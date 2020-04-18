@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>MIT-6.828-LAB2 Memory Management - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="Contents Part 1:Physical Page Management Exercise 1 Key Point     Part 2:Virtual Memory Exercise 2,3 Key Point   Exercise 4   Part 3:Kernel Address Space Exercise 5 Key Point     Questions Challenge C">
+<meta name="keywords" content="MIT6.828">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT-6.828-LAB2 Memory Management">
+<meta property="og:url" content="https://qinstaunch.github.io/2020/01/01/MIT-6-828-LAB2-Memory-Management/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="Contents Part 1:Physical Page Management Exercise 1 Key Point     Part 2:Virtual Memory Exercise 2,3 Key Point   Exercise 4   Part 3:Kernel Address Space Exercise 5 Key Point     Questions Challenge C">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-01-22T07:53:14.451Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MIT-6.828-LAB2 Memory Management">
+<meta name="twitter:description" content="Contents Part 1:Physical Page Management Exercise 1 Key Point     Part 2:Virtual Memory Exercise 2,3 Key Point   Exercise 4   Part 3:Kernel Address Space Exercise 5 Key Point     Questions Challenge C">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="MIT-6.828-LAB2 Memory Management" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    18 分钟 读完 (大约 2754 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                MIT-6.828-LAB2 Memory Management
+            
+        </h1>
+        <div class="content">
+            <h1><span id="contents"><span>Contents</span></span><a href="#contents" class="header-anchor">#</a></h1><ul>
+<li><a href="#OSELAB2_1">Part 1:Physical Page Management</a><ul>
+<li><a href="#OSELAB2_1.1">Exercise 1</a><ul>
+<li><a href="#OSELAB2_1.1.1">Key Point</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#OSELAB2_2">Part 2:Virtual Memory</a><ul>
+<li><a href="#OSELAB2_2.2">Exercise 2,3</a><ul>
+<li><a href="#OSELAB2_2.2.1">Key Point</a></li>
+</ul>
+</li>
+<li><a href="#OSELAB2_2.4">Exercise 4</a></li>
+</ul>
+</li>
+<li><a href="#OSELAB2_3">Part 3:Kernel Address Space</a><ul>
+<li><a href="#OSELAB2_3.5">Exercise 5</a><ul>
+<li><a href="#OSELAB2_3.5.1">Key Point</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#OSELAB2_4">Questions</a></li>
+<li><a href="#OSELAB2_Challenge">Challenge</a></li>
+<li><a href="#OSELAB2_CODE">Code implemention for all exercises</a></li>
+<li><a href="#OSELAB2_ref">REFERENCES</a></li>
+</ul>
+<a id="more"></a>
+
+<hr>
+<h1><span id="part-1-physical-page-management"><span id="OSELAB2_1">Part 1:Physical Page Management</span></span><a href="#part-1-physical-page-management" class="header-anchor">#</a></h1><hr>
+<h2><span id="exercise-1"><span id="OSELAB2_1.1">Exercise 1</span></span><a href="#exercise-1" class="header-anchor">#</a></h2><h3><span id="key-point"><span id="OSELAB2_1.1.1">Key point</span></span><a href="#key-point" class="header-anchor">#</a></h3><p>后续内容建议配合该图食用： <div align="center"><img src="https://s2.ax1x.com/2020/01/16/lj35TI.png" alt="图1-1 映射示意图（注：Encironment在LAB3中才实现）"></div><br>在LAB1做完之后，物理内存当中就已经被加载了内核代码以及数据了（.text Section,.data Section)。kern/init.c当中下一步就是调用<code>mem_init()</code>，通过LAB1的学习以及kern/pmap.c当中的<code>mem_init</code>以及<code>boot_alloc</code>函数的注释，能够了解到boot_alloc是在尚未划分物理页面时在kernel的.bss segment之后分配一个页面大小的内存空间作为kernel page directory,并且分配一定大小的内存空间作为Page Info arrays（该内存空间的大小取决于npages以及sizeof(struct PageInfo),并且还要按PGSIZE对齐）。因此在<code>mem_init</code>中，首先初始化了kernerl page directory，随后给Page Info arrays分配了内存空间，用来存储整个物理内存空间对应的页面信息(Page Information)，在exercise 1当中，最后就是调用<code>page_init</code>来初始化整个物理内存空间对应的页面信息，理解了上图，写出<code>page_init</code>以及整个exercise 1就不难了。  </p>
+<p>但是仍然有几个注意点：</p>
+<ol>
+<li>记录一个页面信息时，将PageInfo中的pp_ref置为1并不是表明其in use或者could not allocate，实际上正确的方式就是忽略这个页面（但是由于C语言需要初始化，因此将pp_ref置为0，pp_link置为NULL即可），虽然将pp_ref置为1好像也不会出错，但是不建议这么做。</li>
+<li>npages_basemem实际上低于1MB并且低于其中IO hole(在LAB1当中有解释！）的部分的物理页面的数量，而npages则是整个物理内存空间包含的物理页面的数量。</li>
+<li><strong>关于上图如何验证，事实上make qemu启动后在i386_detect_memory函数中会输出base=640K，然后你还会发现在该函数中有npages_basemem = basemem / (PGSIZE / 1024);事实上这就完美验证了！</strong></li>
+</ol>
+<p><strong>代码实现见<a href="#OSELAB2_CODE">Code implemention for all exercises</a></strong>.</p>
+<hr>
+<h1><span id="part-2-virtual-memory"><span id="OSELAB2_2">Part 2:Virtual Memory</span></span><a href="#part-2-virtual-memory" class="header-anchor">#</a></h1><hr>
+<h2><span id="exercise-2-3"><span id="OSELAB2_2.2">Exercise 2,3</span></span><a href="#exercise-2-3" class="header-anchor">#</a></h2><h3><span id="key-point"><span id="OSELAB2_2.2.1">Key point</span></span><a href="#key-point" class="header-anchor">#</a></h3><p>这一部分就是让我们认真阅读80386 programmer mannual.这部分基础知识就不再赘述。但是值得一提的是，在80386中，并不是没有segment translation的机制，只是在boot.S当中加载了全局描述符表，该GDT将所有的段寄存器的Base address都设置为0，段寄存器寻址上限设置为0xffff ffff，因此虚拟地址经过Segment translation之后与线性地址等价，对外表现为没有segment translation的机制，但是不能够说80386将segment translation机制禁用了。下面这个简单的示意图还是很重要的：</p>
+<figure class="highlight gherkin hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">           Selector  +--------------+         +-----------+</span><br><span class="line">          ----------&gt;|<span class="hljs-string">              </span>|<span class="hljs-string">         </span>|<span class="hljs-string">           </span>|</span><br><span class="line">                     |<span class="hljs-string"> Segmentation </span>|<span class="hljs-string">         </span>|<span class="hljs-string">  Paging   </span>|</span><br><span class="line">Software             |<span class="hljs-string">              </span>|<span class="hljs-string">--------&gt;</span>|<span class="hljs-string">           </span>|<span class="hljs-string">----------&gt;  RAM</span></span><br><span class="line"><span class="hljs-string">            Offset   </span>|<span class="hljs-string">  Mechanism   </span>|<span class="hljs-string">         </span>|<span class="hljs-string"> Mechanism </span>|</span><br><span class="line">          ----------&gt;|<span class="hljs-string">              </span>|<span class="hljs-string">         </span>|<span class="hljs-string">           </span>|</span><br><span class="line">                     +--------------+         +-----------+</span><br><span class="line">            Virtual                   Linear                Physical</span><br></pre></td></tr></table></figure>
+
+<p>此外，就是exercise3提到的进入qemu monitor的快捷键在我这不顶用，根据这个老哥的博客<a href="https://www.cnblogs.com/fatsheep9146/p/5124921.html" target="_blank" rel="noopener">fatsheep-mit6.828-lab2</a>,这个是可行的。</p>
+<figure class="highlight cpp hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-i386 -hda obj/kern/kernel.img -monitor stdio -gdb tcp::<span class="hljs-number">26000</span> -D qemu.<span class="hljs-built_in">log</span></span><br></pre></td></tr></table></figure>
+
+<h2><span id="exercise-4"><span id="OSELAB2_2.4">Exercise 4</span></span><a href="#exercise-4" class="header-anchor">#</a></h2><p>无特殊注意事项，<strong>代码实现见<a href="#OSELAB2_CODE">Code implemention for all exercises</a></strong>.</p>
+<hr>
+<h1><span id="part-3-kernel-address-space"><span id="OSELAB2_3">Part 3:Kernel Address Space</span></span><a href="#part-3-kernel-address-space" class="header-anchor">#</a></h1><hr>
+<h2><span id="exercise-5"><span id="OSELAB2_3.5">Exercise 5</span></span><a href="#exercise-5" class="header-anchor">#</a></h2><h3><span id="key-point"><span id="OSELAB2_3.5.1">Key point</span></span><a href="#key-point" class="header-anchor">#</a></h3><p>完善<code>mem_init()</code>的虚拟内存映射代码即可。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boot_map_region(kern_pgdir, UPAGES, PTSIZE, PADDR(pages), (PTE_U | PTE_P));</span><br></pre></td></tr></table></figure>
+
+<p>将pages那部分内容映射到虚拟地址<code>UPAGES</code>处，这里的<code>PTSIZE</code>实际上与<code>ROUNDUP(sizeof(struct PageInfo)*npages, PGSIZE)</code>是等价的，虽然它们值不相等，但是都能通过校验函数。用PTSIZE可能是源于inc/memlayout.h中的示意图，使用另外一种是因为这是PageInfo实际分配的物理存储空间大小。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boot_map_region(kern_pgdir, KSTACKTOP-KSTKSIZE, KSTKSIZE, PADDR(bootstack), (PTE_W | PTE_P));</span><br></pre></td></tr></table></figure>
+
+<p>将内核栈映射到虚拟地址KSTACKTOP-KSTKSIZE处。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boot_map_region(kern_pgdir, KERNBASE, -KERNBASE, <span class="hljs-number">0</span>, (PTE_W | PTE_P));</span><br></pre></td></tr></table></figure>
+
+<p>将整个物理存储空间映射到KERNBASE之上，在32位机器上将-KERNBASE按照无符号数解释恰好就是2^32-KERNBASE。</p>
+<p><strong>代码实现见<a href="#OSELAB2_CODE">Code implemention for all exercises</a></strong>.</p>
+<hr>
+<h1><span id="questions"><span id="OSELAB2_4">Questions</span></span><a href="#questions" class="header-anchor">#</a></h1><hr>
+<blockquote>
+<p>1.Assuming that the following JOS kernel code is correct,what type should variable x have,<code>uintptr_t</code> or <code>physaddr_t</code>? </p>
+</blockquote>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">mystery_t</span> x;</span><br><span class="line"><span class="hljs-keyword">char</span>* value = return_a_pointer();</span><br><span class="line">*value = <span class="hljs-number">10</span>;</span><br><span class="line">x = (<span class="hljs-keyword">mystery_t</span>) value;</span><br></pre></td></tr></table></figure>
+
+<p>很显然，返回的是指针，必然是虚拟地址，因此x的类型是<code>uintptr_t</code>.</p>
+<blockquote>
+<p>2.What entries (rows) in the page directory have been filled in at this point? What addresses do they map and where do they point? In other words, fill out this table as much as possible: <div align="center"><img src="https://s2.ax1x.com/2020/01/21/1kazIs.png" alt="图4-1 答案仅供参考"></div></p>
+</blockquote>
+<blockquote>
+<p>3.We have placed the kernel and user environment in the same address space. Why will user programs not be able to read or write the kernel’s memory? What specific mechanisms protect the kernel memory?</p>
+</blockquote>
+<p>无论是Page directory entry还是Page table entry，其低12位的控制bit起到了访问控制（读/写）以及校验优先等级（privileged level）的作用。通过设置相应的bit位就能够控制user对page的访问权限。具体参阅<a href="https://pdos.csail.mit.edu/6.828/2018/readings/i386/toc.htm" target="_blank" rel="noopener">Intel 80386 Reference Programmer’s Manual</a></p>
+<blockquote>
+<p>4.What is the maximum amount of physical memory that this operating system can support? Why?</p>
+</blockquote>
+<p>JOS使用32位系统，并且通过mem_init的设置虚拟内存对物理内存的映射的代码，我们将物理内存从0开始映射到了KERNBASE之上，而KERNBASE是0xF000 0000，32位系统最大虚拟地址为0xFFFF FFFF，因此无论实际物理内存有多大，JOS最大也只能映射2GB的物理内存。从另外一个角度来看，JOS为Page Info分配了4MB的空间，每个<code>struct PageIngo</code>需要8字节空间，因此最多有4MB/8=512K个PageInfo对应于512K个Page，每个Page 4KB，因此最大物理内存空间为2GB。</p>
+<blockquote>
+<p>5.How much space overhead is there for managing memory, if we actually had the maximum amount of physical memory? How is this overhead broken down?</p>
+</blockquote>
+<p>倘若JOS映射了2GB的物理内存，那么就有2GB/4KB=512K个物理页面，每个物理页面对应于4 bytes的page table entry，因此这部分花销是512K*4=2MB。除此之外，还有4KB的Page directory以及4MB的Page Info，因此总的花销是2MB + 4MB + 4KB.</p>
+<blockquote>
+<p>6.Revisit the page table setup in kern/entry.S and kern/entrypgdir.c. Immediately after we turn on paging, EIP is still a low number (a little over 1MB). At what point do we transition to running at an EIP above KERNBASE? What makes it possible for us to continue executing at a low EIP between when we enable paging and when we begin running at an EIP above KERNBASE? Why is this transition necessary?</p>
+</blockquote>
+<p>在LAB1当中已经提到了，在<code>jmp *%eax</code>之后，EIP从高于KERNBASE的地址处开始执行。之所以这样可行是因为entrypgdir.c将虚拟地址[0, 4MB)还有[KERNBASE, KERNBASE+4MB)映射到了物理地址[0, 4MB)。之所以要将[0, 4MB)的虚拟地址空间也映射到物理地址[0, 4MB)是因为在开启Paging之后，entry.S中还有少许指令需要执行，当其执行完之后，就会进入C语言编写的代码来对内核进行初始化，而C实际上只支持虚拟内存，因此这种转移是必要的。</p>
+<hr>
+<h1><span id="challenges"><span id="OSELAB2_Challenge">Challenges</span></span><a href="#challenges" class="header-anchor">#</a></h1><hr>
+<blockquote>
+<p>Challenge! We consumed many physical pages to hold the page tables for the KERNBASE mapping. Do a more space-efficient job using the PTE_PS (“Page Size”) bit in the page directory entries. This bit was not supported in the original 80386, but is supported on more recent x86 processors.</p>
+</blockquote>
+<p>查阅<a href="https://pdos.csail.mit.edu/6.828/2018/readings/ia32/IA32-3A.pdf" target="_blank" rel="noopener">Intel® 64 and IA-32 Architectures Software Developer’s Manual</a>。例如基于x86架构的IA-32处理器以及 Pentium II处理器都支持了在Page directory entry中PTE_PS位的设置。在<strong>同时设置了控制寄存器CR4的PSE flag以及Page direcotry entry中的PTE_PS flag之后，该Page directory entry实际上就存储了指向4MB物理页的指针（即22~31bit位）</strong>这时候实际上二级页表不会起作用。但值得注意的是，按照Intel参考文档的说明，若没有设置CR4的PSE flag，即便设置了PTE_PS flag物理页也只能是4KB，不会是4MB。</p>
+<blockquote>
+<p>【Reference from volume 3-27】When the PSE flag in CR4 is set, both 4-MByte pages and page tables for 4-KByte<br>pages can be accessed from the same page directory. If the PSE flag is clear, only<br>page tables for 4-KByte pages can be accessed (regardless of the setting of the PS<br>flag in a page-directory entry).</p>
+</blockquote>
+<p>我们熟知的4KB页面大小的Page Directory Entry： <div align="center"><img src="https://s2.ax1x.com/2020/01/21/1kdCR0.png" alt="图5-1 4KB页面大小的Page Directory Entry"></div><br>当设置了PSE flag以及PTE_PS flag之后，页面大小为4MB，这时的Page Directory Entry: <div align="center"><img src="https://s2.ax1x.com/2020/01/21/1kdFMT.png" alt="图5-2 4MB页面大小的Page Directory Entry"></div><br>相应的linear address translation也与之前两级页表有所不同： <div align="center"><img src="https://s2.ax1x.com/2020/01/21/1kdPzV.png" alt="图5-3 4MB页面大小对应的地址翻译示意图"></div><br>当页面大小是4MB时，二级页表就不起作用了，因此，不仅能够减少存储页面信息的开销，还能减少页表的开销。</p>
+<hr>
+<blockquote>
+<p>Challenge! Extend the JOS kernel monitor with commands to:</p>
+</blockquote>
+<p>实现了一个简单版本，代码比较丑陋，没有做到能对任何的参数都不会产生bug，仅限简单的参数校验。下方是核心<code>showMappings</code>函数，其它util工具函数参见github代码。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">show_mappings</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> **argv, struct Trapframe *tf)</span></span>&#123;</span><br><span class="line">	<span class="hljs-comment">// validate arguments amount</span></span><br><span class="line">	<span class="hljs-comment">// argc==3,which means that show pages information between argv[1] and argv[2].</span></span><br><span class="line">	<span class="hljs-comment">// argc==4,which means that set all the pages with perm.</span></span><br><span class="line">	<span class="hljs-comment">// argc==5,which means that only set page argv[4] with perm.</span></span><br><span class="line">	cprintf(<span class="hljs-string">"debug-&gt; argc :%d\n"</span>,argc);</span><br><span class="line">	<span class="hljs-keyword">if</span>(argc &lt; <span class="hljs-number">3</span>)&#123;</span><br><span class="line">		cprintf(<span class="hljs-string">"Invalid arguments.You should pass two virtual address:startVA endVA and optional permissions.\n"</span>);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">int32_t</span> start = s2va(argv[<span class="hljs-number">1</span>]), end = s2va(argv[<span class="hljs-number">2</span>]) + <span class="hljs-number">1</span>, perm = <span class="hljs-number">0</span>, onlyTarget = <span class="hljs-number">0</span>;</span><br><span class="line">	<span class="hljs-keyword">if</span>(start == <span class="hljs-number">-1</span> || end == <span class="hljs-number">-1</span> || end &lt; start)&#123;</span><br><span class="line">		cprintf(<span class="hljs-string">"Invalid virual address was given.\n"</span>);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// obtain optional perm.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>(argc &gt;= <span class="hljs-number">4</span>)&#123;</span><br><span class="line">		<span class="hljs-keyword">char</span> *tmp = argv[<span class="hljs-number">3</span>];</span><br><span class="line">		<span class="hljs-keyword">if</span>(tmp[<span class="hljs-number">0</span>] == <span class="hljs-string">'-'</span>)perm = <span class="hljs-number">-1</span>;</span><br><span class="line">		<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">			<span class="hljs-keyword">while</span>(*tmp)&#123;</span><br><span class="line">				perm = perm * <span class="hljs-number">10</span> + (*tmp - <span class="hljs-string">'0'</span>);</span><br><span class="line">				++tmp;	</span><br><span class="line">			&#125;	</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-comment">// obtain onlyTarget while argc==4</span></span><br><span class="line">	<span class="hljs-keyword">if</span>(argc == <span class="hljs-number">5</span>)&#123;</span><br><span class="line">		onlyTarget = s2va(argv[<span class="hljs-number">4</span>]);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">uintptr_t</span> u_start_align = ROUNDDOWN((<span class="hljs-keyword">uintptr_t</span>)start, PGSIZE), u_end_align = ROUNDUP((<span class="hljs-keyword">uintptr_t</span>)end, PGSIZE);</span><br><span class="line">	<span class="hljs-keyword">pte_t</span> *pte;</span><br><span class="line">	cprintf(<span class="hljs-string">"va@start: %08x va@end: %08x\n"</span>, u_start_align, u_end_align);</span><br><span class="line">	<span class="hljs-keyword">for</span>(;u_start_align &lt; u_end_align; u_start_align += PGSIZE)&#123;</span><br><span class="line">		pte = pgdir_walk(kern_pgdir, (<span class="hljs-keyword">void</span> *)u_start_align, <span class="hljs-number">1</span>);</span><br><span class="line">		<span class="hljs-keyword">if</span>(pte)&#123;</span><br><span class="line">			<span class="hljs-keyword">if</span>(argc == <span class="hljs-number">4</span>)setPermissions(perm, pte);</span><br><span class="line">			<span class="hljs-keyword">if</span>(argc == <span class="hljs-number">5</span> &amp;&amp; (<span class="hljs-keyword">uintptr_t</span>)onlyTarget == u_start_align)setPermissions(perm, pte);</span><br><span class="line">			cprintf(<span class="hljs-string">"va@page: %08x "</span>, u_start_align);</span><br><span class="line">			cprintf(<span class="hljs-string">"pa@page: %08x @perm:PTE_P %d PTE_U %d PTE_W %d;\n"</span>, PTE_ADDR(*pte),lovelyValidate(*pte &amp; PTE_P), lovelyValidate(*pte &amp; PTE_U), lovelyValidate(*pte &amp; PTE_W));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果示意图： <div align="center"><img src="https://s2.ax1x.com/2020/01/21/1kdksU.png" alt="图5-4 扩展指令效果示意图（仅供参考）"></div></p>
+<hr>
+<h1><span id="code-implemention-for-all-exercises"><span id="OSELAB2_CODE">Code implemention for all exercises</span></span><a href="#code-implemention-for-all-exercises" class="header-anchor">#</a></h1><p><strong>See github:</strong><a href="https://github.com/QinStaunch/MIT-6.828" target="_blank" rel="noopener">YanTang Qin- MIT6.828</a></p>
+<hr>
+<h1><span id="references"><center><span id="OSELAB2_ref">REFERENCES</span></center></span><a href="#references" class="header-anchor">#</a></h1><p>【1】 <a href="https://pdos.csail.mit.edu/6.828/2018/readings/i386/toc.htm" target="_blank" rel="noopener">Intel 80386 Reference Programmer’s Manual</a><br>【2】 <a href="https://pdos.csail.mit.edu/6.828/2018/readings/ia32/IA32-3A.pdf" target="_blank" rel="noopener">Intel® 64 and IA-32 Architectures Software Developer’s Manual</a><br>【3】 <a href="https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev10.pdf" target="_blank" rel="noopener">XV6 - a simple, Unix-like teaching operating system - Reference Book</a><br>【4】 《Computer Systems: A Programmer’s Perspective (3rd Edition)》.Randal E.Bryant / David O’Hallaron.<br>【5】 《Modern Opeation Systems (Fourth Edition)》.Andrew S.Tanenbaum / Herbert Bos.</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/MIT6-828/">MIT6.828</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/01/16/MIT-6-828-LAB3-User-Environments/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">MIT-6.828-LAB3 User Environments</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/">
+                <span class="level-item">MIT-6.828-LAB1 Booting a PC</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2020/01/01/MIT-6-828-LAB2-Memory-Management/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>Contents#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>Part 1:Physical Page Management#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1</span>
+        <span>Exercise 1#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1.1</span>
+        <span>Key point#</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>Part 2:Virtual Memory#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.1</span>
+        <span>Exercise 2,3#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.1.1</span>
+        <span>Key point#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.2</span>
+        <span>Exercise 4#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>Part 3:Kernel Address Space#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.1</span>
+        <span>Exercise 5#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.1.1</span>
+        <span>Key point#</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">5</span>
+        <span>Questions#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6</span>
+        <span>Challenges#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">7</span>
+        <span>Code implemention for all exercises#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">8</span>
+        <span>REFERENCES#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB3 User Environments">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time></div>
+                    <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB3 User Environments</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB2 Memory Management">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time></div>
+                    <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB2 Memory Management</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
+                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="MIT-6.828-LAB2 Memory Management" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

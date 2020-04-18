@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>踩过的Mybatis坑及一些注意事项总结 - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="文章目录 一、Mybatis注意事项以及踩过的坑  Mybatis主配置文件注意事项   package   SqlSession   select   insert,update,delete   sql   resultMap结果映射（最关键也非常重要） 不使用resultMap标签配置结果映射   一对一   一对多   多对多       二、Mybatis缓存机制    一级缓存   二">
+<meta name="keywords" content="Mybatis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="踩过的Mybatis坑及一些注意事项总结">
+<meta property="og:url" content="https://qinstaunch.github.io/2019/11/25/踩过的Mybatis坑及一些注意事项总结/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="文章目录 一、Mybatis注意事项以及踩过的坑  Mybatis主配置文件注意事项   package   SqlSession   select   insert,update,delete   sql   resultMap结果映射（最关键也非常重要） 不使用resultMap标签配置结果映射   一对一   一对多   多对多       二、Mybatis缓存机制    一级缓存   二">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2019-12-23T01:19:31.634Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="踩过的Mybatis坑及一些注意事项总结">
+<meta name="twitter:description" content="文章目录 一、Mybatis注意事项以及踩过的坑  Mybatis主配置文件注意事项   package   SqlSession   select   insert,update,delete   sql   resultMap结果映射（最关键也非常重要） 不使用resultMap标签配置结果映射   一对一   一对多   多对多       二、Mybatis缓存机制    一级缓存   二">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="踩过的Mybatis坑及一些注意事项总结" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-11-25T14:41:55.000Z">2019-11-25</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Framework/">Framework</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/Framework/Mybatis/">Mybatis</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    26 分钟 读完 (大约 3964 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                踩过的Mybatis坑及一些注意事项总结
+            
+        </h1>
+        <div class="content">
+            <h1><span id="wen-zhang-mu-lu"><span>文章目录</span></span><a href="#wen-zhang-mu-lu" class="header-anchor">#</a></h1><ul>
+<li><p><a href="#1">一、Mybatis注意事项以及踩过的坑</a></p>
+<ul>
+<li><a href="#1_1">Mybatis主配置文件注意事项</a>  </li>
+<li><a href="#1_2">package</a>  </li>
+<li><a href="#1_3">SqlSession</a>  </li>
+<li><a href="#1_4">select</a>  </li>
+<li><a href="#1_5">insert,update,delete</a>  </li>
+<li><a href="#1_6">sql</a>  </li>
+<li><a href="#1_7">resultMap结果映射（最关键也非常重要）</a><ul>
+<li><a href="#1_7_1">不使用resultMap标签配置结果映射</a>  </li>
+<li><a href="#1_7_2">一对一</a>  </li>
+<li><a href="#1_7_3">一对多</a>  </li>
+<li><a href="#1_7_4">多对多</a>  </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a href="#2">二、Mybatis缓存机制</a>  </p>
+<ul>
+<li><a href="#2_1">一级缓存</a>  </li>
+<li><a href="#2_2">二级缓存</a></li>
+</ul>
+</li>
+<li><p><a href="#3">三、Mybatis延迟加载</a>  </p>
+</li>
+</ul>
+<h1><span id="yi-mybatis-zhu-yi-shi-xiang-yi-ji-cai-guo-de-keng"><span id="1">一、Mybatis注意事项以及踩过的坑</span></span><a href="#yi-mybatis-zhu-yi-shi-xiang-yi-ji-cai-guo-de-keng" class="header-anchor">#</a></h1><h2><span id="mybatis-zhu-pei-zhi-wen-jian-zhu-yi-shi-xiang"><span id="1_1">Mybatis主配置文件注意事项</span></span><a href="#mybatis-zhu-pei-zhi-wen-jian-zhu-yi-shi-xiang" class="header-anchor">#</a></h2><ul>
+<li>配置项标签的顺序很重要，不按照文档中介绍的顺序来配置就会报错（但是可以缺少配置项）。</li>
+<li>如果想要使用第三方DataSource，那么就可以通过实现DataSourceFactory接口来使用第三方数据源，例如Druid连接池等。然后再在dataSource type属性中配置上该实现类的名称即可，另外，为该第三方<br>数据源配置的配置项根据使用数据源的不同而有所不同，Mybatis只是解析你所配置的属性。以Druid连接池为例，通过自己实现DataSourceFactory接口，里面有两个方法，一个是setProperties，这个方法的<br>参数properties是mybatis自动解析了主配置文件中你所配置的属性得到的（可以自己输出验证一下，确实是这样），而Druid连接池产生DataSource往往通过DruidDataSourceFactory.createDataSource(properties)<br>，因此你就能理解我前面所说的配置项要根据使用数据源的不同而有所不同的含义啦。</li>
+</ul>
+<a id="more"></a>
+
+<h2><span id="package"><span id="1_2">package</span></span><a href="#package" class="header-anchor">#</a></h2><p>在mybatis主配置文件的别名配置中使用package标签可以配置包名，通过这种方式能够简化对该包下的类的访问。例如在主配置文件配置了<package name="cn.edu.uestc.domain">，那么在以后需要引用<br>到该包下的JavaBean的时候，就不要加上这个包名了，直接使用类的名称即可。</package></p>
+<h2><span id="sqlsession"><span id="1_3">SqlSession</span></span><a href="#sqlsession" class="header-anchor">#</a></h2><ul>
+<li>默认情况下，SqlSession是不会开启autocommit的，即默认情况下，一个SqlSession就是一个事务，因此，若更新了数据库就需要调用SqlSession.commit()来提交,若更新发生异常需要调用SqlSession.rollback()<br>进行事务的回滚（在这里发现了一个MySQL自增主键的坑，由于自增主键的值是存放在内存当中的，并且不会因为事务的回滚而使自增主键的值减小，因此倘若插入失败，那么就会导致自增主键的值在数据库<br>中不再连续）</li>
+<li>通常我们在使用mybatis时，都是定义dao层接口，以及相应的sql语句，让mybatis来帮我们完成数据的查询与封装，而实际上，当你调用getmapper方法时，实际上在mybatis的内部会把调用getmapper的sqlsession对象的this引用传递到底层的函数，到最后，实际上就是调用了sqlsession的那些方法完成数据的查询的：例如selectList等（可以自己查看源码验证）。因此，除了使用mybatis提供的代理对象的方式，还可以自己实现Dao层接口，在内部直接使用sqlsession的那些方法然后再自己完成封装同样也能完成Dao层的功能。</li>
+</ul>
+<h2><span id="select"><span id="1_4">select</span></span><a href="#select" class="header-anchor">#</a></h2><ul>
+<li>id名不能够相同（update等同理），因此通过Mybatis来实现Dao层接口没法实现方法的重载，通过看一些博客，发现可以通过在Service层实现方法的重载，但是在Dao层不使用重载，这时候又会产生一<br>个新的问题，如果希望能够在Service层实现重载，那么Dao层提供的接口必然就需要查询很多参数，那应该如何实现接口的高可用性呢？目前我觉得可以使用Mybatis的动态SQL的特性来解决，让Dao层的接口<br>可以接受很多的必要的参数，但是可以传入无效值，例如Null，然后通过动态SQL的IF等达到动态构建SQL语句的功能。</li>
+<li>parameterType是可选参数，即便不写，Mybatis也可以通过类型处理器（TypeHandler）来推断出具体传入语句的参数</li>
+<li>如果希望能够有多个参数，那么有几种实现方式，（1）直接使用arg0-argn(n的取值取决于Dao层接口方法的参数个数）；（2）在Dao层接口的参数配置上<code>@Param</code>注解，这样就可以在Mapper的配置文件中<br>使用你在<code>@Param</code>中为该参数设置的名称了；（【注】我个人觉得根据不同的情况前面两种方式实际上都可行）；（3）在Dao层接口中传入Map，通过设置Map的K-V来实现多参数，这样就可以在Mapper的配置<br>文件中使用Map的K值了（不推荐这种方式，绝对代码维护火葬场）</li>
+<li>如果参数允许null值，那么根据JDBC的规范，必须在参数中指定JDBC Type，例如#{age,jdbcType=NUMERIC}</li>
+</ul>
+<h2><span id="insert-update-delete"><span id="1_5">insert,update,delete</span></span><a href="#insert-update-delete" class="header-anchor">#</a></h2><p>在这三种映射标签中，会让人产生疑惑的是<code>useGeneratedKeys</code>和<code>keyProperty</code>两个属性，实际上就是当数据库表的主键是自动增长的时候（例如MySQL中的autoincrement），调用insert或者update的时<br>候是肯定没办法拿到该主键的，那么这时候就可以通过设置<code>userGeneratedKeys</code>为<code>true</code>，并且为<code>keyProperty</code>设置一个名字（例如可以设置为keyProperty=“id_autoIncrement”）那么执行该SQL语句之后<br>会返回主键值，在Java代码中就能够获取该主键对应的对象的属性值（即通过我所配置的keyProperty的值“id_autoIncrement”）。例如，<code>UserDao</code>接口定义了<code>int addUser(User user)</code>方法，一开始user<br>对象的id值尚未初始化，因为该user还没有被添加进数据库，因此它还没有id，但是执行了insert方法之后，由于设置上面那个属性，这时调用user.getId()就会返回该user对象插入到数据库之后由数据库<br>自动增长生成的Id值，相反，如果没有设置上面那两个属性，调用user.getId()就不会返回Id值。还有我猜测addUser方法返回的结果是不是也是Id值？经验证不是，只是插入成功的行数而已。</p>
+<h2><span id="sql"><span id="1_6">sql</span></span><a href="#sql" class="header-anchor">#</a></h2><p>搭配<code>include</code>标签可重复利用SQL代码段。没有什么特别的注意事项吧，看看官方文档还有博客就行。</p>
+<h2><span id="resultmap-jie-guo-ying-she-zui-guan-jian-ye-fei-chang-chong-yao"><span id="1_7">resultMap结果映射（最关键也非常重要）</span></span><a href="#resultmap-jie-guo-ying-she-zui-guan-jian-ye-fei-chang-chong-yao" class="header-anchor">#</a></h2><h3><span id="bu-shi-yong-resultmap-biao-qian-pei-zhi-jie-guo-ying-she"><span id="1_7_1">不使用resultMap标签配置结果映射</span></span><a href="#bu-shi-yong-resultmap-biao-qian-pei-zhi-jie-guo-ying-she" class="header-anchor">#</a></h3><p>数据库中的列名与相应的JavaBean中的属性名不匹配怎么办？（1）用select as别名的方式；（2）使用resultMap标签来创建数据库列名到JavaBean的属性名的映射关系，然后在相应的SQL语句映射里面的<br>resultMap属性配置上你使用resultMap标签创建的映射关系即可。</p>
+<h3><span id="yi-dui-yi"><span id="1_7_2">一对一</span></span><a href="#yi-dui-yi" class="header-anchor">#</a></h3><p>associate标签用来描述“一对一”的关系。例如，一个人有一个博客，在项目domain中可能有User和Blog，这时想要查询User对象以及对应的Blog，SQL语句有可能是这样的：<code>select u.*,b.id as bid,b.title,b.brief  from user u,blog b where u.id=b.id;</code>相应的，若要建立相应的结果映射ResultMap就应当是这样的：  </p>
+<figure class="highlight applescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;resultMap <span class="hljs-built_in">id</span>=<span class="hljs-string">"user_blog_resultmap"</span> type=<span class="hljs-string">"User"</span>&gt;</span><br><span class="line">    &lt;<span class="hljs-built_in">id</span> <span class="hljs-keyword">property</span>=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"id"</span>/&gt;</span><br><span class="line">    &lt;<span class="hljs-literal">result</span> <span class="hljs-keyword">property</span>=<span class="hljs-string">"username"</span> column=<span class="hljs-string">"username"</span>/&gt;</span><br><span class="line">    &lt;<span class="hljs-literal">result</span> <span class="hljs-keyword">property</span>=<span class="hljs-string">"password"</span> column=<span class="hljs-string">"password"</span>/&gt;</span><br><span class="line">    &lt;<span class="hljs-literal">result</span> <span class="hljs-keyword">property</span>=<span class="hljs-string">"telephone"</span> column=<span class="hljs-string">"telephone"</span>/&gt;</span><br><span class="line">    &lt;spanssociate <span class="hljs-keyword">property</span>=<span class="hljs-string">"blog"</span> column=<span class="hljs-string">"id"</span> javatype=<span class="hljs-string">"Blog"</span>&gt;</span><br><span class="line">        &lt;<span class="hljs-built_in">id</span> <span class="hljs-keyword">property</span>=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"bid"</span>/&gt;</span><br><span class="line">        &lt;<span class="hljs-literal">result</span> <span class="hljs-keyword">property</span>=<span class="hljs-string">"title"</span> column=<span class="hljs-string">"title"</span>/&gt;</span><br><span class="line">        &lt;<span class="hljs-literal">result</span> <span class="hljs-keyword">property</span>=<span class="hljs-string">"brief"</span> column=<span class="hljs-string">"brief"</span>/&gt;</span><br><span class="line">    &lt;/associate&gt;</span><br><span class="line">&lt;/resultMap&gt;</span><br></pre></td></tr></table></figure>
+
+<h3><span id="yi-dui-duo"><span id="1_7_3">一对多</span></span><a href="#yi-dui-duo" class="header-anchor">#</a></h3><p>collection标签用来描述“一对多”的关系。例如，一个人可以有多个账单，假设在项目的domain中User有一个私有成员<code>private List&lt;bill&gt; bills;</code>那么此时对应的查询SQL语句可能是这样的：  </p>
+<figure class="highlight n1ql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">select</span> u.*,b.id <span class="hljs-keyword">as</span> bid,b.date <span class="hljs-keyword">as</span> date,b.money <span class="hljs-keyword">as</span> money <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> u <span class="hljs-keyword">left</span> <span class="hljs-keyword">outer</span> <span class="hljs-keyword">join</span> blog b <span class="hljs-keyword">on</span> u.id = b.uid</span><br><span class="line"><span class="hljs-symbol">``</span><span class="hljs-symbol">`  </span></span><br><span class="line"><span class="hljs-symbol">并且最终的结果映射可能是这样的：</span></span><br></pre></td></tr></table></figure>
+
+<resultmap id="user_blog_one_to_many_resultMap" type="User">
+    <id property="id" column="id">
+    <result property="username" column="username">
+    <result property="password" column="password">
+    <result property="telephone" column="telephonte">
+    <collection property="biils" oftype="bill">
+        <id property="id" column="bid">
+        <result property="date" column="date">
+        <result property="money" coumn="money">
+    </result></result></id></collection>
+</result></result></result></id></resultmap>
+<figure class="highlight haxe hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">### &lt;span id="1_7_4"&gt;多对多&lt;/span&gt;</span></span><br><span class="line">“多对多”的关系同样可以用collection标签来描述。例如考虑这样一个应用场景，一个人可以有多种角色（例如职员，董事等），而一个角色也能够被赋予给多个人，假设在项目中的domain中对“人”以及“角色”有相应的JavaBean如下所示(省略getter和setter等方法，懒得写）：  </span><br><span class="line">```java</span><br><span class="line"><span class="hljs-keyword">package</span> cn.uestc.domain</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">private</span> int id;</span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">String</span> password;</span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">String</span> telephone;</span><br><span class="line">    <span class="hljs-keyword">private</span> List&lt;Role&gt; roles;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">package</span> cn.uestc.domain</span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Role</span></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">in</span> id;</span><br><span class="line">    <span class="hljs-keyword">private</span> <span class="hljs-keyword">String</span> roleName;</span><br><span class="line">    <span class="hljs-keyword">private</span> List&lt;User&gt; users;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而在数据库当中，除了对应的User表和Role表之外，由于是M:N的关系，需要有第三张表描述这个关系：</p>
+<figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> exist user_role(</span><br><span class="line">uid <span class="hljs-built_in">int</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>,</span><br><span class="line">rid <span class="hljs-built_in">int</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>,</span><br><span class="line"><span class="hljs-keyword">constraint</span> user_role_uid_fk_ref_user <span class="hljs-keyword">foreign</span> <span class="hljs-keyword">key</span> (uid) <span class="hljs-keyword">references</span> <span class="hljs-keyword">user</span>(<span class="hljs-keyword">id</span>) <span class="hljs-keyword">on</span> <span class="hljs-keyword">delete</span> <span class="hljs-keyword">cascade</span> <span class="hljs-keyword">on</span> <span class="hljs-keyword">update</span> <span class="hljs-keyword">cascade</span>,</span><br><span class="line"><span class="hljs-keyword">constraint</span> user_role_rid_fk_ref_role <span class="hljs-keyword">foreign</span> <span class="hljs-keyword">key</span> (rid) <span class="hljs-keyword">references</span> <span class="hljs-keyword">role</span>(<span class="hljs-keyword">id</span>) <span class="hljs-keyword">on</span> <span class="hljs-keyword">delete</span> <span class="hljs-keyword">cascade</span> <span class="hljs-keyword">on</span> <span class="hljs-keyword">update</span> <span class="hljs-keyword">cascade</span></span><br><span class="line">)<span class="hljs-keyword">engine</span>=<span class="hljs-keyword">InnoDB</span>;</span><br></pre></td></tr></table></figure>
+
+<p>那么想实现，查询user以及该user被赋予的角色最终的Sql语句可能是这样的:  </p>
+<figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">select</span> u.*,r.id <span class="hljs-keyword">as</span> rid,r.rolename <span class="hljs-keyword">as</span> rolename <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> u </span><br><span class="line"><span class="hljs-keyword">left</span> <span class="hljs-keyword">join</span> user_role ur <span class="hljs-keyword">on</span> u.id=ur.uid </span><br><span class="line"><span class="hljs-keyword">left</span> <span class="hljs-keyword">join</span> <span class="hljs-keyword">role</span> r <span class="hljs-keyword">on</span> ur.rid=r.id;</span><br></pre></td></tr></table></figure>
+
+<p>那么结果映射可能就是这样的：  </p>
+<figure class="highlight hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;resultMap id=<span class="hljs-string">"userAndCorrospondingRoles"</span> type=<span class="hljs-string">"User"</span>&gt;</span><br><span class="line">    &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"id"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"password"</span> column=<span class="hljs-string">"password"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"telephone"</span> column=<span class="hljs-string">"telephone"</span>/&gt;</span><br><span class="line">    &lt;collection property=<span class="hljs-string">"roles"</span> ofType=<span class="hljs-string">"Role"</span>&gt;</span><br><span class="line">        &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"rid"</span>/&gt;</span><br><span class="line">        &lt;result property=<span class="hljs-string">"roleName"</span> column=<span class="hljs-string">"roleName"</span>/&gt;</span><br><span class="line">    &lt;/collection&gt;</span><br><span class="line">&lt;/resultMap&gt;</span><br></pre></td></tr></table></figure>
+
+<p>同理，想要查询role以及被赋予了role角色的user最终的sql语句可能是这样的：</p>
+<figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">select</span> u.*,r.id <span class="hljs-keyword">as</span> rid,r.rolename <span class="hljs-keyword">as</span> rolename <span class="hljs-keyword">from</span> <span class="hljs-keyword">role</span> r </span><br><span class="line"><span class="hljs-keyword">left</span> <span class="hljs-keyword">join</span> user_role ur <span class="hljs-keyword">on</span> r.id=ur.rid</span><br><span class="line"><span class="hljs-keyword">left</span> <span class="hljs-keyword">join</span> <span class="hljs-keyword">user</span> u <span class="hljs-keyword">on</span> u.id=ur.uid;</span><br></pre></td></tr></table></figure>
+
+<p>相应的结果映射为：</p>
+<figure class="highlight hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;resultMap id=<span class="hljs-string">"roleAndUsers"</span> type=<span class="hljs-string">"Role"</span>&gt;</span><br><span class="line">    &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"rid"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"roleName"</span> column=<span class="hljs-string">"roleName"</span>/&gt;</span><br><span class="line">    &lt;collection property=<span class="hljs-string">"users"</span> ofType=<span class="hljs-string">"User"</span>&gt;</span><br><span class="line">        &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"id"</span>/&gt;</span><br><span class="line">        &lt;result property=<span class="hljs-string">"password"</span> column=<span class="hljs-string">"password"</span>/&gt;</span><br><span class="line">        &lt;result property=<span class="hljs-string">"telephone"</span> column=<span class="hljs-string">"telephone"</span>/&gt;</span><br><span class="line">    &lt;/collection&gt;</span><br><span class="line">&lt;/resultMap&gt;</span><br></pre></td></tr></table></figure>
+
+<h1><span id="er-mybatis-huan-cun-ji-zhi"><span id="2">二、Mybatis缓存机制</span></span><a href="#er-mybatis-huan-cun-ji-zhi" class="header-anchor">#</a></h1><p>Mybatis有两级缓存，默认仅开启一级会话缓存，而二级缓存需要自己配置。</p>
+<h2><span id="yi-ji-huan-cun"><span id="2_1">一级缓存</span></span><a href="#yi-ji-huan-cun" class="header-anchor">#</a></h2><p>一级缓存的作用域是SqlSession对象，在每个SqlSession对象中都有一个Map作为缓存，当在同一个SqlSession对象上执行同样的查询操作时，第二次不会执行SQL语句，而是直接从SqlSession内部的Map当中取出对象返回，可以这样来验证：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span></span>&#123;</span><br><span class="line">    <span class="hljs-meta">@Test</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test0</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">        SqlSession sqlSession0 = MybatisUtil.getSqlSession();</span><br><span class="line">        UserDao userDao0 = sqlSession0.getMapper(UserDao.class);</span><br><span class="line">        User user0 = userDao0.findUserById(<span class="hljs-number">1</span>);</span><br><span class="line">        User user1 = userDao0.findUserById(<span class="hljs-number">1</span>);</span><br><span class="line">        sqlSession0.close();</span><br><span class="line">        SqlSession sqlSession1 = MybatisUtil.getSqlSession();</span><br><span class="line">        UserDao userDao1 = sqlSession1.getMapper(UserDao.class);</span><br><span class="line">        User user2 = userDao1.findUserById(<span class="hljs-number">1</span>);</span><br><span class="line">        <span class="hljs-keyword">if</span>(user0==user1)&#123;</span><br><span class="line">            System.out.println(<span class="hljs-string">"Yes"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">if</span>(user0!=user2)&#123;</span><br><span class="line">            System.out.println(<span class="hljs-string">"No"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">输出结果应该是：</span><br><span class="line">Yes</span><br><span class="line">No</span><br></pre></td></tr></table></figure>
+
+<p>因此关闭了SqlSession，相应的一级缓存也会被清空。</p>
+<h2><span id="er-ji-huan-cun"><span id="2_2">二级缓存</span></span><a href="#er-ji-huan-cun" class="header-anchor">#</a></h2><p>二级缓存的作用域是mapper，默认是不会开启二级缓存的，需要在mapper配置中加上<code>&lt;cache/&gt;</code>标签，并且对Sql语句使用<code>useCache</code>属性，这样就能开启二级缓存了，关于二级缓存的特性与更多配置，在Mybatis的官方文档解释得非常清楚，就不再多说，仅仅记录几个关键的点：</p>
+<ol>
+<li>二级缓存作用域是mapper，跨sqlsession；</li>
+<li>开启了二级缓存之后，一级缓存就失效了，查询语句都直接从二级缓存中拿数据；</li>
+<li>二级缓存能够将对象序列化，因此Domain的JavaBean需要实现Serializable接口，否则会报错；</li>
+<li>二级缓存能够自定义，只需要实现Cache接口就行，例如可以用Redis来实现一个分布式的二级缓存；</li>
+<li>当调用了插入，更新等语句之后会清空二级缓存，注意上面说到二级缓存是作用域是mapper，也就是该mapper的二级缓存都会清空，因此，为了提高性能，有时候需要将那些不常更新的数据单独放在一个mapper当中。</li>
+</ol>
+<h1><span id="san-mybatis-yan-chi-jia-zai"><span id="3">三、Mybatis延迟加载</span></span><a href="#san-mybatis-yan-chi-jia-zai" class="header-anchor">#</a></h1><p>在Django框架的ORM系统中，同样有着这样的机制，即查询是“惰性”的，只有需要用到的时候才会执行查询，没有用到的时候不会执行查询，从而优化内存的使用。Mybatis的延迟加载也是类似的，但是Mybatis并不是默认这样的机制，需要在主配置文件的settings中进行配置才行，在Mybatis官方文档中对于延迟加载这个配置项这样描述：  </p>
+<blockquote>
+<p>lazyLoadingEnabled：延迟加载的全局开关。当开启时，所有关联对象都会延迟加载,特定关联关系中可通过设置 fetchType 属性来覆盖该项的开关状态。<br>aggressiveLazyLoading：当开启时，任何方法的调用都会加载该对象的所有属性。 否则，每个属性会按需加载（参考 lazyLoadTriggerMethods)。  </p>
+</blockquote>
+<p>因此想要使用延迟加载，首先需要在主配置文件当中将lazyLoadingEnabled与aggressiveLazyLoading设为true。其次，在配置resultMap时不能够完全按照上面来，以上面所说的“一对一”的关系为例：</p>
+<figure class="highlight hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;resultMap id=<span class="hljs-string">"user_blog_resultmap"</span> type=<span class="hljs-string">"User"</span>&gt;</span><br><span class="line">    &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"id"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"username"</span> column=<span class="hljs-string">"username"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"password"</span> column=<span class="hljs-string">"password"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"telephone"</span> column=<span class="hljs-string">"telephone"</span>/&gt;</span><br><span class="line">    &lt;spanssociate property=<span class="hljs-string">"blog"</span> column=<span class="hljs-string">"id"</span> javatype=<span class="hljs-string">"Blog"</span>&gt;</span><br><span class="line">        &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"bid"</span>/&gt;</span><br><span class="line">        &lt;result property=<span class="hljs-string">"title"</span> column=<span class="hljs-string">"title"</span>/&gt;</span><br><span class="line">        &lt;result property=<span class="hljs-string">"brief"</span> column=<span class="hljs-string">"brief"</span>/&gt;</span><br><span class="line">    &lt;/associate&gt;</span><br><span class="line">&lt;/resultMap&gt;</span><br></pre></td></tr></table></figure>
+
+<p>若想实现延迟加载需要这样来配置：</p>
+<figure class="highlight hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;resultMap id=<span class="hljs-string">"user_blog_resultmap"</span> type=<span class="hljs-string">"User"</span>&gt;</span><br><span class="line">    &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"id"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"username"</span> column=<span class="hljs-string">"username"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"password"</span> column=<span class="hljs-string">"password"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"telephone"</span> column=<span class="hljs-string">"telephone"</span>/&gt;</span><br><span class="line">    &lt;spanssociate property=<span class="hljs-string">"blog"</span> column=<span class="hljs-string">"id"</span> javatype=<span class="hljs-string">"Blog"</span> select=<span class="hljs-string">"selectBlog"</span>/&gt;</span><br><span class="line">&lt;/resultMap&gt;</span><br></pre></td></tr></table></figure>
+
+<p>并且除此之外还需要实现一个selectBlog（额外思考，这是如何实现的?我觉得是使用了代理，代理了JavaBean对象，并且拦截了getBlog()方法，并且假如的确是使用了代理，考虑到Java动态代理仅能对接口生效，因此，这里必然是使用CGLIB来完成代理功能的，实际上也确实是这样的，可去查看源码！）：</p>
+<figure class="highlight hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=<span class="hljs-string">"selectBlog"</span> resultType=<span class="hljs-string">"Blog"</span>&gt;</span><br><span class="line">    select * from blog where id=#&#123;id&#125;;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
+
+<p>相应的还需要一个SQL语句：</p>
+<figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span></span><br></pre></td></tr></table></figure>
+
+<p>这时，当业务调用查询user的Dao层接口时，不会立即将blog查询，而是当用到的时候才会执行（例如执行完查询user之后返回的user对象，调用user.getBlog()方法，将导致上面的selectBlog执行）。此外，这里有一个点，就是associate标签中的column应该怎么取数据库中的哪一列？官方文档是这么解释的：</p>
+<blockquote>
+<p>select：用于加载复杂类型属性的映射语句的 ID，它会从 column 属性中指定的列检索数据，作为参数传递给此 select 语句。具体请参考关联元素。</p>
+</blockquote>
+<p>答案就很明显了，可以看到selectBlog中使用到id作为参数，那么associate中也要对应，并且更重要的是，查询列表得有叫id的列，从resultMap的配置来看，显然是满足了这些要求的。</p>
+<p>不过这样的方式对于大数据集存在N+1的问题，并且会产生严重的性能问题。Mybatis推荐了另外一种方式，resultMap的嵌套映射，详情可参考Mybatis官方文档。同样继续改进上面的那个例子：</p>
+<figure class="highlight hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;resultMap id=<span class="hljs-string">"user_blog_resultmap"</span> type=<span class="hljs-string">"User"</span>&gt;</span><br><span class="line">    &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"id"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"username"</span> column=<span class="hljs-string">"username"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"password"</span> column=<span class="hljs-string">"password"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"telephone"</span> column=<span class="hljs-string">"telephone"</span>/&gt;</span><br><span class="line">    &lt;spanssociate property=<span class="hljs-string">"blog"</span> column=<span class="hljs-string">"id"</span> javaType=<span class="hljs-string">"Blog"</span> resultMap=<span class="hljs-string">"blogMap"</span>/&gt;</span><br><span class="line">&lt;/resultMap&gt;</span><br><span class="line"></span><br><span class="line">&lt;resultMap id=<span class="hljs-string">"blogMap"</span> type=<span class="hljs-string">"Blog"</span>&gt;</span><br><span class="line">    &lt;id property=<span class="hljs-string">"id"</span> column=<span class="hljs-string">"bid"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"title"</span> column=<span class="hljs-string">"title"</span>/&gt;</span><br><span class="line">    &lt;result property=<span class="hljs-string">"brief"</span> column=<span class="hljs-string">"brief"</span>/&gt;</span><br><span class="line">&lt;/resultMap&gt;</span><br></pre></td></tr></table></figure>
+
+<p>此时就不能像上面用select属性一样，单独有一个SQL语句，而应该这样使用整体的SQL语句，<strong>但是，这种方式没有延迟加载的效果</strong>，其实也能发现和之前直接放入associate，不使用associate的resultMap属性是完全一样的，不同的是，这样可以复用resultMap，所以也很不错：</p>
+<figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">select</span> u.*,b.id <span class="hljs-keyword">as</span> bid,b.title <span class="hljs-keyword">as</span> title,b.brief <span class="hljs-keyword">as</span> brief <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> u,blog b <span class="hljs-keyword">where</span> u.id=b.uid;</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Mybatis/">Mybatis</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/12/05/HashMap-ConcurrentHashMap-同步HashMap/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">HashMap+ConcurrentHashMap+同步HashMap</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/11/19/代理模式以及它与装饰模式的异同/">
+                <span class="level-item">代理模式以及它与装饰模式的异同</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2019/11/25/踩过的Mybatis坑及一些注意事项总结/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB3 User Environments">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time></div>
+                    <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB3 User Environments</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB2 Memory Management">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time></div>
+                    <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB2 Memory Management</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
+                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="踩过的Mybatis坑及一些注意事项总结" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

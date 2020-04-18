@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>高速缓存模拟器:Cache Simulator - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="文章目录 一、题目说明 相关说明 测试用例以及得分点   二、代码 三、结果测试一、题目说明相关说明self-study student可以在CMU相关官网上下载到相应的lab resource以及对lab的英文文档说明，下载传送门：Lab resource[PDF]">
+<meta name="keywords" content="csapp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高速缓存模拟器:Cache Simulator">
+<meta property="og:url" content="https://qinstaunch.github.io/2019/11/17/高速缓存模拟器-Cache-Simulator/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="文章目录 一、题目说明 相关说明 测试用例以及得分点   二、代码 三、结果测试一、题目说明相关说明self-study student可以在CMU相关官网上下载到相应的lab resource以及对lab的英文文档说明，下载传送门：Lab resource[PDF]">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2019-12-23T01:20:49.817Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="高速缓存模拟器:Cache Simulator">
+<meta name="twitter:description" content="文章目录 一、题目说明 相关说明 测试用例以及得分点   二、代码 三、结果测试一、题目说明相关说明self-study student可以在CMU相关官网上下载到相应的lab resource以及对lab的英文文档说明，下载传送门：Lab resource[PDF]">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="高速缓存模拟器:Cache Simulator" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-11-17T13:46:28.000Z">2019-11-17</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/csapp/">csapp</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    7 分钟 读完 (大约 1090 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                高速缓存模拟器:Cache Simulator
+            
+        </h1>
+        <div class="content">
+            <h1><span id="wen-zhang-mu-lu"><span>文章目录</span></span><a href="#wen-zhang-mu-lu" class="header-anchor">#</a></h1><ul>
+<li><a href="#1">一、题目说明</a><ul>
+<li><a href="#1.1">相关说明</a></li>
+<li><a href="#1.2">测试用例以及得分点</a></li>
+</ul>
+</li>
+<li><a href="#2">二、代码</a></li>
+<li><a href="#3">三、结果测试</a><h1><span id="yi-ti-mu-shuo-ming"><span id="1">一、题目说明</span></span><a href="#yi-ti-mu-shuo-ming" class="header-anchor">#</a></h1><h2><span id="xiang-guan-shuo-ming"><span id="1.1">相关说明</span></span><a href="#xiang-guan-shuo-ming" class="header-anchor">#</a></h2>self-study student可以在CMU相关官网上下载到相应的lab resource以及对lab的英文文档说明，下载传送门：<br><a href="http://csapp.cs.cmu.edu/3e/labs.html" target="_blank" rel="noopener">Lab resource[PDF]</a>  </li>
+</ul>
+<a id="more"></a>
+
+<h2><span id="ce-shi-yong-li-yi-ji-de-fen-dian"><span id="1.2">测试用例以及得分点</span></span><a href="#ce-shi-yong-li-yi-ji-de-fen-dian" class="header-anchor">#</a></h2><p>根据说明文档，我做的时候抽取出来的几个关键点，包括格式，注意事项，得分点，以及测试用例：<br><img src="https://img-blog.csdnimg.cn/20190826203802452.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MTcyNDAwMA==,size_16,color_FFFFFF,t_70" alt="1-1 题目要点"><br>说明文档中，没有给出测试用例的结果，我这里全部测出来了，如下表所示：</p>
+<table border="1">
+<tr>
+<td> s</td>
+<td> E</td>
+<td> b</td>
+<td> hit_counts</td>
+<td> miss_counts</td>
+<td> eviction_counts</td>
+<td> test trace files</td>
+<td> 分值</td>
+</tr>
+<tr>
+<td> 1</td>
+<td> 1</td>
+<td> 1</td>
+<td> 9</td>
+<td> 8</td>
+<td> 6</td>
+<td> yi2.trace</td>
+<td> 3</td>
+</tr>
+<tr>
+<td> 4</td>
+<td> 2</td>
+<td> 4</td>
+<td> 4</td>
+<td> 5</td>
+<td> 2</td>
+<td> yi.trace</td>
+<td> 3</td>
+</tr>
+<tr>
+<td> 2</td>
+<td> 1</td>
+<td> 4</td>
+<td> 2</td>
+<td> 3</td>
+<td> 1</td>
+<td> dave.trace</td>
+<td> 3</td>
+</tr>
+<tr>
+<td> 2</td>
+<td> 1</td>
+<td> 3</td>
+<td> 167</td>
+<td> 71</td>
+<td> 67</td>
+<td> trans.trace</td>
+<td> 3</td>
+</tr>
+<tr>
+<td> 2</td>
+<td> 2</td>
+<td> 3</td>
+<td> 201</td>
+<td> 37</td>
+<td> 29</td>
+<td> trans.trace</td>
+<td> 3</td>
+</tr>
+<tr>
+<td> 2</td>
+<td> 4</td>
+<td> 3</td>
+<td> 212</td>
+<td> 26</td>
+<td> 10</td>
+<td> trans.trace</td>
+<td> 3</td>
+</tr>
+<tr>
+<td> 5</td>
+<td> 1</td>
+<td> 5</td>
+<td> 231</td>
+<td> 7</td>
+<td> 0</td>
+<td> trans.trace</td>
+<td> 3</td>
+</tr>
+<tr>
+<td> 5</td>
+<td> 1</td>
+<td> 5</td>
+<td> 265189</td>
+<td> 21775</td>
+<td> 21743</td>
+<td> long.trace</td>
+<td> 6</td>
+</tr>
+</table>
+
+<h1><span id="er-dai-ma"><span id="2">二、代码</span></span><a href="#er-dai-ma" class="header-anchor">#</a></h1><p>话不多说，直接上代码，关于函数接口的设计以及算法和一些细节上的问题已经注释了：</p>
+<p>编译时的指令为:gcc -Og -o my_csim_ref csim.c cachelab.c</p>
+<p>得到一个可执行文件my_csim_ref</p>
+<p>如果代码有问题，可以用gdb调试</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"cachelab.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;getopt.h&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> BUFSIZE 30</span></span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">get_opt</span><span class="hljs-params">()</span></span>; <span class="hljs-comment">// 获取参数</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">init_cache</span><span class="hljs-params">()</span></span>; <span class="hljs-comment">// 初始化cache，分配内存</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">del_cache</span><span class="hljs-params">()</span></span>; <span class="hljs-comment">// 程序结束时释放申请的内存</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">load_block</span><span class="hljs-params">(<span class="hljs-keyword">int</span> address,<span class="hljs-keyword">int</span> size)</span></span>; <span class="hljs-comment">// load指令</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">modify_block</span><span class="hljs-params">(<span class="hljs-keyword">long</span> address,<span class="hljs-keyword">int</span> size)</span></span>; <span class="hljs-comment">// modify指令</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">store_block</span><span class="hljs-params">(<span class="hljs-keyword">long</span> address,<span class="hljs-keyword">int</span> size)</span></span>; <span class="hljs-comment">// store指令</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">tag</span><span class="hljs-params">(<span class="hljs-keyword">long</span> address)</span></span>; <span class="hljs-comment">// 根据地址返回标记值</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">set_index</span><span class="hljs-params">(<span class="hljs-keyword">long</span> address)</span></span>; <span class="hljs-comment">// 根据地址返回组索引</span></span><br><span class="line"> </span><br><span class="line"><span class="hljs-comment">// 行</span></span><br><span class="line"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span>&#123;</span></span><br><span class="line">	<span class="hljs-keyword">int</span> flag;</span><br><span class="line">	<span class="hljs-keyword">long</span> tag;</span><br><span class="line">	<span class="hljs-keyword">long</span> latest_access_time;</span><br><span class="line">&#125;cache_line;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-comment">// 组，为了更加地形象所以这么写，组中有一个指向组内缓冲行的指针</span></span><br><span class="line"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span>&#123;</span></span><br><span class="line">	cache_line *data_lines;</span><br><span class="line">&#125;<span class="hljs-built_in">set</span>;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-built_in">set</span> *cache=<span class="hljs-literal">NULL</span>; <span class="hljs-comment">// cache指针</span></span><br><span class="line"><span class="hljs-keyword">int</span> S=<span class="hljs-number">0</span>,E=<span class="hljs-number">0</span>,B=<span class="hljs-number">0</span>;</span><br><span class="line"><span class="hljs-keyword">int</span> hit_counts=<span class="hljs-number">0</span>,miss_counts=<span class="hljs-number">0</span>,eviction_counts=<span class="hljs-number">0</span>;</span><br><span class="line"><span class="hljs-keyword">long</span> my_clock=<span class="hljs-number">0</span>; <span class="hljs-comment">// 简单使用一个长整型来抽象表达时间，不科学，但是有效</span></span><br><span class="line"><span class="hljs-keyword">char</span> *file=<span class="hljs-literal">NULL</span>; <span class="hljs-comment">// 保存要用的traces测试文件的文件名，文件名在get_opt()中获取</span></span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc,<span class="hljs-keyword">char</span> **argv)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	get_opt(argc,argv);</span><br><span class="line">	init_cache();</span><br><span class="line">	FILE *test_file_ptr=fopen(file,<span class="hljs-string">"r"</span>); <span class="hljs-comment">// 打开测试文件</span></span><br><span class="line"> </span><br><span class="line">	<span class="hljs-keyword">char</span> instruction[BUFSIZE];</span><br><span class="line">	<span class="hljs-keyword">long</span> addr;</span><br><span class="line">	<span class="hljs-keyword">int</span> size;</span><br><span class="line">	<span class="hljs-keyword">char</span> buffer[BUFSIZE];</span><br><span class="line">	<span class="hljs-keyword">while</span>(fgets(buffer,BUFSIZE,test_file_ptr)!=<span class="hljs-literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">	    <span class="hljs-comment">// 这里有两个细节问题，首先不能用%c来读取instruction(即说明文档中提到的L,M,S)</span></span><br><span class="line">	    <span class="hljs-comment">// 因为一开始我是用的%c,但是我打印出来后发现和期望值不同</span></span><br><span class="line">	    <span class="hljs-comment">// 其次就是，CMU给的说明文档中说了测试用例中的地址实际上是16进制，我一开始就是</span></span><br><span class="line">	    <span class="hljs-comment">// 当十进制了，结果调试很久很久</span></span><br><span class="line">		<span class="hljs-built_in">sscanf</span>(buffer,<span class="hljs-string">"%s %lx,%d"</span>,instruction,&amp;addr,&amp;size);</span><br><span class="line">		<span class="hljs-keyword">long</span> address=(<span class="hljs-keyword">long</span>)addr;</span><br><span class="line">		<span class="hljs-keyword">if</span>(*instruction==<span class="hljs-string">'L'</span>)load_block(address,size);</span><br><span class="line">		<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(*instruction==<span class="hljs-string">'M'</span>)modify_block(address,size);</span><br><span class="line">		<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(*instruction==<span class="hljs-string">'S'</span>)store_block(address,size);</span><br><span class="line">	&#125;</span><br><span class="line">	printSummary(hit_counts,miss_counts,eviction_counts); <span class="hljs-comment">// 打印结果</span></span><br><span class="line">	del_cache(); <span class="hljs-comment">// 释放内存</span></span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">get_opt</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc,<span class="hljs-keyword">char</span> **argv)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">int</span> c;</span><br><span class="line">	<span class="hljs-keyword">while</span>((c=getopt(argc,argv,<span class="hljs-string">"s:E:b:t:"</span>))!= <span class="hljs-number">-1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="hljs-keyword">switch</span>(c)</span><br><span class="line">		&#123;</span><br><span class="line">		    <span class="hljs-comment">// atoi将字符串转换为数字</span></span><br><span class="line">			<span class="hljs-keyword">case</span> <span class="hljs-string">'s'</span>:S=atoi(optarg);<span class="hljs-keyword">break</span>;</span><br><span class="line">			<span class="hljs-keyword">case</span> <span class="hljs-string">'E'</span>:E=atoi(optarg);<span class="hljs-keyword">break</span>;</span><br><span class="line">			<span class="hljs-keyword">case</span> <span class="hljs-string">'b'</span>:B=atoi(optarg);<span class="hljs-keyword">break</span>;</span><br><span class="line">			<span class="hljs-keyword">case</span> <span class="hljs-string">'t'</span>:file=optarg;<span class="hljs-keyword">break</span>; <span class="hljs-comment">// 测试文件traces的文件名</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">init_cache</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">int</span> i,j,set_num=<span class="hljs-number">1</span>&lt;&lt;S,temp=<span class="hljs-keyword">sizeof</span>(cache_line)*E;</span><br><span class="line">	cache=(<span class="hljs-built_in">set</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-built_in">set</span>)*set_num); <span class="hljs-comment">// 分配组</span></span><br><span class="line">	<span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;set_num;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		cache[i].data_lines=(cache_line*)<span class="hljs-built_in">malloc</span>(temp); <span class="hljs-comment">// 分配行</span></span><br><span class="line">		<span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;E;j++)</span><br><span class="line">		&#123;</span><br><span class="line">			cache[i].data_lines[j].flag=<span class="hljs-number">0</span>;</span><br><span class="line">			cache[i].data_lines[j].tag=<span class="hljs-number">0</span>;</span><br><span class="line">			cache[i].data_lines[j].latest_access_time=<span class="hljs-number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">del_cache</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">int</span> i,j,set_num=<span class="hljs-number">1</span>&lt;&lt;S; <span class="hljs-comment">// set_num为2^S==1&lt;&lt;S</span></span><br><span class="line">	<span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;set_num;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="hljs-built_in">free</span>(cache[i].data_lines);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-built_in">free</span>(cache);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">load_block</span><span class="hljs-params">(<span class="hljs-keyword">int</span> address,<span class="hljs-keyword">int</span> size)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">    <span class="hljs-comment">// 这里block_replace必须赋初值，否则结果不会正确</span></span><br><span class="line">	<span class="hljs-keyword">int</span> i,full=<span class="hljs-number">1</span>,block_replace=<span class="hljs-number">0</span>,set_index_=set_index(address),tag_=tag(address);</span><br><span class="line">	<span class="hljs-keyword">int</span> compare_time=cache[set_index_].data_lines[<span class="hljs-number">0</span>].latest_access_time;</span><br><span class="line">    <span class="hljs-comment">// 按照CSAPP第六章给出三个步骤：1.组选择 2.行匹配 3.字节偏移</span></span><br><span class="line">	cache_line *line=cache[set_index_].data_lines; <span class="hljs-comment">// 组选择</span></span><br><span class="line">	<span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;E;i++) <span class="hljs-comment">// 行匹配</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="hljs-keyword">if</span>(line[i].flag==<span class="hljs-number">1</span>) <span class="hljs-comment">// 行有效</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="hljs-keyword">if</span>(tag_==line[i].tag) <span class="hljs-comment">// 命中</span></span><br><span class="line">			&#123;</span><br><span class="line">				hit_counts++;</span><br><span class="line">				line[i].latest_access_time=++my_clock;</span><br><span class="line">				<span class="hljs-keyword">break</span>;</span><br><span class="line">			&#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(full&amp;&amp;compare_time&gt;line[i].latest_access_time)&#123;</span><br><span class="line">			    <span class="hljs-comment">// 行有效，但标记不匹配</span></span><br><span class="line">			    <span class="hljs-comment">// 说明文档中要求我们采用LRU算法来进行块的替换</span></span><br><span class="line">			    <span class="hljs-comment">// 这里有一个细节问题，只有在full仍然是真时才需要不断按照LRU思想更新</span></span><br><span class="line">			    <span class="hljs-comment">// block_replace的值，若full已经为假了，就存在空闲块了，不需要使用LRU</span></span><br><span class="line">			    <span class="hljs-comment">// 算法选择块来替换了</span></span><br><span class="line">				compare_time=line[i].latest_access_time;</span><br><span class="line">				block_replace=i;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="hljs-keyword">else</span>&#123; <span class="hljs-comment">// 行无效，即存在空闲行</span></span><br><span class="line">			full=<span class="hljs-number">0</span>;</span><br><span class="line">			block_replace=i;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">	<span class="hljs-keyword">if</span>(i==E) <span class="hljs-comment">// 未命中</span></span><br><span class="line">	&#123;</span><br><span class="line">		miss_counts++;</span><br><span class="line">		line[block_replace].flag=<span class="hljs-number">1</span>;</span><br><span class="line">		line[block_replace].tag=tag_;</span><br><span class="line">		line[block_replace].latest_access_time=++my_clock;</span><br><span class="line">		<span class="hljs-keyword">if</span>(full)eviction_counts++; <span class="hljs-comment">// 产生替换</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">store_block</span><span class="hljs-params">(<span class="hljs-keyword">long</span> address,<span class="hljs-keyword">int</span> size)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">int</span> i,set_index_=set_index(address),tag_=tag(address);</span><br><span class="line">	cache_line *line=cache[set_index_].data_lines;</span><br><span class="line">	<span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;E;i++) <span class="hljs-comment">// 写命中</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="hljs-keyword">if</span>(line[i].flag==<span class="hljs-number">1</span>&amp;&amp;line[i].tag==tag_)</span><br><span class="line">		&#123;</span><br><span class="line">			hit_counts++;</span><br><span class="line">			line[i].latest_access_time=my_clock;</span><br><span class="line">			<span class="hljs-keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">	<span class="hljs-keyword">if</span>(i==E) <span class="hljs-comment">// 写不命中，使用写分配法</span></span><br><span class="line">	&#123;</span><br><span class="line">		load_block(address,size);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">modify_block</span><span class="hljs-params">(<span class="hljs-keyword">long</span> address,<span class="hljs-keyword">int</span> size)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	load_block(address,size);</span><br><span class="line">	store_block(address,size);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">set_index</span><span class="hljs-params">(<span class="hljs-keyword">long</span> address)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> (address&gt;&gt;B)&amp;((<span class="hljs-number">1</span>&lt;&lt;S)<span class="hljs-number">-1</span>); <span class="hljs-comment">// 去掉B位，并且只保留S位即为索引位</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">tag</span><span class="hljs-params">(<span class="hljs-keyword">long</span> address)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> (<span class="hljs-keyword">long</span>)address&gt;&gt;(B+S); <span class="hljs-comment">// 去掉块偏移以及组索引位，剩下的即为标记位</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1><span id="san-jie-guo-ce-shi"><span id="3">三、结果测试</span></span><a href="#san-jie-guo-ce-shi" class="header-anchor">#</a></h1><p>所有测试用例均通过：<br><img src="https://img-blog.csdnimg.cn/20190826205510451.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MTcyNDAwMA==,size_16,color_FFFFFF,t_70" alt="3-1 代码测试结果"></p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/csapp/">csapp</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/11/17/Shell-demo-on-Unix-Platform/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Shell demo on Unix Platform</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/11/17/Memory-mountain-for-Principle-of-program-locality/">
+                <span class="level-item">Memory mountain for Principle of program locality</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2019/11/17/高速缓存模拟器-Cache-Simulator/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>文章目录#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>一、题目说明#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1</span>
+        <span>相关说明#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.2</span>
+        <span>测试用例以及得分点#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>二、代码#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>三、结果测试#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB3 User Environments">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time></div>
+                    <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB3 User Environments</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB2 Memory Management">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time></div>
+                    <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB2 Memory Management</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
+                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="高速缓存模拟器:Cache Simulator" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>关于动态规划的一点简单思考 - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="文章目录 零、鸣谢 一、写这篇博客的背景 二、要不，先上个萝卜丁开开胃？ 例子概览 Maximal Square Brust balloons version-0 回溯法未优化版 version-1 记忆优化版本回溯 version-2 动态规划版本   Shortest Common Supersequence Wildcard Matching   三、别问，问就是使劲刷题 四、没什么用的技巧">
+<meta name="keywords" content="Algorithms">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于动态规划的一点简单思考">
+<meta property="og:url" content="https://qinstaunch.github.io/2019/12/17/关于动态规划的一点简单思考/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="文章目录 零、鸣谢 一、写这篇博客的背景 二、要不，先上个萝卜丁开开胃？ 例子概览 Maximal Square Brust balloons version-0 回溯法未优化版 version-1 记忆优化版本回溯 version-2 动态规划版本   Shortest Common Supersequence Wildcard Matching   三、别问，问就是使劲刷题 四、没什么用的技巧">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-01-22T08:10:21.739Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于动态规划的一点简单思考">
+<meta name="twitter:description" content="文章目录 零、鸣谢 一、写这篇博客的背景 二、要不，先上个萝卜丁开开胃？ 例子概览 Maximal Square Brust balloons version-0 回溯法未优化版 version-1 记忆优化版本回溯 version-2 动态规划版本   Shortest Common Supersequence Wildcard Matching   三、别问，问就是使劲刷题 四、没什么用的技巧">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="关于动态规划的一点简单思考" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-12-17T10:53:48.000Z">2019-12-17</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Java/">Java</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/Java/algorithms/">algorithms</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    42 分钟 读完 (大约 6307 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                关于动态规划的一点简单思考
+            
+        </h1>
+        <div class="content">
+            <h1><span id="wen-zhang-mu-lu"><span>文章目录</span></span><a href="#wen-zhang-mu-lu" class="header-anchor">#</a></h1><ul>
+<li><a href="#dp0">零、鸣谢</a></li>
+<li><a href="#dp1">一、写这篇博客的背景</a></li>
+<li><a href="#dp2">二、要不，先上个萝卜丁开开胃？</a><ul>
+<li><a href="#dp2.1">例子概览</a></li>
+<li><a href="#dp2.2">Maximal Square</a></li>
+<li><a href="#dp2.3">Brust balloons</a><ul>
+<li><a href="#dp2.3.0">version-0 回溯法未优化版</a></li>
+<li><a href="#dp2.3.1">version-1 记忆优化版本回溯</a></li>
+<li><a href="#dp2.3.2">version-2 动态规划版本</a></li>
+</ul>
+</li>
+<li><a href="#dp2.4">Shortest Common Supersequence</a></li>
+<li><a href="#dp2.5">Wildcard Matching</a></li>
+</ul>
+</li>
+<li><a href="#dp3">三、别问，问就是使劲刷题</a></li>
+<li><a href="#dp4">四、没什么用的技巧总结</a></li>
+<li><a href="#dp5">五、动态规划入门模型回顾</a></li>
+<li><a href="#dp6">参考资料</a></li>
+</ul>
+<hr>
+<h1><span id="ling-ming-xie"><span id="dp0">零、鸣谢</span></span><a href="#ling-ming-xie" class="header-anchor">#</a></h1><p><strong>感谢室友祁挣斌友情制作动态图</strong></p>
+<h1><span id="yi-xie-zhe-pian-bo-ke-de-bei-jing"><span id="dp1">一、写这篇博客的背景</span></span><a href="#yi-xie-zhe-pian-bo-ke-de-bei-jing" class="header-anchor">#</a></h1><p>为了面试，这段时间，在leetcode上刷刷算法题，做了很多道题之后，在<a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv" target="_blank" rel="noopener">Best Time to Buy and Sell Stock IV</a>这道题始终超内存不知该如何解决的时候，在讨论区看到了<a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/discuss/108870/Most-consistent-ways-of-dealing-with-the-series-of-stock-problems" target="_blank" rel="noopener">Most consistent ways of dealing with the series of stock problems</a>用同一个套路解决leetcode中六道关于股票买卖的题目，让我大开眼界，也让我只能感叹自己之前解决的几个股票买卖的解法就是shit。总而言之，这篇非常优秀的文章给予了我打算写这篇博客的源动力，其次，就是想把这几天集中训练动态规划题目的一点小小收获与感想记录下来，便于日后复习。</p>
+<a id="more"></a> 
+
+<h1><span id="er-yao-bu-xian-shang-ge-xiao-cai"><span id="dp2">二、要不，先上个小菜？</span></span><a href="#er-yao-bu-xian-shang-ge-xiao-cai" class="header-anchor">#</a></h1><p>俗话说，”talk is cheap,show me the code”，因此通过几个例子来完整记录一下自己对几个典型题目的解决方式。(<strong>不会附上题目，可通过点击链接进入leetcode主页自行查看题目描述</strong>)用到了4个题目作为例子，难度为中等、困难、困难以及困难，如下所示：</p>
+<hr>
+<h2><span id="li-zi-gai-lan"><span id="dp2.1">例子概览</span></span><a href="#li-zi-gai-lan" class="header-anchor">#</a></h2><ul>
+<li><a href="https://leetcode.com/problems/maximal-square/" target="_blank" rel="noopener">#221 Maximal Square</a></li>
+<li><a href="https://leetcode.com/problems/burst-balloons" target="_blank" rel="noopener">#312 Brust balloons</a></li>
+<li><a href="https://leetcode.com/problems/shortest-common-supersequence" target="_blank" rel="noopener">#1092 Shortest Common Supersequence</a>  </li>
+<li><a href="https://leetcode.com/problems/wildcard-matching" target="_blank" rel="noopener">#44 Wildcard Matching</a></li>
+</ul>
+<hr>
+<h2><span id="maximal-square"><span id="dp2.2">Maximal Square</span></span><a href="#maximal-square" class="header-anchor">#</a></h2><p><strong>题目描述：</strong><a href="https://leetcode.com/problems/maximal-square/" target="_blank" rel="noopener">Maximal Square</a></p>
+<p>这道题很简单，<strong>定义：</strong>  </p>
+<ul>
+<li>dp[i][j]为以matrix[i][j]为左上角的最大正方形的边长  </li>
+</ul>
+<p><strong>边界条件：</strong>  </p>
+<ul>
+<li>$dp[rowThresh - 1][k] = matrix[rowThresh - 1][k] - ‘0&#39;, 0≤ k &lt;columnThresh$;  </li>
+<li>$dp[k][columnThresh - 1] = matrix[k][columnThresh - 1] - ‘0&#39;, 0 ≤ k &lt; rowThresh$;  </li>
+</ul>
+<p><strong>状态转移方程：</strong>  </p>
+<ul>
+<li>dp[i][j]取决于dp[i + 1][j]与dp[i][j + 1]以及可能存在的右下角的方格中元素是否为’1’，具体看图：</li>
+</ul>
+<p>有两种情况，灰色为当前matrix[i][j]所处位置，对应于dp[i][j]，红色以及黄色代表右侧的正方形与下方的正方形，优先挑小的正方形的边长为len，并且可能会多出右下角的小方块没有验证是否为1：<br><img src="https://s2.ax1x.com/2020/01/22/1A34ud.png" alt="图2-1 两种情况"><br>根据不同的情况，最终dp[i][j]的值可更新为（绿色表示应当选择的正方形）：<br><img src="https://s2.ax1x.com/2020/01/22/1A3fjH.png" alt="图2-2 两种情况下(i,j)处最大正方形边长的更新示意图">  </p>
+<p><strong>状态的枚举顺序：</strong><br>这种本身题目二维数组就提示了动态规划状态的设计思路以及子状态通常也只会与临近方块相关，并且按照常规方式枚举也不会有太大问题，不需要什么枚举子状态的特殊技巧。由于我将dp[i][j]定义为以matrix[i][j]为左上角的最大正方形的边长，因此只需要从右下角往左上角遍历状态即可。</p>
+<p><strong>代码：</strong></p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">maximalSquare</span><span class="hljs-params">(<span class="hljs-keyword">char</span>[][] matrix)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span>(matrix == <span class="hljs-keyword">null</span> || matrix.length == <span class="hljs-number">0</span> || matrix[<span class="hljs-number">0</span>].length == <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">int</span> rowThresh,columnThresh,maxLen = <span class="hljs-number">0</span>;</span><br><span class="line">        rowThresh = matrix.length - <span class="hljs-number">1</span>;</span><br><span class="line">        columnThresh = matrix[<span class="hljs-number">0</span>].length - <span class="hljs-number">1</span>;</span><br><span class="line">        <span class="hljs-keyword">int</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[rowThresh + <span class="hljs-number">1</span>][columnThresh + <span class="hljs-number">1</span>];</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 初始化边界条件，我所采取的是从右下角往左上角递推，因此初始化右、下两条边的边界条件</span></span><br><span class="line">        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;i &lt;= columnThresh; ++i)&#123;</span><br><span class="line">            dp[rowThresh][i] = matrix[rowThresh][i] - <span class="hljs-string">'0'</span>;</span><br><span class="line">            <span class="hljs-keyword">if</span>(dp[rowThresh][i] == <span class="hljs-number">1</span>)maxLen = <span class="hljs-number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;i &lt;= rowThresh; ++i)&#123;</span><br><span class="line">            dp[i][columnThresh] = matrix[i][columnThresh] - <span class="hljs-string">'0'</span>;</span><br><span class="line">            <span class="hljs-keyword">if</span>(dp[i][columnThresh] == <span class="hljs-number">1</span>)maxLen = <span class="hljs-number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 递推</span></span><br><span class="line">        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = rowThresh - <span class="hljs-number">1</span>;i &gt;= <span class="hljs-number">0</span>; --i)&#123;</span><br><span class="line">            <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = columnThresh - <span class="hljs-number">1</span>;j &gt;= <span class="hljs-number">0</span>; --j)&#123;</span><br><span class="line">                <span class="hljs-keyword">if</span>(matrix[i][j] == <span class="hljs-string">'1'</span>)&#123;</span><br><span class="line">                    <span class="hljs-keyword">int</span> possibleLen = Math.min(dp[i + <span class="hljs-number">1</span>][j], dp[i][j + <span class="hljs-number">1</span>]);</span><br><span class="line">                    <span class="hljs-keyword">if</span>(possibleLen &gt; <span class="hljs-number">0</span> &amp;&amp; matrix[i + possibleLen][j + possibleLen] == <span class="hljs-string">'1'</span>)&#123;</span><br><span class="line">                        dp[i][j] = possibleLen + <span class="hljs-number">1</span>;</span><br><span class="line">                    &#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">                        dp[i][j] = possibleLen &gt; <span class="hljs-number">1</span>?possibleLen:<span class="hljs-number">1</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="hljs-keyword">if</span>(dp[i][j] &gt; maxLen)maxLen = dp[i][j];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> maxLen * maxLen;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>时间复杂度：</strong>O(rowThresh * columnThresh)<br><strong>空间复杂度：</strong>O(rowThresh * columnThresh)</p>
+<hr>
+<h2><span id="brust-balloons"><span id="dp2.3">Brust balloons</span></span><a href="#brust-balloons" class="header-anchor">#</a></h2><p><strong>题目描述：</strong><a href="https://leetcode.com/problems/burst-balloons" target="_blank" rel="noopener">Brust balloons</a><br>这道题，看第一眼就想到用回溯法应该如何做了，并且也能够预计到单纯递归必然超时，但是动态规划第一眼没什么头绪，只能先写出递归，再通过记忆化优化，最后找出状态转移方程了。  </p>
+<h3><span id="version-0-hui-su-fa-wei-you-hua-ban"><span id="dp2.3.0">version-0 回溯法未优化版</span></span><a href="#version-0-hui-su-fa-wei-you-hua-ban" class="header-anchor">#</a></h3><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">recursively</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums,<span class="hljs-keyword">int</span> size)</span></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span>(size == <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">int</span> result = <span class="hljs-number">0</span>,leftBalloonValue,righBalloontValue,originValue,j,i;</span><br><span class="line">    <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>;i &lt; nums.length; ++i)&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span>(nums[i] &gt;= <span class="hljs-number">0</span>)&#123;</span><br><span class="line">            <span class="hljs-comment">// 找左右气泡</span></span><br><span class="line">            <span class="hljs-keyword">for</span>(j = i - <span class="hljs-number">1</span>;j &gt;= <span class="hljs-number">0</span> &amp;&amp; nums[j] &lt; <span class="hljs-number">0</span>; --j);</span><br><span class="line">            leftBalloonValue = j &lt; <span class="hljs-number">0</span>?<span class="hljs-number">1</span>:nums[j];</span><br><span class="line">            <span class="hljs-keyword">for</span>(j = i + <span class="hljs-number">1</span>;j &lt; nums.length &amp;&amp; nums[j] &lt; <span class="hljs-number">0</span>; ++j);</span><br><span class="line">            righBalloontValue = j &gt;= nums.length?<span class="hljs-number">1</span>:nums[j];</span><br><span class="line"></span><br><span class="line">            originValue = nums[i];</span><br><span class="line">            nums[i] = -<span class="hljs-number">1</span>;</span><br><span class="line">            result = Math.max(result, recursively(nums, size - <span class="hljs-number">1</span>) + leftBalloonValue * originValue * righBalloontValue);</span><br><span class="line">            nums[i] = originValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>解法很好理解，对于气球[i,j],戳破某一个气球k，k∈(i,j)之前，先计算出其子问题即，把气球(i,k)以及气球(k,j)戳破完能得到的最大值，并且为了避免气球k被重复戳破，将气球k的权值标为-1，表明其已被戳破（因为题目指明了气球的权值为非负数），并且在计算完子问题，将气球k的权值恢复，以便后续递归。用图来说明就是: <div align="center"><img src="https://s2.ax1x.com/2020/01/22/1A3Wge.png" alt="图2-3 戳气球策略简略示意图"></div><br>现在单纯考虑气球(i,j)之间，若要求得戳破i,j之间所有气球的最大值，就需要枚举i,j之间的所有的气球也即function(i,j) = max{function(i,k)+function(k,j)+nums[i]×nums[k]×nums[j]}, k∈(i,j)  </p>
+<p><strong>时间复杂度：</strong>假设共有n个气球，则第一层，可戳破n个，第二层，可戳破(n-1)个，因此该算法至少是n(n-1)(n-2)······1即n!的时间复杂度<br><strong>空间复杂度：</strong>递归栈最多n层，因此为O(n)</p>
+<h3><span id="version-1-ji-yi-hua-you-hua-ban-ben-hui-su"><span id="dp2.3.1">version-1 记忆化优化版本回溯</span></span><a href="#version-1-ji-yi-hua-you-hua-ban-ben-hui-su" class="header-anchor">#</a></h3><p>单纯暴力回溯时间复杂度过大，但是经过上面递归版本的描述，很容易发现，在计算子问题时会发生许多重复计算，考虑到在递归的某一层气球(i,j)结束的时候，戳破(i,j)之间气球能得到的最多硬币数就已知了，因此，将该值记录下来，当再递归到(i,j)的时候，直接返回记录的值，就能减少大量的重复计算了。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">//记忆化之后能够顺利通过，已经无法通过减少乘法计算次数来优化执行时间了，优化到极限了</span></span><br><span class="line"><span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span>[][] memory;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">maxCoins1</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums)</span></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">int</span> len;</span><br><span class="line">    <span class="hljs-keyword">if</span>(nums == <span class="hljs-keyword">null</span> || (len = nums.length) == <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">    memory = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[len + <span class="hljs-number">2</span>][len + <span class="hljs-number">2</span>];</span><br><span class="line">    <span class="hljs-keyword">return</span> recursively(nums,-<span class="hljs-number">1</span>,len);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> <span class="hljs-title">recursively</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> left, <span class="hljs-keyword">int</span> right)</span></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span>(left == right || left + <span class="hljs-number">1</span> == right)<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">    <span class="hljs-keyword">if</span>(memory[left + <span class="hljs-number">1</span>][right + <span class="hljs-number">1</span>] &gt; <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> memory[left + <span class="hljs-number">1</span>][right + <span class="hljs-number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">int</span> result = <span class="hljs-number">0</span>, leftBalloonValue = (left &lt;= -<span class="hljs-number">1</span>?<span class="hljs-number">1</span>:nums[left]), rightBalloontValue = (right &gt;= nums.length?<span class="hljs-number">1</span>:nums[right]);</span><br><span class="line">    <span class="hljs-keyword">int</span> base = leftBalloonValue * rightBalloontValue;</span><br><span class="line">    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> k = left + <span class="hljs-number">1</span>;k &lt; right; ++k)&#123;</span><br><span class="line">        result = Math.max(result, recursively(nums, left, k) + recursively(nums, k, right) + base * nums[k]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">return</span> memory[left + <span class="hljs-number">1</span>][right + <span class="hljs-number">1</span>] = result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>时间复杂度：</strong>由于记忆化的存在，任意两个气球之间仅被枚举了一次,因此时间复杂度为O(${C_{n}^{2}}$)<br><strong>空间复杂度：</strong>递归栈最多为n层，以及记忆化结果的消耗为$n^2$，因此总的空间复杂度为O($n^2$)  </p>
+<h2><span id="version-2-dong-tai-gui-hua-ban-ben"><span id="dp2.3.2">version-2 动态规划版本</span></span><a href="#version-2-dong-tai-gui-hua-ban-ben" class="header-anchor">#</a></h2><p>事实上，写完version-0之后，状态转移方程就已经出现了。<br>因此<strong>定义状态：</strong>  </p>
+<ul>
+<li>$dp[i][j]$为戳破(i,j)之间的气球能够得到的最大硬币数</li>
+</ul>
+<p><strong>边界条件：</strong>  </p>
+<ul>
+<li>$dp[i][j] = 0,(j-i)≤1$,其实只需要关注dp[i][i+1]必然等于0即可，因为按照上面的定义，中间没有气球，那么最大硬币数自然也为0</li>
+</ul>
+<p><strong>状态转移方程：</strong>  </p>
+<ul>
+<li>$dp(i,j) = max\lbrace dp(i,k)+dp(k,j)+nums[i]×nums[k]×nums[j]\rbrace, k∈(i,j)$</li>
+</ul>
+<p>然而<strong>如何枚举从而确保在枚举到(i,j)的时候i,j之间的子状态已经计算完毕了呢？</strong><br>例如，这样枚举就会发生错误： <div align="center"><img src="https://s2.ax1x.com/2020/01/22/1A3H4f.gif" alt="图2-4 一种典型的错误的枚举方式">)</div>这是一个很容易被忽视的点，很多人都应该做过经典动态规划题目“最长回文子串”，它和这题的枚举似乎很类似，都是(i,j)区间之间依赖于更小的区间，因此这里也可以考虑采用“最长回文子串”枚举状态的方法，即定区间长度，首先求出所有长度为len的区间的解，再解决长度为len+1的区间的解，看起来会像这样：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> len = <span class="hljs-number">2</span>;i &lt; maxLen; ++len)&#123;</span><br><span class="line">	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i + len - <span class="hljs-number">1</span> &lt; maxLen; ++i)&#123;</span><br><span class="line">		<span class="hljs-keyword">int</span> j = i + len - <span class="hljs-number">1</span>;</span><br><span class="line">		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> k = i + <span class="hljs-number">1</span>;k &lt; j; ++k)&#123;</span><br><span class="line">			......</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是对于此题，除了定长区间，还有两种状态枚举方式可行,这里结合我后面给出的代码给出一种正确的枚举方式，希望你能理解我的意思，那么另外一种也就不难写出了： <div align="center"><img src="https://s2.ax1x.com/2020/01/22/1A3qC8.gif" alt="图2-5 正确的枚举方式之一"></div></p>
+<p><strong>代码：</strong>  </p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="hljs-comment">// version-3 version-2的等价版本</span></span><br><span class="line">    <span class="hljs-comment">// 时间复杂度:O(n^3)</span></span><br><span class="line">    <span class="hljs-comment">// 空间复杂度:O(n^2)</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">maxCoins</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums)</span></span>&#123;</span><br><span class="line">        <span class="hljs-keyword">int</span> len, i, j, k;</span><br><span class="line">        <span class="hljs-keyword">if</span>(nums == <span class="hljs-keyword">null</span> || (len = nums.length) == <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">        <span class="hljs-keyword">int</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[len + <span class="hljs-number">2</span>][len + <span class="hljs-number">2</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-keyword">for</span>(j = <span class="hljs-number">1</span>;j &lt;= len; ++j)&#123;</span><br><span class="line">            <span class="hljs-keyword">for</span>(i = j - <span class="hljs-number">2</span>;i &gt;= -<span class="hljs-number">1</span>; --i)&#123;</span><br><span class="line">                <span class="hljs-keyword">int</span> left = i + <span class="hljs-number">1</span>, right = j + <span class="hljs-number">1</span>, max = <span class="hljs-number">0</span>, base = (i &lt;= -<span class="hljs-number">1</span>?<span class="hljs-number">1</span>:nums[i]) * (j &gt;= len?<span class="hljs-number">1</span>:nums[j]);</span><br><span class="line">                <span class="hljs-keyword">for</span>(k = j - <span class="hljs-number">1</span>;k &gt;= i + <span class="hljs-number">1</span>; --k)&#123;</span><br><span class="line">                    max = Math.max(max, dp[left][k + <span class="hljs-number">1</span>] + dp[k + <span class="hljs-number">1</span>][right] + base * nums[k]);</span><br><span class="line">                &#125;</span><br><span class="line">                dp[left][right] = max;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][len + <span class="hljs-number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// version-2 动态规划版</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">maxCoins0</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums)</span></span>&#123;</span><br><span class="line">        <span class="hljs-keyword">int</span> len, i, j, k;</span><br><span class="line">        <span class="hljs-keyword">if</span>(nums == <span class="hljs-keyword">null</span> || (len = nums.length) == <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">        <span class="hljs-keyword">int</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[len + <span class="hljs-number">2</span>][len + <span class="hljs-number">2</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-keyword">for</span>(i = len - <span class="hljs-number">2</span>;i &gt;= -<span class="hljs-number">1</span>; --i)&#123;</span><br><span class="line">            <span class="hljs-keyword">for</span>(j = i + <span class="hljs-number">2</span>;j &lt;= len; ++j)&#123;</span><br><span class="line">                <span class="hljs-keyword">int</span> left = i + <span class="hljs-number">1</span>, right = j + <span class="hljs-number">1</span>, max = <span class="hljs-number">0</span>, base = (i &lt;= -<span class="hljs-number">1</span>?<span class="hljs-number">1</span>:nums[i]) * (j &gt;= len?<span class="hljs-number">1</span>:nums[j]);</span><br><span class="line">                <span class="hljs-keyword">for</span>(k = i + <span class="hljs-number">1</span>;k &lt; j; ++k)&#123;</span><br><span class="line">                    max = Math.max(max, dp[left][k + <span class="hljs-number">1</span>] + dp[k + <span class="hljs-number">1</span>][right] + base * nums[k]);</span><br><span class="line">                &#125;</span><br><span class="line">                dp[left][right] = max;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][len + <span class="hljs-number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>时间复杂度：</strong>这种是典型的$\sum_{i=1}^{n}\sum_{j=i+1}^{n}\sum_{k=i}^{j}$类型的循环嵌套，因此该算法时间复杂度为O($n^3$);<br><strong>空间复杂度：</strong>O($n^2$)  </p>
+<hr>
+<h2><span id="shortest-common-supersequence"><span id="dp2.4">Shortest Common Supersequence</span></span><a href="#shortest-common-supersequence" class="header-anchor">#</a></h2><p><strong>题目描述：</strong><a href="https://leetcode.com/problems/shortest-common-supersequence" target="_blank" rel="noopener">Shortest Common Supersequence</a><br>这道题我确实做了很久！好几个小时就在画表推导关系，事实上，这题让我一直比较卡住的是如何构造最终结果。下面是我完整的思路：  </p>
+<ol>
+<li>看到题一瞬间，捕捉关键词，’Common,sequence’，于是可以大胆猜测这道题是不是最长公共子序列（Longest Common Subsequence,LCS)的变形，题目描述给的例子让我坚信了这一点，因为，无论如何，当我完整构造出最长公共子序列的dp表之后，我至少能解决：1、题目给出的两个字符串的最长公共子序列是什么，以及其长度maxCommonLen；2、最后该最短公共超序列的长度一定是$S1.length + S2.length - maxCommonLen$；</li>
+<li>动态规划解决LCS不难，问题在于，我如何构造SCS呢（SCS是最短公共超序列的简写）？下面的想法都是我按照时间线逐个尝试过的：<ul>
+<li>首先找出两个字符串的公共字符串，尝试将第二个字符串在公共字符串的帮助下插入到第一个字符串中（！失败，太复杂，逻辑也不好理）</li>
+<li>同样找出公共字符串，然后枚举该公共字符串，当str1与str2的字符不等于该字符串时，就将其放入到结果字符串中，相等后，加入该字符，并且str1指针与str2字符都后移（！失败，额。。。就是有些例子通不过）</li>
+<li>由于画表推导了许多遍，’<strong>two years later!XD</strong>‘最后找到了直接复用dp表直接推出结果的方法！</li>
+</ul>
+</li>
+</ol>
+<p><strong>状态定义：</strong>这种双字符串的题，通常情况下，状态设计都较为套路。  </p>
+<ul>
+<li>dp[i][j]定义为str1的前i个字符与str2的前j个字符的最大公共子序列的长度</li>
+</ul>
+<p><strong>临界条件：</strong>实际上也就是lcs的临界条件  </p>
+<ul>
+<li>$dp[0][k] = dp[j][0] = 0, k∈[0, str2.length), j∈[0, str1.length)$</li>
+</ul>
+<p><strong>状态转移方程：</strong>lcs的转移方程，许多人碰到字符串的题目时，常常想不通状态转移方程，其实，有的时候，先画个表，推一推，答案直接出来了，然后再反过来去想为什么反而更好理解！（XD，没错，就是这么暴力）  </p>
+<ul>
+<li>$dp[i][j] = \lbrace_{dp[i-1][j-1],str1[i-1] == str2[j-1]}^{max\lbrace dp[i-1][j],dp[i][j-1]\rbrace+1,str1[i-1] != str2[j-1]}$</li>
+</ul>
+<p><strong>状态枚举：</strong>这题状态枚举没什么注意事项。</p>
+<p><strong>代码：</strong></p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">shortestCommonSupersequence</span><span class="hljs-params">(String str1, String str2)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">if</span>(str1 == <span class="hljs-keyword">null</span>)<span class="hljs-keyword">return</span> str2;</span><br><span class="line">        <span class="hljs-keyword">int</span> str1Len = str1.length(), str2Len = str2.length(), i, j;</span><br><span class="line">        <span class="hljs-keyword">int</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[str1Len + <span class="hljs-number">1</span>][str2Len + <span class="hljs-number">1</span>];</span><br><span class="line">        <span class="hljs-comment">// lcs打表</span></span><br><span class="line">        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">1</span>;i &lt;= str1Len; ++i)&#123;</span><br><span class="line">            <span class="hljs-keyword">for</span>(j = <span class="hljs-number">1</span>;j &lt;= str2Len; ++j)&#123;</span><br><span class="line">                <span class="hljs-keyword">if</span>(str1.charAt(i - <span class="hljs-number">1</span>) == str2.charAt(j - <span class="hljs-number">1</span>))&#123;</span><br><span class="line">                    dp[i][j] = dp[i - <span class="hljs-number">1</span>][j - <span class="hljs-number">1</span>] + <span class="hljs-number">1</span>;</span><br><span class="line">                &#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">                    dp[i][j] = Math.max(dp[i - <span class="hljs-number">1</span>][j], dp[i][j - <span class="hljs-number">1</span>]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// 通过上述动态规划，此时lcsLen = dp[str1Len][str2Len]即为两字符串的最大公共子序列</span></span><br><span class="line">        StringBuilder sb = <span class="hljs-keyword">new</span> StringBuilder();</span><br><span class="line">        i = str1Len;</span><br><span class="line">        j = str2Len;</span><br><span class="line">        <span class="hljs-comment">// 反向递推构造最短公共超序列，在后文有示意图</span></span><br><span class="line">        <span class="hljs-keyword">while</span>(i &gt; <span class="hljs-number">0</span> || j &gt; <span class="hljs-number">0</span>)&#123;</span><br><span class="line">            <span class="hljs-comment">// i==0或j==0抵达边界时，没得选，一条道走到黑</span></span><br><span class="line">            <span class="hljs-keyword">if</span>(i == <span class="hljs-number">0</span>)&#123;</span><br><span class="line">                sb.append(str2.charAt(--j));</span><br><span class="line">            &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(j == <span class="hljs-number">0</span>)&#123;</span><br><span class="line">                sb.append(str1.charAt(--i));</span><br><span class="line">            &#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">                <span class="hljs-comment">// 此时未抵达边界</span></span><br><span class="line">                <span class="hljs-keyword">if</span>(str1.charAt(i - <span class="hljs-number">1</span>) == str2.charAt(j - <span class="hljs-number">1</span>))&#123;</span><br><span class="line">                    <span class="hljs-comment">// 如果相等，只能取一个字符</span></span><br><span class="line">                    sb.append(str1.charAt(--i));</span><br><span class="line">                    --j;</span><br><span class="line">                &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(dp[i - <span class="hljs-number">1</span>][j] &gt;= dp[i][j - <span class="hljs-number">1</span>])&#123;</span><br><span class="line">                    <span class="hljs-comment">// 只有优先选择大的路径才对！回想lcs的递推式！</span></span><br><span class="line">                    sb.append(str1.charAt(--i));</span><br><span class="line">                &#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">                    sb.append(str2.charAt(--j));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> sb.reverse().toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">/* version-0 保留版本，未通过</span></span><br><span class="line"><span class="hljs-comment">    public String shortestCommonSupersequence(String str1, String str2) &#123;</span></span><br><span class="line"><span class="hljs-comment">        if(str1 == null)return str2;</span></span><br><span class="line"><span class="hljs-comment">        int str1Len = str1.length(), str2Len = str2.length(), i, j, lcsLen = 0;</span></span><br><span class="line"><span class="hljs-comment">        int[][] dp = new int[str1Len + 1][str2Len + 1];</span></span><br><span class="line"><span class="hljs-comment">        ArrayList&lt;Character&gt; lcs = new ArrayList&lt;&gt;();</span></span><br><span class="line"><span class="hljs-comment">        for(i = 1;i &lt;= str1Len; ++i)&#123;</span></span><br><span class="line"><span class="hljs-comment">            for(j = 1;j &lt;= str2Len; ++j)&#123;</span></span><br><span class="line"><span class="hljs-comment">                if(str1.charAt(i - 1) == str2.charAt(j - 1))&#123;</span></span><br><span class="line"><span class="hljs-comment">                    dp[i][j] = dp[i - 1][j - 1] + 1;</span></span><br><span class="line"><span class="hljs-comment">                    if(dp[i][j] &gt; lcsLen)&#123;</span></span><br><span class="line"><span class="hljs-comment">                        lcsLen = dp[i][j];</span></span><br><span class="line"><span class="hljs-comment">                        lcs.add(str1.charAt(i - 1));</span></span><br><span class="line"><span class="hljs-comment">                    &#125;</span></span><br><span class="line"><span class="hljs-comment">                &#125;else&#123;</span></span><br><span class="line"><span class="hljs-comment">                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);</span></span><br><span class="line"><span class="hljs-comment">                &#125;</span></span><br><span class="line"><span class="hljs-comment">            &#125;</span></span><br><span class="line"><span class="hljs-comment">        &#125;</span></span><br><span class="line"><span class="hljs-comment">        // debug</span></span><br><span class="line"><span class="hljs-comment">        int resultLen = str1Len + str2Len - lcsLen;</span></span><br><span class="line"><span class="hljs-comment">        System.out.println("lcsLen="+lcsLen+" and str1Len="+str1Len+" and str2Len="+str2Len + "and resultLen should be "+resultLen);</span></span><br><span class="line"><span class="hljs-comment">        for(char c:lcs)&#123;</span></span><br><span class="line"><span class="hljs-comment">            System.out.print(c + " ");</span></span><br><span class="line"><span class="hljs-comment">        &#125;</span></span><br><span class="line"><span class="hljs-comment">        System.out.println();</span></span><br><span class="line"><span class="hljs-comment"></span></span><br><span class="line"><span class="hljs-comment">        // 通过上述动态规划，此时lcsLen = dp[str1Len][str2Len]即为两字符串的最大公共子序列</span></span><br><span class="line"><span class="hljs-comment">        StringBuilder sb = new StringBuilder();</span></span><br><span class="line"><span class="hljs-comment">        i = j = 0;</span></span><br><span class="line"><span class="hljs-comment">        for(char c:lcs)&#123;</span></span><br><span class="line"><span class="hljs-comment">            while(i &lt; str1Len &amp;&amp; str1.charAt(i) != c)sb.append(str1.charAt(i++));</span></span><br><span class="line"><span class="hljs-comment">            while(j &lt; str2Len &amp;&amp; str2.charAt(j) != c)sb.append(str2.charAt(j++));</span></span><br><span class="line"><span class="hljs-comment">            sb.append(c);</span></span><br><span class="line"><span class="hljs-comment">            ++i;</span></span><br><span class="line"><span class="hljs-comment">            ++j;</span></span><br><span class="line"><span class="hljs-comment">        &#125;</span></span><br><span class="line"><span class="hljs-comment">        // 剩余的str1与str2的字符</span></span><br><span class="line"><span class="hljs-comment">        while(i &lt; str1Len)sb.append(str1.charAt(i++));</span></span><br><span class="line"><span class="hljs-comment">        while(j &lt; str2Len)sb.append(str2.charAt(j++));</span></span><br><span class="line"><span class="hljs-comment">        String result = sb.toString();</span></span><br><span class="line"><span class="hljs-comment">        // debug</span></span><br><span class="line"><span class="hljs-comment">        System.out.println("final acctually resultLen is "+result.length());</span></span><br><span class="line"><span class="hljs-comment">        return sb.toString();</span></span><br><span class="line"><span class="hljs-comment">    &#125;</span></span><br><span class="line"><span class="hljs-comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>通过lcs打表构造scs的示意图（注意！由于疏忽，该表的行列被搞反了，该图完全转置后才能和上面的代码对应起来，或者更新代码也是行的）：</strong> <div align="center"><img src="https://s2.ax1x.com/2020/01/22/1A8QPK.gif" alt="图2-6 通过lcs的dp表构造scs的一个解的示意图（建议配合代码理解）"></div>上面两个字符串按照示意图最终生成的scs逆序之后的结果为<strong>bbababbaaba</strong></p>
+<p><strong>时间复杂度：</strong>O($str1Len * str2Len$)<br><strong>空间复杂度：</strong>O($str1Len * str2Len$)</p>
+<p><strong>Additional Thinking:</strong>有没有可能输出所有可能的最短公共子序列？在上面的代码里，其实我们能够很容易发现，存在可分支的情况，就是当dp[i-1][j] == dp[i][j-1]的时候，从代码上来看，无论是选择向左走还是向上走<strong>似乎</strong>都不会错，既然有分支，那么就可能有多解！不妨再单独写一个递归函数来输出所有的结果！  </p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// 实际上就是暴力把上面的代码转述了一下，代码未优化</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">lookUp</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[][] dp, String str1, String str2, StringBuilder sb, ArrayList&lt;String&gt; result, <span class="hljs-keyword">int</span> i, <span class="hljs-keyword">int</span> j)</span></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">if</span>(i == <span class="hljs-number">0</span> &amp;&amp; j == <span class="hljs-number">0</span>)&#123;</span><br><span class="line">        result.add(sb.reverse().toString());</span><br><span class="line">        <span class="hljs-keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">char</span> c;</span><br><span class="line">    <span class="hljs-keyword">if</span>(i == <span class="hljs-number">0</span>)&#123;</span><br><span class="line">        c = str2.charAt(j - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.append(c);</span><br><span class="line">        lookUp(dp, str1, str2, sb, result, i, j - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.deleteCharAt(sb.length() - <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(j == <span class="hljs-number">0</span>)&#123;</span><br><span class="line">        c = str1.charAt(i - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.append(c);</span><br><span class="line">        lookUp(dp, str1, str2, sb, result, i - <span class="hljs-number">1</span>, j);</span><br><span class="line">        sb.deleteCharAt(sb.length() - <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(str1.charAt(i - <span class="hljs-number">1</span>) == str2.charAt(j - <span class="hljs-number">1</span>))&#123;</span><br><span class="line">        c = str1.charAt(i - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.append(c);</span><br><span class="line">        lookUp(dp, str1, str2, sb, result, i - <span class="hljs-number">1</span>, j - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.deleteCharAt(sb.length() - <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(dp[i - <span class="hljs-number">1</span>][j] &gt; dp[i][j - <span class="hljs-number">1</span>])&#123;</span><br><span class="line">        c = str1.charAt(i - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.append(c);</span><br><span class="line">        lookUp(dp, str1, str2, sb, result, i - <span class="hljs-number">1</span>, j);</span><br><span class="line">        sb.deleteCharAt(sb.length() - <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(dp[i - <span class="hljs-number">1</span>][j] &lt; dp[i][j - <span class="hljs-number">1</span>])&#123;</span><br><span class="line">        c = str2.charAt(j - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.append(c);</span><br><span class="line">        lookUp(dp, str1, str2, sb, result, i, j - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.deleteCharAt(sb.length() - <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">        c = str1.charAt(i - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.append(c);</span><br><span class="line">        lookUp(dp, str1, str2, sb, result, i - <span class="hljs-number">1</span>, j);</span><br><span class="line">        sb.deleteCharAt(sb.length() - <span class="hljs-number">1</span>);</span><br><span class="line">        c = str2.charAt(j - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.append(c);</span><br><span class="line">        lookUp(dp, str1, str2, sb, result, i, j - <span class="hljs-number">1</span>);</span><br><span class="line">        sb.deleteCharAt(sb.length() - <span class="hljs-number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可惜，最终结果不对：  </p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">str1:bbbaaaba  str2:bbababbb</span><br><span class="line">Index SCS           Valid?   Repeat?</span><br><span class="line"><span class="hljs-number">0</span>---- bbababbaaba   √        No</span><br><span class="line"><span class="hljs-number">1</span>---- bbababababb   ×        --</span><br><span class="line"><span class="hljs-number">2</span>---- bbabaabbabb   ×        --</span><br><span class="line"><span class="hljs-number">3</span>---- bbbabaababb   √        No</span><br><span class="line"><span class="hljs-number">4</span>---- bbababaabbb   ×        --</span><br><span class="line"><span class="hljs-number">5</span>---- bbabaabbabb   ×        --</span><br><span class="line"><span class="hljs-number">6</span>---- bbbabaababb   √        Yes-<span class="hljs-number">3</span>-<span class="hljs-number">6</span></span><br><span class="line"><span class="hljs-number">7</span>---- bbabaaabbbb   ×        --</span><br><span class="line"><span class="hljs-number">8</span>---- bbbabaababb   √        Yes-<span class="hljs-number">3</span>-<span class="hljs-number">6</span>-<span class="hljs-number">8</span></span><br><span class="line"><span class="hljs-number">9</span>---- bbbaabbabbb   ×        --</span><br><span class="line"><span class="hljs-number">10</span>--- bbababaabab   √        No</span><br><span class="line"><span class="hljs-number">11</span>--- bbabaabbabb   ×        --</span><br><span class="line"><span class="hljs-number">12</span>--- bbbabaababb   √        Yes-<span class="hljs-number">3</span>-<span class="hljs-number">6</span>-<span class="hljs-number">8</span>-<span class="hljs-number">12</span></span><br><span class="line"><span class="hljs-number">13</span>--- bbabaaabbbb   ×        --</span><br><span class="line"><span class="hljs-number">14</span>--- bbbabaababb   √        Yes-<span class="hljs-number">3</span>-<span class="hljs-number">6</span>-<span class="hljs-number">8</span>-<span class="hljs-number">12</span>-<span class="hljs-number">14</span></span><br><span class="line"><span class="hljs-number">15</span>--- bbbaabbabbb   ×        --</span><br><span class="line"><span class="hljs-number">16</span>--- bbabaaababb   √        No</span><br><span class="line"><span class="hljs-number">17</span>--- bbbabaababb   √        Yes-<span class="hljs-number">3</span>-<span class="hljs-number">6</span>-<span class="hljs-number">8</span>-<span class="hljs-number">12</span>-<span class="hljs-number">14</span>-<span class="hljs-number">17</span></span><br><span class="line"><span class="hljs-number">18</span>--- bbbaabbabbb   ×        --</span><br><span class="line"><span class="hljs-number">19</span>--- bbbaaababbb   √        No</span><br></pre></td></tr></table></figure>
+
+<p>从上面的结果来看，不仅有错误的答案，还有很多重复，其实有重复很容易理解，但是有错误似乎不太好理解，上面动态规划的代码似乎与递归代码一致呀，其实不是，容易忽略的一点是，递推的代码，在判断到dp[i - 1][j]与dp[i][j - 1]的关系的时候，自始至终都是遵循了一致的选择方向，当判断到dp[i - 1][j] == dp[i][j - 1]时，都是自始至终选择dp[i - 1][j]，或者换另外一种写法之后，自始至终选择dp[i][j - 1]那么代码提交结果就不会有错，可是递归并不是遵循了这种策略。从上面的结果来看，最终有效的SCS有6个。（对于如何高效求解所有可能的解，到这里我也迷茫了…）</p>
+<hr>
+<h2><span id="wildcard-matching"><span id="dp2.5">Wildcard Matching</span></span><a href="#wildcard-matching" class="header-anchor">#</a></h2><p><strong>题目描述：</strong><a href="https://leetcode.com/problems/wildcard-matching" target="_blank" rel="noopener">Wildcard Matching</a><br>该题与<a href="https://leetcode.com/problems/regular-expression-matching" target="_blank" rel="noopener">Regular Expression Matching</a>基本一模一样，都是困难难度，所以建议你先把这题做一遍，或者看我<a href="#dp3">三、别问，问就是使劲刷题</a>中对该题的解析之后再来看这道题，你就会发现掌握套路之后，这题其实就是<strong>送分题</strong>。另外，可以告诉你的是，在leetcode上，这种字符串类型的题目，按照上面<a href="#dp2.4">Shortest Common Supersequence</a>的那个动态图将表画出来，基本都能解出来，甚至有时你都不需要明白状态转移方程为什么是这样的，比如这题就是这样的，当然，如果你有经验，不用画表也能做出来这道题，在这里，因为这题简单，就不附上表格了。  </p>
+<p><strong>状态定义：</strong>  </p>
+<ul>
+<li>$dp[i][j]$定义为字符串s的前i个字符是否能够与模式串p的前j个字符匹配</li>
+</ul>
+<p><strong>边界状态：</strong>  </p>
+<ul>
+<li>$dp[0][0] = true$</li>
+<li>$dp[k][0] = false, k ∈ [1, s.length]$</li>
+<li>$dp[0][k] = dp[0][k - 1] &amp;&amp; p[k - 1] == ‘*‘$【例如：****“就能匹配空字符串】</li>
+</ul>
+<p><strong>状态转移方程：</strong></p>
+<ul>
+<li>当s[i-1] == p[j-1]或者p[j-1] == ‘?’时：dp[i][j] = dp[i - 1][j - 1]</li>
+<li>当s[i-1] != p[j-1]并且p[j-1] == ‘*‘时：dp[i][j] = dp[i - 1][j] || dp[i][j - 1],分别对应于’*‘匹配多个字符或者’*‘不匹配字符时的情况【注：因为题目说明了’*‘可匹配多个字符或者不匹配】</li>
+<li>综上有：$dp[i][j] = \lbrace_{dp[i-1][j-1],s[i-1] == p[j-1] || p[j-1] == ?}^{dp[i-1][j] || dp[i][j-1], p[j-1] == *}$</li>
+</ul>
+<p><strong>状态枚举：</strong>无注意事项。  </p>
+<p><strong>代码：</strong>  </p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isMatch</span><span class="hljs-params">(String s, String p)</span> </span>&#123;</span><br><span class="line">        <span class="hljs-keyword">int</span> sLen = (s == <span class="hljs-keyword">null</span>?<span class="hljs-number">0</span>:s.length()), pLen = (p == <span class="hljs-keyword">null</span>?<span class="hljs-number">0</span>:p.length());</span><br><span class="line">        <span class="hljs-keyword">boolean</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">boolean</span>[sLen + <span class="hljs-number">1</span>][pLen + <span class="hljs-number">1</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-comment">// init-state</span></span><br><span class="line">        <span class="hljs-keyword">int</span> i,j;</span><br><span class="line">        dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = <span class="hljs-keyword">true</span>;</span><br><span class="line">        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">1</span>; i &lt;= pLen; ++i)&#123;</span><br><span class="line">            dp[<span class="hljs-number">0</span>][i] = dp[<span class="hljs-number">0</span>][i - <span class="hljs-number">1</span>] &amp;&amp; p.charAt(i - <span class="hljs-number">1</span>) == <span class="hljs-string">'*'</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// transition function</span></span><br><span class="line">        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">1</span>;i &lt;= sLen; ++i)&#123;</span><br><span class="line">            <span class="hljs-keyword">for</span>(j = <span class="hljs-number">1</span>; j &lt;= pLen; ++j)&#123;</span><br><span class="line">                <span class="hljs-keyword">if</span>(s.charAt(i - <span class="hljs-number">1</span>) == p.charAt(j - <span class="hljs-number">1</span>) || p.charAt(j - <span class="hljs-number">1</span>) == <span class="hljs-string">'?'</span>)&#123;</span><br><span class="line">                    dp[i][j] = dp[i - <span class="hljs-number">1</span>][j - <span class="hljs-number">1</span>];</span><br><span class="line">                &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(p.charAt(j - <span class="hljs-number">1</span>) == <span class="hljs-string">'*'</span>)&#123;</span><br><span class="line">                    dp[i][j] = dp[i - <span class="hljs-number">1</span>][j] || dp[i][j - <span class="hljs-number">1</span>]; <span class="hljs-comment">// *匹配多个或者不匹配</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">return</span> dp[sLen][pLen];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>时间复杂度：</strong>O($sLen * pLen$)<br><strong>空间复杂度：</strong>O($sLen * pLen$)  </p>
+<hr>
+<h1><span id="san-bie-wen-wen-jiu-shi-shi-jing-shua-ti"><span id="dp3">三、别问，问就是使劲刷题</span></span><a href="#san-bie-wen-wen-jiu-shi-shi-jing-shua-ti" class="header-anchor">#</a></h1><p>上面我通过实例完整的描述一遍如何解决动态规划的问题，其实这几题只是我做的题中的一点点，从我在leetcode上做过的题目中，我挑出了4个很经典的题：</p>
+<ul>
+<li><a href="https://leetcode.com/problems/regular-expression-matching" target="_blank" rel="noopener">#10 Regular Expression Matching</a></li>
+<li><a href="https://leetcode.com/problems/edit-distance" target="_blank" rel="noopener">#72 Edit Distance</a></li>
+<li><a href="https://leetcode.com/problems/scramble-string" target="_blank" rel="noopener">#87 Scramble String</a></li>
+<li><a href="https://leetcode.com/problems/dungeon-game" target="_blank" rel="noopener">#174 Dungeon Game</a></li>
+</ul>
+<p>以表格的形式说明其<strong>状态定义、边界条件、状态转移方程</strong>： <div align="center"><img src="https://s2.ax1x.com/2020/01/22/1A3IHI.png" alt="图3-1 四道经典题题解（上）"></div><div align="center"><img src="https://s2.ax1x.com/2020/01/22/1A3TEt.png" alt="图3-2 四道经典题题解（下）"></div></p>
+<p>除此之外，还有很多好题，鉴于篇幅所限，就不放了，其次就是，建议Leetcode刷了之后，刷一刷Pat，Zoj（现在好像迁移到PTA上了），或者《算法竞赛入门经典》这本书，一定会有更深的理解！</p>
+<h1><span id="si-mei-shi-me-yong-de-ji-qiao-zong-jie"><span id="dp4">四、没什么用的技巧总结</span></span><a href="#si-mei-shi-me-yong-de-ji-qiao-zong-jie" class="header-anchor">#</a></h1><p>如果你认真地独立思考把这些题都做了一遍，那么你一定会发现这些题很多都有独特的特点，而这些特点就代表了一类题型，无论是从状态定义、状态转移还是枚举方式，纯粹以刷leetcode的视角，都有着相对较为死板的套路，如下表所示（<strong>注：</strong>建议阅读我在本博客顶部“写这篇博客的背景”中提到的<a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/discuss/108870/Most-consistent-ways-of-dealing-with-the-series-of-stock-problems" target="_blank" rel="noopener">Most consistent ways of dealing with the series of stock problems</a>） <div align="center"><img src="https://s2.ax1x.com/2020/01/22/1A35DA.png" alt="图4-1 LeetCode动态规划题常见的几种形式"></div>leetcode上大部分题都较为基础，因此其状态设计都很套路，除此之外，还很重要的是如何枚举状态，保证在当前状态下子状态都已经枚举完毕，见下总结：</p>
+<ol>
+<li><p>dp[i]的普通枚举,dp[i][j]的普通枚举（通常这类问题都是多阶段决策问题，因此按照定义枚举不会出错，甚至于有时可转换为滚动数组，将二维数组优化为一维数组），这类题目按照定义枚举不会出错，通常看起来会像这样：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// dp[i]普通</span></span><br><span class="line"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">1</span>; i &lt; threshold; ++i)&#123;</span><br><span class="line">	......</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// dp[i]稍复杂</span></span><br><span class="line"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">1</span>; i &lt; threshold; ++i)&#123;</span><br><span class="line">	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = i; j &gt;= <span class="hljs-number">0</span>; --j)&#123;</span><br><span class="line">		......</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// dp[i][j] ↘方向</span></span><br><span class="line"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; iThreshold; ++i)&#123;</span><br><span class="line">	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>; j &lt; jThreshold; ++j)&#123;</span><br><span class="line">		......</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// dp[i][j] ↖方向</span></span><br><span class="line"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = iThreshold - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; --i)&#123;</span><br><span class="line">	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = jThreshold - <span class="hljs-number">1</span>;j &gt;= <span class="hljs-number">0</span>; --j)&#123;</span><br><span class="line">		......</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>定长区间类似问题的枚举技巧，这类问题通常与区间有关，往往要将任意len长度的区间的结果都要枚举出来，例如经典的“最长回文子串”问题，以及上面解析的“戳气球问题”，“Scramble String(扰乱字符串)”都能用到这种技巧！：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">* 技巧1：外嵌循环定长区间</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> len = <span class="hljs-number">1</span>; len &lt; maxLen; ++len)&#123;</span><br><span class="line">	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i + len - <span class="hljs-number">1</span> &lt; iThreshold; ++i)&#123;</span><br><span class="line">		<span class="hljs-keyword">int</span> j = i + len - <span class="hljs-number">1</span>;</span><br><span class="line">		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> k = i + <span class="hljs-number">1</span>; k &lt; j; ++k)&#123;</span><br><span class="line">			......</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">* 技巧2：使用上文"戳气球"用到的那种枚举方式,同样能做到技巧1的效果，详情可参* 见上文动态图</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = <span class="hljs-number">1</span>; j &lt; jThreshold; ++j)&#123;</span><br><span class="line">	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = j - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; --i)&#123;</span><br><span class="line">		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> k = i; k &lt; j; ++k)&#123;</span><br><span class="line">			......</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h1><span id="wu-jing-sai-ru-men-dong-tai-gui-hua-ru-men-mo-xing"><span id="dp5">五、竞赛入门-动态规划入门模型</span></span><a href="#wu-jing-sai-ru-men-dong-tai-gui-hua-ru-men-mo-xing" class="header-anchor">#</a></h1><p>非竞赛党，一年多以前出于提升代码能力的目的，之前也刷过《算法竞赛入门经典》这本书，虽然只看了基础篇还有竞赛篇的三章，不过既然都写动态规划的博客了，就简单回顾下动态规划初步这章的几个基本模型概念吧。 </p>
+<hr>
+<ol>
+<li><strong>记忆化搜索与递推。</strong>典型的就是斐波那契数列，还有数字三角形，事实上就是递归的过程中有许多需要重复计算的地方，因此通过记忆化，使其不再被重复计算，就像上文”Brust Balloon”一样，由于暴力递归产生大量重复解，通过记忆化能将其时间复杂度大幅度优化。</li>
+<li><strong>DAG模型。</strong>许多问题都能抽象成DAG上的最长路、最短路、路径计数问题。（至今清晰记得这种解法，因为确实好用！）例如经典的0-1背包问题也能看作一种DAG模型。</li>
+<li><strong>多阶段决策问题。</strong>无论是在回溯法当中还是递归当中，有时在某一层结点会涉及到不同的决策，从而在该结点上产生不同的解答树，这就是多阶段决策问题，不同阶段，不同决策，决策做完，完整的解浮出水面。例如Leetcode的那6道买卖股票的问题，“戳气球”等都算是一种多阶段决策问题（其实，感觉自己后面对这个的概念都比较模糊)</li>
+<li><strong>线性结构上的动态规划。</strong>这个就不引用书里的话了，其实leetcode有大量这样的题，典型的那些“最长公共子序列”、“最长回文子串”、“最长连续子序列”等等都是线性结构上的动态规划。</li>
+<li>树上的动态规划和复杂状态的动态规划基本忘了，leetcode上这类题目也比较少….额，就不复习了吧，博客写累了。  </li>
+</ol>
+<h1><span id="can-kao-zi-liao"><span id="dp6"><center>参考资料</center></span></span><a href="#can-kao-zi-liao" class="header-anchor">#</a></h1><p>【1】 《算法竞赛入门经典-第二版》，刘汝佳著<br>【2】 LeetCode讨论区文章：<a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/discuss/108870/Most-consistent-ways-of-dealing-with-the-series-of-stock-problems" target="_blank" rel="noopener">Most consistent ways of dealing with the series of stock problems</a></p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Algorithms/">Algorithms</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">MIT-6.828-LAB1 Booting a PC</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/12/05/HashMap-ConcurrentHashMap-同步HashMap/">
+                <span class="level-item">HashMap+ConcurrentHashMap+同步HashMap</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2019/12/17/关于动态规划的一点简单思考/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>文章目录#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>零、鸣谢#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>一、写这篇博客的背景#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>二、要不，先上个小菜？#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.1</span>
+        <span>例子概览#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.2</span>
+        <span>Maximal Square#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.3</span>
+        <span>Brust balloons#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.3.1</span>
+        <span>version-0 回溯法未优化版#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.3.2</span>
+        <span>version-1 记忆化优化版本回溯#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.4</span>
+        <span>version-2 动态规划版本#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.5</span>
+        <span>Shortest Common Supersequence#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.6</span>
+        <span>Wildcard Matching#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">5</span>
+        <span>三、别问，问就是使劲刷题#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6</span>
+        <span>四、没什么用的技巧总结#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">7</span>
+        <span>五、竞赛入门-动态规划入门模型#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">8</span>
+        <span>参考资料#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB3 User Environments">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time></div>
+                    <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB3 User Environments</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB2 Memory Management">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time></div>
+                    <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB2 Memory Management</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
+                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="关于动态规划的一点简单思考" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

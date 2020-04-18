@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>MIT-6.828-LAB4 Preemptive Multitasking - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="Contents Part A : Multiprocessor Support and Cooperative Mutitasking Exercise 1 Exercise 2 Question   Exercise 3 Exercise 4 Exercise 5 Question   Exercise 6 : Round-Robin Scheduling Question Challenge">
+<meta name="keywords" content="MIT6.828">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT-6.828-LAB4 Preemptive Multitasking">
+<meta property="og:url" content="https://qinstaunch.github.io/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="Contents Part A : Multiprocessor Support and Cooperative Mutitasking Exercise 1 Exercise 2 Question   Exercise 3 Exercise 4 Exercise 5 Question   Exercise 6 : Round-Robin Scheduling Question Challenge">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-01-24T03:55:35.650Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MIT-6.828-LAB4 Preemptive Multitasking">
+<meta name="twitter:description" content="Contents Part A : Multiprocessor Support and Cooperative Mutitasking Exercise 1 Exercise 2 Question   Exercise 3 Exercise 4 Exercise 5 Question   Exercise 6 : Round-Robin Scheduling Question Challenge">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="MIT-6.828-LAB4 Preemptive Multitasking" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    43 分钟 读完 (大约 6407 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                MIT-6.828-LAB4 Preemptive Multitasking
+            
+        </h1>
+        <div class="content">
+            <h1><span id="contents"><span>Contents</span></span><a href="#contents" class="header-anchor">#</a></h1><ul>
+<li><a href="#OSELAB4_A">Part A : Multiprocessor Support and Cooperative Mutitasking</a><ul>
+<li><a href="#OSELAB4_A.1">Exercise 1</a></li>
+<li><a href="#OSELAB4_A.2">Exercise 2</a><ul>
+<li><a href="#OSELAB4_A.2.QUESTION">Question</a></li>
+</ul>
+</li>
+<li><a href="#OSELAB4_A.3">Exercise 3</a></li>
+<li><a href="#OSELAB4_A.4">Exercise 4</a></li>
+<li><a href="#OSELAB4_A.5">Exercise 5</a><ul>
+<li><a href="#OSELAB4_A.5.QUESTION">Question</a></li>
+</ul>
+</li>
+<li><a href="#OSELAB4_A.6">Exercise 6 : Round-Robin Scheduling</a><ul>
+<li><a href="#OSELAB4_A.6.QUESTION">Question</a></li>
+<li><a href="#OSELAB4_A.6.CHALLENGE">Challenge : Extend More Complex Scheduling Policy</a><ul>
+<li><a href="#OSELAB4_A.6.CHALLENGE.FPS">Fixed-Priority Scheduler</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#OSELAB4_A.7">Exercise 7</a></li>
+</ul>
+</li>
+<li><a href="#OSELAB4_B">Part B : Copy-on-Write Fork</a><ul>
+<li><a href="#OSELAB4_B.8">Exercise 8</a></li>
+<li><a href="#OSELAB4_B.9">Exercise 9</a></li>
+<li><a href="#OSELAB4_B.10">Exercise 10</a></li>
+<li><a href="#OSELAB4_B.11">Exercise 11</a></li>
+<li><a href="#OSELAB4_B.12">Exercise 12</a><ul>
+<li><a href="#OSELAB4_B.12.CHALLENGE">Challenge : Implement Shared-Memory sfork</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#OSELAB4_C">Part C : Preemptive Multitasking and Inter-Process Communication(IPC)</a><ul>
+<li><a href="#OSELAB4_C.13">Exercise 13</a></li>
+<li><a href="#OSELAB4_C.14">Exercise 14</a></li>
+<li><a href="#OSELAB4_C.15">Exercise 15</a></li>
+</ul>
+</li>
+<li><a href="#OSELAB4_TEST">TEST</a></li>
+<li><a href="#OSELAB4_REFERENCES">REFERENCES</a></li>
+</ul>
+<a id="more"></a>
+
+<hr>
+<h1><span id="part-a-multiprocessor-support-and-cooperative-mutitasking"><span id="OSELAB4_A">Part A:Multiprocessor Support and Cooperative Mutitasking</span></span><a href="#part-a-multiprocessor-support-and-cooperative-mutitasking" class="header-anchor">#</a></h1><hr>
+<h2><span id="exercise-1"><span id="OSELAB4_A.1">Exercise 1</span></span><a href="#exercise-1" class="header-anchor">#</a></h2><p>在LAB4之前，所有的代码都是在同一个处理器上执行的，这个处理器一般叫做Bootstrap Processor(BSP)，BSP是哪个处理器是由BIOS和硬件共同决定的。在LAB4的一开始，我们要通过BSP来增加多处理器的支持，除了BSP之外的其它处理器一般叫做Application Processors(APs)。多处理器共享许多硬件资源，例如内存和I/O总线，但是也有许多硬件资源并不是共享的，例如LAPIC单元，TSS等寄存器，因此需要在BSP初始化好之后再初始化其它APs，当然，此时page等也不再需要初始化了（内存是共享的）。</p>
+<p>在LAB4中的内存映射关系如下所示，可以和LAB3的内存映射关系对比来看: <div align="center"><img src="https://s2.ax1x.com/2020/01/22/1AD1Rs.png" alt="图 1-1 内存映射关系示意图"></div></p>
+<p>代码很简单，值得注意的是，每个CPU都会调用一次mmio_map_region，因此base需要在每一次完成映射之后把值更新：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span> *</span><br><span class="line">mmio_map_region(<span class="hljs-keyword">physaddr_t</span> pa, <span class="hljs-keyword">size_t</span> size)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">static</span> <span class="hljs-keyword">uintptr_t</span> base = MMIOBASE;</span><br><span class="line">	<span class="hljs-keyword">size_t</span> sizeUp = ROUNDUP(size, PGSIZE);</span><br><span class="line">	<span class="hljs-keyword">if</span>(sizeUp &gt; (MMIOLIM - base))panic(<span class="hljs-string">"reservation of mmio overflow MMIOLIM!"</span>);</span><br><span class="line">	boot_map_region(kern_pgdir, base, sizeUp, pa, (PTE_PCD | PTE_PWT | PTE_W));</span><br><span class="line">	<span class="hljs-comment">// test case in check_page below -check that they don't overlap-reminds me of that base is an static variable and </span></span><br><span class="line">	<span class="hljs-comment">// this function mmio_map_region might be invoked two or more times.See more details in check_page function below.</span></span><br><span class="line">	base += sizeUp;</span><br><span class="line">	<span class="hljs-keyword">return</span> (<span class="hljs-keyword">void</span> *)(base - sizeUp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-2"><span id="OSELAB4_A.2">Exercise 2</span></span><a href="#exercise-2" class="header-anchor">#</a></h2><p>BSP完成了初始化之后（kern/init.c:i386_init），就需要调用boot_aps来完成APs的初始化，这一部分的Control flow如下所示：</p>
+<figure class="highlight smali hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">+-----------------------+   +----------------------+</span><br><span class="line">| kern/init.c:i386_init |==&gt;| kern/init.c:boot_aps |</span><br><span class="line">+-----------------------+   +----------------------+</span><br><span class="line">                                  | Pass control to kern/lapic.c:lapic_startap<span class="hljs-built_in"> and </span>switch to</span><br><span class="line">                                  V the booted processor to<span class="hljs-built_in"> execute </span>rest code/instruction.</span><br><span class="line">+--------------------+   +------------------------------+</span><br><span class="line">| kern/init.c:mp_main|&lt;==| kern/mpentry.S:mpentry_start |</span><br><span class="line">+--------------------+   +------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>值得注意的是，在kern/lapic.c中发生了处理器的切换</strong>，也就是说，从mpentry_start开始就是由被激活的CPU执行的，换而言之，从mpentry_start开始，这部分代码和BSP就是完全<strong>并行执行</strong>了，这也是为什么在<code>kern/init.c:boot_aps</code>的<code>lapic_startap(c-&gt;cpu_id, PADDR(code))</code>之后，需要BSP不断自旋直到该APs初始化完毕的原因：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// kern/init.c:boot_aps</span></span><br><span class="line"><span class="hljs-comment">// Start the CPU at mpentry_start</span></span><br><span class="line">lapic_startap(c-&gt;cpu_id, PADDR(code));</span><br><span class="line"><span class="hljs-comment">// Wait for the CPU to finish some basic setup in mp_main()</span></span><br><span class="line"><span class="hljs-keyword">while</span>(c-&gt;cpu_status != CPU_STARTED);</span><br></pre></td></tr></table></figure>
+
+<p>同样，这也是为什么在BSP执行<code>boot_aps</code>之前需要申请内核锁的原因：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">mp_main(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-comment">// We are in high EIP now, safe to switch to kern_pgdir </span></span><br><span class="line">	lcr3(PADDR(kern_pgdir));</span><br><span class="line">	cprintf(<span class="hljs-string">"SMP: CPU %d starting\n"</span>, cpunum());</span><br><span class="line"></span><br><span class="line">	lapic_init();</span><br><span class="line">	env_init_percpu();</span><br><span class="line">	trap_init_percpu();</span><br><span class="line">	xchg(&amp;thiscpu-&gt;cpu_status, CPU_STARTED); <span class="hljs-comment">// tell boot_aps() we're up</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Now that we have finished some basic setup, call sched_yield()</span></span><br><span class="line">	<span class="hljs-comment">// to start running processes on this CPU.  But make sure that</span></span><br><span class="line">	<span class="hljs-comment">// only one CPU can enter the scheduler at a time!</span></span><br><span class="line">	<span class="hljs-comment">//</span></span><br><span class="line">	lock_kernel();</span><br><span class="line">	sched_yield();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的代码可以看出，每个APs初始化完毕之后，使用<code>xchg</code>指令设置该CPU的状态为CPU_STARTED，来通知BSP该APs已经初始化完毕了，此时BSP就能够继续初始化下一个APs或者开始运行第一个User Environment，由于此时至少存在两个处理器是并行地运行，若不使用内核锁来确保同时只能有一个CPU执行一些关键的内核代码，就必然会产生并发错误，例如，在不使用内核锁的情况下，假设两个CPU同时进入了Scheduler，那么就可能导致两个CPU同时执行同一个User Environment的严重的并发错误，除此之外，创建Environment，分配Page等等都可能产生Race Condition，这显然不对。因此BSP在调用<code>boot_aps</code>之前必须申请kernel_lock，这样当所有APs还没初始化成功之前（即BSP的boot_aps还没返回之前）已完成初始化的APs都会被阻塞在<code>mp_main</code>的<code>lock_kernel</code>上，因为此时kernel_lock被BSP持有。</p>
+<p>由于mpentry_start一开始将%DS，%ES，%SS设置为0，并且此时各种控制寄存器都尚未初始化，此时只能运行物理内存的低2^16字节地址上的代码，但是mpentry_start代码实际上属于内核代码，因此<code>boot_aps</code>才将mpentry_start这部分代码复制到MPENTRY_PADDR(0x7000)起始处（详情可看本文图 1-1）：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">memmove(code, mpentry_start, mpentry_end - mpentry_start);</span><br></pre></td></tr></table></figure>
+
+<p>正是需要将mpentry_start这部分代码复制到了MPENTRY_START的缘故，因此需要修改page_init，将mpentry_start这部分物理页标记为Not free，这也正是Exercise 2要我们做的：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">page_init(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">size_t</span> i, extendedFree = PGNUM(PADDR(boot_alloc(<span class="hljs-number">0</span>)));</span><br><span class="line">	<span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt; npages; ++i)&#123;</span><br><span class="line">		pages[i].pp_ref = <span class="hljs-number">0</span>;</span><br><span class="line">		<span class="hljs-keyword">if</span>(i == <span class="hljs-number">0</span> || (i &gt;= npages_basemem &amp;&amp; i &lt; extendedFree) || i == PGNUM(MPENTRY_PADDR))&#123;</span><br><span class="line">			pages[i].pp_link = <span class="hljs-literal">NULL</span>;</span><br><span class="line">		&#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">			pages[i].pp_link = page_free_list;</span><br><span class="line">			page_free_list = &amp;pages[i];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3><span id="question"><span id="OSELAB4_A.2.QUESTION">Question</span></span><a href="#question" class="header-anchor">#</a></h3><blockquote>
+<p>1.Compare kern/mpentry.S side by side with boot/boot.S. Bearing in mind that kern/mpentry.S is compiled and linked to run above KERNBASE just like everything else in the kernel, what is the purpose of macro MPBOOTPHYS? Why is it necessary in kern/mpentry.S but not in boot/boot.S? In other words, what could go wrong if it were omitted in kern/mpentry.S?</p>
+</blockquote>
+<p>kern/mentry.S与boot/boot.S主要有以下两点区别：</p>
+<ol>
+<li>kern/mentry.S不需要使能A20；</li>
+<li>kern/mentry.S需要使用宏MPBOOTPHYS来计算它所引用的符号（symbol）的绝对地址而不是和boot/boot.S一样依赖于链接器（linker）。</li>
+</ol>
+<p>正如前面所提到的，kern/mpentry.S实际上是内核代码，它们的地址都在KERNBASE之上，而mpentry.S作为APs的boot代码，运行在低地址，因此需要使用宏MPBOOTPHYS来计算绝对地址，随后执行mpentry.S时运行在实模式之下。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> MPBOOTPHYS(s) ((s) - mpentry_start + MPENTRY_PADDR)</span></span><br></pre></td></tr></table></figure>
+
+<p>但是在boot/boot.S这部分代码实际上是由BIOS直接加载到了物理地址0x7c00，因此不需要使用宏来计算绝对地址。简单来说就是kern/mpentry.S引用的符号对应的地址是虚拟地址，高于KERNBASE，因此若不使用MPBOOTPHYS计算绝对地址，直接把虚拟地址当成物理地址，那么必然会加载未知的物理内存数据，必然出错。</p>
+<hr>
+<h2><span id="exercise-3"><span id="OSELAB4_A.3">Exercise 3</span></span><a href="#exercise-3" class="header-anchor">#</a></h2><p>每个CPU可以并行地进入Trap，因此必须需要为每个CPU设置独立的内核栈。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span></span><br><span class="line">mem_init_mp(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">uint32_t</span> CPU_i = <span class="hljs-number">0</span>;</span><br><span class="line">	<span class="hljs-keyword">for</span>(;CPU_i &lt; NCPU; ++CPU_i)&#123;</span><br><span class="line">		<span class="hljs-keyword">uintptr_t</span> startVa = KSTACKTOP - CPU_i * (KSTKSIZE + KSTKGAP) - KSTKSIZE;</span><br><span class="line">		boot_map_region(kern_pgdir, startVa, KSTKSIZE, PADDR(percpu_kstacks[CPU_i]), (PTE_W | PTE_P));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-4"><span id="OSELAB4_A.4">Exercise 4</span></span><a href="#exercise-4" class="header-anchor">#</a></h2><p>由于每个CPU有着独立的内核栈，因此我们还需要修改每个CPU对应的TSS（Task State Segment）,并且将CPU对应的TSS descriptor写入到GDT中:</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">trap_init_percpu(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-comment">// Setup a TSS so that we get the right stack when we trap to kernel.</span></span><br><span class="line">	thiscpu-&gt;cpu_ts.ts_esp0 = KSTACKTOP - thiscpu-&gt;cpu_id * (KSTKSIZE + KSTKGAP);</span><br><span class="line">	thiscpu-&gt;cpu_ts.ts_ss0 = GD_KD;</span><br><span class="line">	thiscpu-&gt;cpu_ts.ts_iomb = <span class="hljs-keyword">sizeof</span>(struct Taskstate);</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Initialize the TSS slot of the gdt.</span></span><br><span class="line">	gdt[(GD_TSS0 &gt;&gt; <span class="hljs-number">3</span>) + thiscpu-&gt;cpu_id] = SEG16(STS_T32A, (<span class="hljs-keyword">uint32_t</span>)(&amp;(thiscpu-&gt;cpu_ts)), <span class="hljs-keyword">sizeof</span>(struct Taskstate) - <span class="hljs-number">1</span>, <span class="hljs-number">0</span>);</span><br><span class="line">	gdt[(GD_TSS0 &gt;&gt; <span class="hljs-number">3</span>) + thiscpu-&gt;cpu_id].sd_s = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Load the TSS selector (like other segment selectors, the</span></span><br><span class="line">	<span class="hljs-comment">// bottom three bits are special; we leave them 0)</span></span><br><span class="line">	ltr(GD_TSS0 + <span class="hljs-number">8</span> * thiscpu-&gt;cpu_id); <span class="hljs-comment">// low 3 bits was special.</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Load the IDT</span></span><br><span class="line">	lidt(&amp;idt_pd);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-5"><span id="OSELAB4_A.5">Exercise 5</span></span><a href="#exercise-5" class="header-anchor">#</a></h2><p>从Exercise 2的讨论中，我们知道了在kern/init.c:i386_init中调用<code>boot_aps</code>之前BSP需要申请内核锁的原因是为了避免对内核一些关键资源的申请和分配产生错误，换而言之，后续从Kernel mode进入User mode时需要释放Kernel Lock，否则从一开始，所有的APs都会在<code>mp_main</code>中被阻塞，只有BSP一个CPU在做实际工作。另外，用户态也可以通过Trap陷入内核态，在执行关键内核代码之前，也需要申请Kernel Lock以避免并发错误。</p>
+<p>因此，不考虑吞吐量和性能的前提条件下，在以下四个地方申请Kernel Lock或者释放Kernel Lock即可避免并发错误：</p>
+<ol>
+<li>In i386_init(), acquire the lock before the BSP wakes up the other CPUs.</li>
+<li>In mp_main(), acquire the lock after initializing the AP, and then call sched_yield() to start running environments on this AP.</li>
+<li>In trap(), acquire the lock when trapped from user mode. To determine whether a trap happened in user mode or in kernel mode, check the low bits of the tf_cs.</li>
+<li>In env_run(), release the lock right before switching to user mode. Do not do that too early or too late, otherwise you will experience races or deadlocks.</li>
+</ol>
+<p><strong>为什么在trap中可能需要申请Kernel Lock?</strong><br>在LAB3中我们设置的Trap Control Flow如下：</p>
+<figure class="highlight gherkin hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">+-----------------+  +------------------+  +-------------------------+  +---------------------------+</span><br><span class="line">|<span class="hljs-string">procedure or task</span>|<span class="hljs-string">=&gt;</span>|<span class="hljs-string">processor hardware</span>|<span class="hljs-string">=&gt;</span>|<span class="hljs-string">handler(kern/trapentry.S)</span>|<span class="hljs-string">=&gt;</span>|<span class="hljs-string">_alltraps(kern/trapentry.S)</span>|</span><br><span class="line">+-----------------+  +------------------+  +-------------------------+  +---------------------------+</span><br><span class="line">                                                                                       |</span><br><span class="line"><span class="hljs-string">                                                                                       </span>|</span><br><span class="line">+------------------+  +----------------------------+  +-------------------+            |</span><br><span class="line">|<span class="hljs-string"> handler function </span>|<span class="hljs-string">&lt;=</span>|<span class="hljs-string"> trap_dispatch(kern/trap.c) </span>|<span class="hljs-string">&lt;=</span>|<span class="hljs-string"> trap(kern/trap.c) </span>|<span class="hljs-string">&lt;============</span></span><br><span class="line"><span class="hljs-string">+------------------+  +----------------------------+  +-------------------+</span></span><br></pre></td></tr></table></figure>
+
+<p>从processor hardware(APIC)探测到的Exception Vector根据我们在LAB3设置的IDT可以找到对应的Interrupt Descriptor，而该Interrupt Descriptor中保存有我们设置的handler(kern/trapentry.S)地址，也就是说，从处理器开始执行handler(kern/trapentry.S)的代码开始，实际上就已经陷入内核态了。在handler(kern/trapentry.S)和_alltraps(kern/trapentry.S)构造了trap frame之后，进入trap(kern/trap.c)，因此在这里需要检测是否该次trap是由用户态陷入到内核态的，若是，则执行后续的一些内核代码时，为避免并发错误，就需要先获得内核锁，以确保仅有一个CPU正在执行那些可能产生并发错误的内核代码。</p>
+<hr>
+<h3><span id="question"><span id="OSELAB4_A.5.QUESTION">Question</span></span><a href="#question" class="header-anchor">#</a></h3><blockquote>
+<p>It seems that using the big kernel lock guarantees that only one CPU can run the kernel code at a time. Why do we still need separate kernel stacks for each CPU? Describe a scenario in which using a shared kernel stack will go wrong, even with the protection of the big kernel lock.</p>
+</blockquote>
+<p>答案在Exercise 5中的讨论其实已经说得很清楚了，在获得内核锁之前需要由硬件切换到内核栈，在该CPU对应的内核栈中构造此次Trap的Trap frame，构造完成之后在trap(kern/trap.c)当中才去申请获得内核锁。倘若所有CPU共享内核栈，由于CPU能够并行地引发Trap，那么每个CPU在为它们当前正在执行的Environment构造Trap frame时就会产生混乱，从而引发错误。</p>
+<hr>
+<h2><span id="exercise-6-round-robin-scheduling"><span id="OSELAB4_A.6">Exercise 6 : Round-Robin Scheduling</span></span><a href="#exercise-6-round-robin-scheduling" class="header-anchor">#</a></h2><p>轮循式调度策略很简单：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">sched_yield(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">uint32_t</span> curenvIndex = (curenv?ENVX(curenv-&gt;env_id):<span class="hljs-number">0</span>), offset; <span class="hljs-comment">// curenv might be NULL!</span></span><br><span class="line">	<span class="hljs-keyword">for</span>(offset = <span class="hljs-number">0</span>; offset &lt; NENV; ++offset)&#123;</span><br><span class="line">		<span class="hljs-keyword">uint32_t</span> realIndex = (curenvIndex + offset) % NENV;</span><br><span class="line">		<span class="hljs-keyword">if</span>(envs[realIndex].env_status == ENV_RUNNABLE)&#123;</span><br><span class="line">			env_run(&amp;envs[realIndex]); <span class="hljs-comment">// switch to the first runnable environment.env_run will never return.</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">if</span>(curenv &amp;&amp; curenv-&gt;env_status == ENV_RUNNING)&#123;</span><br><span class="line">		<span class="hljs-comment">// no envs are runnable,but the environment previously running on this CPU is still running.</span></span><br><span class="line">		<span class="hljs-comment">// It's okay to choose this environment.</span></span><br><span class="line">		env_run(curenv);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-comment">// sched_halt never returns</span></span><br><span class="line">	sched_halt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3><span id="question"><span id="OSELAB4_A.6.QUESTION">Question</span></span><a href="#question" class="header-anchor">#</a></h3><blockquote>
+<p>In your implementation of env_run() you should have called lcr3(). Before and after the call to lcr3(), your code makes references (at least it should) to the variable e, the argument to env_run. Upon loading the %cr3 register, the addressing context used by the MMU is instantly changed. But a virtual address (namely e) has meaning relative to a given address context–the address context specifies the physical address to which the virtual address maps. Why can the pointer e be dereferenced both before and after the addressing switch?</p>
+</blockquote>
+<p>因为不仅高于KERNBASE之上的映射关系在任何Environment都是一样的，并且Read-Only Environment也是一样的。</p>
+<blockquote>
+<p>Whenever the kernel switches from one environment to another, it must ensure the old environment’s registers are saved so they can be restored properly later. Why? Where does this happen?</p>
+</blockquote>
+<p>这样才能在Environment发生切换的时候恢复到该Environment进入Trap前的一样状态。很明显，这种保存是发生在kern/trap.c:trap中的<code>curenv-&gt;env_tf = *tf</code>，当此次Trap是由用户态触发的时候，将trap frame完整保存到curenv-&gt;env_tf中，这样在env_pop_tf时，就能恢复现场了：</p>
+<hr>
+<h3><span id="challenge-extend-more-complex-scheduling-policy"><span id="OSELAB4_A.6.CHALLENGE">Challenge : Extend More Complex Scheduling Policy</span></span><a href="#challenge-extend-more-complex-scheduling-policy" class="header-anchor">#</a></h3><h4><span id="fixed-priority-scheduler"><span id="OSELAB4_A.6.CHALLENGE.FPS">Fixed-Priority Scheduler</span></span><a href="#fixed-priority-scheduler" class="header-anchor">#</a></h4><p>在Env中增加<code>unsigned env_priority</code>，值越小代表被调度的优先级越高：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">sched_yield(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">uint32_t</span> curenvIndex = (curenv?ENVX(curenv-&gt;env_id):<span class="hljs-number">0</span>), offset; <span class="hljs-comment">// curenv might be NULL!</span></span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Env</span> *<span class="hljs-title">envCandidate</span> = <span class="hljs-title">NULL</span>;</span></span><br><span class="line">	<span class="hljs-keyword">for</span>(offset = <span class="hljs-number">0</span>; offset &lt; NENV; ++offset)&#123;</span><br><span class="line">		<span class="hljs-keyword">uint32_t</span> realIndex = (curenvIndex + offset) % NENV;</span><br><span class="line">		<span class="hljs-keyword">if</span>(envs[realIndex].env_status == ENV_RUNNABLE &amp;&amp; (!envCandidate || envs[realIndex].env_priority &lt; envCandidate-&gt;env_priority))&#123;</span><br><span class="line">			envCandidate = &amp;envs[realIndex];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-comment">// switch to the greatest-priority runnable environment.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>(curenv &amp;&amp; curenv-&gt;env_status == ENV_RUNNING &amp;&amp; (!envCandidate || curenv-&gt;env_priority &lt; envCandidate-&gt;env_priority))&#123;</span><br><span class="line">		cprintf(<span class="hljs-string">"envid@%04x with priority@%d will yield to envid@%04x with priority@%d\n"</span>, curenv-&gt;env_id, curenv-&gt;env_priority, curenv-&gt;env_id, curenv-&gt;env_priority);</span><br><span class="line">		env_run(curenv);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">if</span>(envCandidate)&#123;</span><br><span class="line">		cprintf(<span class="hljs-string">"envid@%04x with priority@%d will yield to envid@%04x with priority@%d\n"</span>, curenv?curenv-&gt;env_id:<span class="hljs-number">-1</span>, curenv?curenv-&gt;env_priority:<span class="hljs-number">-1</span>, envCandidate-&gt;env_id, envCandidate-&gt;env_priority);</span><br><span class="line">		env_run(envCandidate);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// sched_halt never returns</span></span><br><span class="line">	sched_halt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，还需要实现能够改变Environment的调度优先级的系统调用<code>sys_env_set_priority</code>，相应的，需要修改syscall.h，增加枚举值SYS_env_set_priority。</p>
+<p>完整的实现和测试程序可参见<a href="https://github.com/QinStaunch/MIT-6.828" target="_blank" rel="noopener">Github:YanTang Qin</a>的lab4WithPrioritySched分支:</p>
+<ul>
+<li>将项目克隆至本地：<code>git clone https://github.com/QinStaunch/MIT-6.828.git MIT-6.828</code></li>
+<li>切换到lab4WithPrioritySched分支：<code>git checkout lab4WithPrioritySched</code></li>
+<li>将其与lab4分支比较可快速找到修改的地方：<code>git diff lab4</code></li>
+</ul>
+<hr>
+<h2><span id="exercise-7"><span id="OSELAB4_A.7">Exercise 7</span></span><a href="#exercise-7" class="header-anchor">#</a></h2><p>这部分的实现不难，篇幅原因，代码实现见<a href="https://github.com/QinStaunch/MIT-6.828" target="_blank" rel="noopener">Github:YanTang Qin</a>的Master分支</p>
+<hr>
+<h1><span id="part-b-copy-on-write-fork"><span id="OSELAB4_B">Part B : Copy-on-Write Fork</span></span><a href="#part-b-copy-on-write-fork" class="header-anchor">#</a></h1><hr>
+<p>不同于Unix的fork，JOS在用户地址空间环境下来处理由于写时复制机制而产生的缺页异常，换而言之，最终这种缺页异常的处理会由内核态的page_fault_handler(kern/trap.c)最终转移到用户地址空间中指定的page fault handler(例如后面的Exercise要实现的pgfault(lib/fork.c))，并且在调用完用户地址空间中的page fault handler之后，还需要把控制最终转移回触发这次page fault的用户程序指令，而这是通过_pgfault_upcall(lib/pfentry.S)来实现的。整个的Control Flow如下所示(省略了一些函数调用)：</p>
+<figure class="highlight gherkin hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">+-----------------+  +------------------+  +----------------------------------+  +---------------------------+</span><br><span class="line">|<span class="hljs-string">procedure or task</span>|<span class="hljs-string">=&gt;</span>|<span class="hljs-string">processor hardware</span>|<span class="hljs-string">=&gt;</span>|<span class="hljs-string">pageFaultHandler(kern/trapentry.S)</span>|<span class="hljs-string">=&gt;</span>|<span class="hljs-string">_alltraps(kern/trapentry.S)</span>|</span><br><span class="line">+-----------------+  +------------------+  +----------------------------------+  +---------------------------+</span><br><span class="line">                                                                                                 |</span><br><span class="line"><span class="hljs-string">+---------------------------------+  +----------------------------+  +-------------------+       </span>|</span><br><span class="line">|<span class="hljs-string"> page_fault_handler(kern/trap.c) </span>|<span class="hljs-string">&lt;=</span>|<span class="hljs-string"> trap_dispatch(kern/trap.c) </span>|<span class="hljs-string">&lt;=</span>|<span class="hljs-string"> trap(kern/trap.c) </span>|<span class="hljs-string">&lt;=======</span></span><br><span class="line"><span class="hljs-string">+---------------------------------+  +----------------------------+  +-------------------+</span></span><br><span class="line"><span class="hljs-string">              </span>|</span><br><span class="line">              V</span><br><span class="line">+--------------------------------+  +-------------------------------------------------+  ——</span><br><span class="line">|<span class="hljs-string"> _pgfault_upcall(lib/pfentry.S) </span>|<span class="hljs-string">=&gt;</span>|<span class="hljs-string"> _pgfault_handler(Specified By User Environment) </span>|<span class="hljs-string">    </span>|<span class="hljs-string">-&gt; Happend in user address space.</span></span><br><span class="line"><span class="hljs-string">+--------------------------------+  +-------------------------------------------------+  ——</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-8"><span id="OSELAB4_B.8">Exercise 8</span></span><a href="#exercise-8" class="header-anchor">#</a></h2><p>因此我们需要实现一个系统调用，它能够给该Environment绑定一个_pgfault_upcall函数：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span></span><br><span class="line">sys_env_set_pgfault_upcall(<span class="hljs-keyword">envid_t</span> envid, <span class="hljs-keyword">void</span> *func)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Env</span> *<span class="hljs-title">thisEnv</span>;</span></span><br><span class="line">	<span class="hljs-keyword">if</span>(envid2env(envid, &amp;thisEnv, <span class="hljs-number">1</span>) &lt; <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> -E_BAD_ENV;</span><br><span class="line">	thisEnv-&gt;env_pgfault_upcall = func;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-9"><span id="OSELAB4_B.9">Exercise 9</span></span><a href="#exercise-9" class="header-anchor">#</a></h2><p>使用专门的User Exception Stack来处理page fault，为了能够在处理完page fault之后能够恢复现场(这一次不是通过调用env_run之后的env_pop_tf来恢复现场了，因为env_run用来进入_pgfault_upcall(lib/pfentry.S)用户程序了！)，我们需要在User Exception Stack上构造User Trap Frame。由于page fault可能递归触发，因此我们构造User Trap Frame时需要检测trap-time esp是否已经在User Exception Stack上了，并且针对这种情况，我们需要额外预留4字节的空间以便后续将trap-time eip保存到这预留的4字节空间中，只有这样才能在调用<code>ret</code>指令的时候，将trap-time eip从栈中弹出到%eip中，才能实现从触发此次page fault的指令开始执行的效果！</p>
+<p>你可能会有这样的疑问，为什么第一次在User Exception Stack上构造User Trap Frame时不需要预留4字节的空间？因为User Exception Stack栈顶的UTF的trap-time esp的值实际上是属于User Normal Stack的！因此我们保存的trap-time eip实际上后来被我们保存到了User Normal Stack上，而在调用<code>ret</code>指令之前，我们首先会把trap-time esp - 4恢复到寄存器%esp中，这样的话，当我们再调用<code>ret</code>指令时，栈指针实际上就指向了返回地址！</p>
+<p>下面是完整图解，如果你不是很明白，请多看几遍，否则后续的代码，你会感觉到很疑惑！</p>
+<figure class="highlight applescript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">+<span class="hljs-comment">------------------+ &lt;- UXSTACKTOP.                  ---</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> esp    |                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+                                   |</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> eflags |                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+                                   |</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> eip    |                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+ &lt;- Start of struct PushRegs.      |</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> ecx    |                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+                                   |</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> edx    |                                   \</span><br><span class="line">+<span class="hljs-comment">------------------+                                    \ Last User-Trap-Frame</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> esp    |                                    /</span><br><span class="line">+<span class="hljs-comment">------------------+                                   /</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> ebp    |                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+                                   |</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> esi    |                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+                                   |</span></span><br><span class="line">| trap-<span class="hljs-built_in">time</span> edi    |                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+ &lt;- End of struct PushRegs.        |</span></span><br><span class="line">| tf_err:<span class="hljs-keyword">error</span> code|                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+                                   |</span></span><br><span class="line">| fault_va         |                                   |</span><br><span class="line">+<span class="hljs-comment">------------------+ &lt;- %esp(@) when handler is run. ---</span></span><br><span class="line">|                  | &lt;==</span><br><span class="line">+<span class="hljs-comment">------------------+   | After we have called _pgfault_handler specified by user environment,</span></span><br><span class="line">| *trap-<span class="hljs-built_in">time</span> esp   |   | we have <span class="hljs-keyword">to</span> store *trap-<span class="hljs-built_in">time</span> eip <span class="hljs-keyword">to</span> address %esp(@) - <span class="hljs-number">4.</span>Up <span class="hljs-keyword">to</span> this point,</span><br><span class="line">+<span class="hljs-comment">------------------+   | upon we have restored necessary status or registers of the User-Trap-Frame</span></span><br><span class="line">| *trap-<span class="hljs-built_in">time</span> eflags|   | such <span class="hljs-keyword">as</span> PushRegs <span class="hljs-keyword">and</span> eflags register,we could use instruction <span class="hljs-string">"ret"</span> <span class="hljs-keyword">to</span> pop</span><br><span class="line">+<span class="hljs-comment">------------------+   | the *trap-time eip we have stored before to register %eip.In other words,</span></span><br><span class="line">| *trap-<span class="hljs-built_in">time</span> eip   | === <span class="hljs-keyword">that</span> <span class="hljs-keyword">is</span> also <span class="hljs-keyword">the</span> reason why we need <span class="hljs-keyword">to</span> store *trap-<span class="hljs-built_in">time</span> eip <span class="hljs-keyword">to</span> %esp(@) <span class="hljs-number">-4.</span></span><br><span class="line">+~~~~~~~~~~~~~~~~~~+</span><br><span class="line">| ................ |</span><br><span class="line">+~~~~~~~~~~~~~~~~~~+</span><br></pre></td></tr></table></figure>
+
+<p>Exercise 9实际上就是要我们完成User trap frame的构造，以及把控制转移到用户程序_pgfault_upcall，以及完成从User Normal Stack到User Exceptiob Stack的切换：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">page_fault_handler(struct Trapframe *tf)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">uint32_t</span> fault_va;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Read processor's CR2 register to find the faulting address</span></span><br><span class="line">	fault_va = rcr2();</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Handle kernel-mode page faults.Beacuse it should never triger page fault in kernel-mode,just panic!</span></span><br><span class="line">	<span class="hljs-keyword">if</span>((tf-&gt;tf_cs &amp; <span class="hljs-number">3</span>) == <span class="hljs-number">0</span>)&#123;</span><br><span class="line">		panic(<span class="hljs-string">":( Your kernel triger a page fault at va@0x%08x !Bad kernel"</span>, fault_va);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// We've already handled kernel-mode exceptions, so if we get here,</span></span><br><span class="line">	<span class="hljs-comment">// the page fault happened in user mode.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>(curenv-&gt;env_pgfault_upcall)&#123;</span><br><span class="line">		<span class="hljs-comment">// exist env_pgfault_upcall.</span></span><br><span class="line">		<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">UTrapframe</span> *<span class="hljs-title">utf</span>;</span></span><br><span class="line">		<span class="hljs-keyword">if</span>(tf-&gt;tf_esp &gt;= (UXSTACKTOP - PGSIZE) &amp;&amp; tf-&gt;tf_esp &lt;= (UXSTACKTOP - <span class="hljs-number">1</span>))&#123;</span><br><span class="line">			<span class="hljs-comment">// the user environment is already running on the exception stack when an exception occurs.</span></span><br><span class="line">			<span class="hljs-comment">// Thus,we should start the new stack frame just under the tf-&gt;tf_esp.We have to push a word</span></span><br><span class="line">			<span class="hljs-comment">// at the top of the trap-time stack as a scratch space.</span></span><br><span class="line">			utf = (struct UTrapframe *)(tf-&gt;tf_esp - <span class="hljs-number">4</span> - <span class="hljs-keyword">sizeof</span>(struct UTrapframe));</span><br><span class="line">		&#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">			utf = (struct UTrapframe *)(UXSTACKTOP- <span class="hljs-keyword">sizeof</span>(struct UTrapframe));</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="hljs-comment">// 1.We have to check whether the environment allocate a page with permissions PTE_W for its exception</span></span><br><span class="line">		<span class="hljs-comment">// stack and whether the exception stack overflows.</span></span><br><span class="line">		<span class="hljs-comment">// 2.Set size to 1 is enough here,because the user environment exception stack's size is only on page,</span></span><br><span class="line">		<span class="hljs-comment">// user_mem_assert function will definitely fail as long as the utf's virtual address is already lower</span></span><br><span class="line">		<span class="hljs-comment">// than UXSTACKTOP-PGSIZE.Actually,any value between 1 and sizeof(struct UTrapFrame) is okay here.</span></span><br><span class="line">		<span class="hljs-comment">// 3.if user_mem_assert fail,this function will not return,just invoke env_destroy and sys_yield.</span></span><br><span class="line">		user_mem_assert(curenv, (<span class="hljs-keyword">void</span> *)utf, <span class="hljs-number">1</span>, PTE_W);</span><br><span class="line">		<span class="hljs-comment">// now we can construct UTrapFrame.</span></span><br><span class="line">		utf-&gt;utf_esp = tf-&gt;tf_esp;</span><br><span class="line">		utf-&gt;utf_eflags = tf-&gt;tf_eflags;</span><br><span class="line">		utf-&gt;utf_eip = tf-&gt;tf_eip;</span><br><span class="line">		utf-&gt;utf_regs = tf-&gt;tf_regs;</span><br><span class="line">		utf-&gt;utf_err = tf-&gt;tf_err;</span><br><span class="line">		utf-&gt;utf_fault_va = fault_va;</span><br><span class="line">		<span class="hljs-comment">// then branch to curenv-&gt;env_pgfault_upcall.</span></span><br><span class="line">		curenv-&gt;env_tf.tf_eip = (<span class="hljs-keyword">uintptr_t</span>)curenv-&gt;env_pgfault_upcall;</span><br><span class="line">		<span class="hljs-comment">// Don't forget set stack pointer.</span></span><br><span class="line">		curenv-&gt;env_tf.tf_esp = (<span class="hljs-keyword">uintptr_t</span>)utf;</span><br><span class="line">		env_run(curenv); <span class="hljs-comment">// never return.</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Destroy the environment that caused the fault.</span></span><br><span class="line">	cprintf(<span class="hljs-string">"[%08x] user fault va %08x ip %08x\n"</span>,</span><br><span class="line">		curenv-&gt;env_id, fault_va, tf-&gt;tf_eip);</span><br><span class="line">	print_trapframe(tf);</span><br><span class="line">	env_destroy(curenv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-10"><span id="OSELAB4_B.10">Exercise 10</span></span><a href="#exercise-10" class="header-anchor">#</a></h2><p>主要完成恢复现场的工作，细节部分在Exercise 9中已经讨论，这里不再赘述：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">.text</span><br><span class="line">.globl _pgfault_upcall</span><br><span class="line">_pgfault_upcall:</span><br><span class="line">	// Call the C page fault handler.</span><br><span class="line">	pushl %esp			// function argument: pointer to UTF</span><br><span class="line">	movl _pgfault_handler, %eax</span><br><span class="line">	call *%eax</span><br><span class="line">	addl $4, %esp			// pop function argument</span><br><span class="line">	</span><br><span class="line">	// Now the C page fault handler has returned and you must return</span><br><span class="line">	// to the trap time state.</span><br><span class="line">	// Push trap-time %eip onto the trap-time stack.</span><br><span class="line"></span><br><span class="line">	movl 0x28(%esp), %eax   // UTrapFrame.utf_eip</span><br><span class="line">	subl $4, 0x30(%esp)     // UTrapFrame.utf_esp - 4</span><br><span class="line">	movl 0x30(%esp), %edx   // Set register %edx to UTrapFrame.utf_esp - 4</span><br><span class="line">	movl %eax, (%edx)</span><br><span class="line"></span><br><span class="line">	addl $0x8, %esp         // Set %esp to the end of struct PushRegs,see more details at inc/trap.h</span><br><span class="line">	popal                   // Restore the trap-time registers.(struct PushRegs)</span><br><span class="line"></span><br><span class="line">	addl $0x4, %esp         // now we are located at trap-time eip,so we have to increment %esp with 4.</span><br><span class="line">	popfl                   // Restore eflags register.</span><br><span class="line"></span><br><span class="line">	popl %esp               // Just restore the adjusted trap-time stack pointer.</span><br><span class="line"></span><br><span class="line">	ret                     // We are now on the trap-time stack,since we have saved trap-time eip above</span><br><span class="line">		                    // trap-time esp,ret instruction will pop this trap-time eip to register %eip</span><br><span class="line">                            // which known as PC at this time.Thus,we can return to re-execute the instruction</span><br><span class="line">                            // that faulted.</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-11"><span id="OSELAB4_B.11">Exercise 11</span></span><a href="#exercise-11" class="header-anchor">#</a></h2><p>实现不难，篇幅有限，具体实现见<a href="https://github.com/QinStaunch/MIT-6.828" target="_blank" rel="noopener">Github:YanTang Qin</a>的Master分支</p>
+<hr>
+<h2><span id="exercise-12"><span id="OSELAB4_B.12">Exercise 12</span></span><a href="#exercise-12" class="header-anchor">#</a></h2><p>实现不难，篇幅有限，具体实现见<a href="https://github.com/QinStaunch/MIT-6.828" target="_blank" rel="noopener">Github:YanTang Qin</a>的Master分支</p>
+<hr>
+<h3><span id="challenge-implement-shared-memory-sfork"><span id="OSELAB4_B.12.CHALLENGE">Challenge : Implement Shared-Memory sfork</span></span><a href="#challenge-implement-shared-memory-sfork" class="header-anchor">#</a></h3><p>【注：我在实现这个时，已经完成了LAB4，所以我是用IPC测试的】除了User Normal Stack需要被标记为Copy-On-Write之外，实现上简单来想就只需要复制Address Space，并且把Parent Environment和Child Environment都标记上PTE_W权限应该就没问题了，但是除此之外，这里有一个trick，如果仅仅只是这样的实现，<code>make run-pingpongs</code>会发生死锁： <div align="center"><img src="https://s2.ax1x.com/2020/01/23/1VpicD.png" alt="图 12-1 pingpongs可能发生死锁"></div><strong>可以发现thisenv没有更新，最后Environment 1000不断尝试通过IPC向Environment 1001发送数据，同时，Environment 1000也标记自己需要接受数据，这必然产生死锁！</strong>其根本原因就在于sfork是共享内存的，也就意味着在pingpongs调用sfork时把thisenv指向了Child Environment之后，不管是在parent environment还是child environment中，thisenv都是一直指向Child Environment。</p>
+<p>解决办法也很简单，修改lib/ipc.c中<code>int32_t ipc_recv(envid_t *from_env_store, void *pg, int *perm_store)</code>，在其调用完<code>sys_ipc_recv</code>之后修改thienv的指向就可以了：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">int32_t</span></span><br><span class="line">ipc_recv(<span class="hljs-keyword">envid_t</span> *from_env_store, <span class="hljs-keyword">void</span> *pg, <span class="hljs-keyword">int</span> *perm_store)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">int</span> error;</span><br><span class="line">	<span class="hljs-keyword">if</span>(!pg)pg = (<span class="hljs-keyword">void</span> *)UTOP; <span class="hljs-comment">// see more details in kern/syscall.c:sys_ipc_try_send and sys_ipc_recv.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>((error = sys_ipc_recv(pg)) &lt; <span class="hljs-number">0</span>)&#123;</span><br><span class="line">		<span class="hljs-keyword">if</span>(from_env_store)*from_env_store = <span class="hljs-number">0</span>;</span><br><span class="line">		<span class="hljs-keyword">if</span>(perm_store)*perm_store = <span class="hljs-number">0</span>;</span><br><span class="line">		<span class="hljs-keyword">return</span> error;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	thisenv = &amp;envs[ENVX(sys_getenvid())]; <span class="hljs-comment">// (*)for lab4's challenge sfork().</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">if</span>(from_env_store)*from_env_store = thisenv-&gt;env_ipc_from;</span><br><span class="line">	<span class="hljs-keyword">if</span>(perm_store)*perm_store = thisenv-&gt;env_ipc_perm;</span><br><span class="line">	<span class="hljs-keyword">return</span> thisenv-&gt;env_ipc_value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于普通fork，直接用thisenv不会出错，因为普通fork实现了Copy-On-Write机制，而sfork是共享内存，因此需要加上<code>thisenv = &amp;envs[ENVX(sys_getenvid())]</code>才能确保IPC机制的正确性，但是不使用IPC时，parent environment调用sfork之后，thisenv指针也同样指向child environment，对此我没想到好的解决办法，因为是完全共享内存的，但是每次使用thisenv时，通过系统调用<code>sys_getenvid</code>来获得当前环境指针的方式是绝对不会出错的。</p>
+<p>修改之后<code>make run-pingpongs</code>不再死锁，正常运行： <div align="center"><img src="https://s2.ax1x.com/2020/01/23/1ViRdH.png" alt="图 12-2 修改ipc_recv之后，pingpongs不再死锁"></div>篇幅有限，sfork的具体实现见<a href="https://github.com/QinStaunch/MIT-6.828" target="_blank" rel="noopener">Github:YanTang Qin</a>的Master分支。</p>
+<hr>
+<h1><span id="part-c-preemptive-multitasking-and-inter-process-communication-ipc"><span id="OSELAB4_C">Part C : Preemptive Multitasking and Inter-Process Communication(IPC)</span></span><a href="#part-c-preemptive-multitasking-and-inter-process-communication-ipc" class="header-anchor">#</a></h1><hr>
+<h2><span id="exercise-13"><span id="OSELAB4_C.13">Exercise 13</span></span><a href="#exercise-13" class="header-anchor">#</a></h2><p>让JOS支持时钟中断，这样即便某个Environment没有自愿放弃CPU，也能够响应时钟中断从而Scheduler能够调度其它Environment运行，以防出现“饿死”的现象。</p>
+<p>实现不难，篇幅有限，具体实现见<a href="https://github.com/QinStaunch/MIT-6.828" target="_blank" rel="noopener">Github:YanTang Qin</a>的Master分支</p>
+<p>但是千万记得要修改sched_halt()被注释掉的sti指令，这个疏漏导致我后来花了一个小时来排除bug！</p>
+<hr>
+<h2><span id="exercise-14"><span id="OSELAB4_C.14">Exercise 14</span></span><a href="#exercise-14" class="header-anchor">#</a></h2><p>内核代码需要对时钟中断进行处理，调用之前实现的sched_yield即可：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span>(tf-&gt;tf_trapno == (IRQ_OFFSET + IRQ_TIMER))&#123;</span><br><span class="line">	lapic_eoi();</span><br><span class="line">	sched_yield();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-15"><span id="OSELAB4_C.15">Exercise 15</span></span><a href="#exercise-15" class="header-anchor">#</a></h2><p>JOS实现IPC的方式是发送页面以及在struct Env中预留的一个可以存放需要传送的env_ipc_value：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span></span><br><span class="line">sys_ipc_try_send(<span class="hljs-keyword">envid_t</span> envid, <span class="hljs-keyword">uint32_t</span> value, <span class="hljs-keyword">void</span> *srcva, <span class="hljs-keyword">unsigned</span> perm)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Env</span> *<span class="hljs-title">receiverEnv</span>, *<span class="hljs-title">currentEnv</span>;</span></span><br><span class="line">	<span class="hljs-keyword">int32_t</span> error, leastPerm = (PTE_U | PTE_P);</span><br><span class="line">	<span class="hljs-comment">// obtain current environment.</span></span><br><span class="line">	envid2env(<span class="hljs-number">0</span>, &amp;currentEnv, <span class="hljs-number">0</span>);</span><br><span class="line">	assert(currentEnv);</span><br><span class="line">	<span class="hljs-comment">// Environment envid doesn't currently exist.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>((error = envid2env(envid, &amp;receiverEnv, <span class="hljs-number">0</span>)) &lt; <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> error;</span><br><span class="line">	<span class="hljs-comment">// Envid is not currently blocked in sys_ipc_recv or another enviironment managed to send first.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>(!receiverEnv-&gt;env_ipc_recving)<span class="hljs-keyword">return</span> -E_IPC_NOT_RECV;</span><br><span class="line">	<span class="hljs-comment">// Need to send page currently mapped at 'srcva'.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>((<span class="hljs-keyword">uintptr_t</span>)srcva &lt; UTOP)&#123;</span><br><span class="line">		<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">PageInfo</span> *<span class="hljs-title">pageInfo</span>;</span></span><br><span class="line">		<span class="hljs-keyword">pte_t</span> *pte;</span><br><span class="line">		<span class="hljs-comment">// srcva is not page-aligned.</span></span><br><span class="line">		<span class="hljs-keyword">if</span>(((<span class="hljs-keyword">uintptr_t</span>)srcva &amp; (PGSIZE - <span class="hljs-number">1</span>)))<span class="hljs-keyword">return</span> -E_INVAL;</span><br><span class="line">		<span class="hljs-comment">// Permissions deny.</span></span><br><span class="line">		<span class="hljs-keyword">if</span>((<span class="hljs-keyword">int32_t</span>)(leastPerm &amp; perm) != leastPerm || (perm &amp; (~PTE_SYSCALL)))<span class="hljs-keyword">return</span> -E_INVAL;</span><br><span class="line">		<span class="hljs-comment">// srcva is not mapped in the caller's address space.</span></span><br><span class="line">		<span class="hljs-keyword">if</span>(!(pageInfo = page_lookup(currentEnv-&gt;env_pgdir, srcva, &amp;pte)))<span class="hljs-keyword">return</span> -E_INVAL;</span><br><span class="line">		<span class="hljs-comment">// if(perm &amp; PTE_W),but srcva is read-only in the current environment's address space.</span></span><br><span class="line">		<span class="hljs-keyword">if</span>((perm &amp; PTE_W) &amp;&amp; !((*pte) &amp; PTE_W))<span class="hljs-keyword">return</span> -E_INVAL;</span><br><span class="line">		<span class="hljs-keyword">if</span>((<span class="hljs-keyword">uintptr_t</span>)receiverEnv-&gt;env_ipc_dstva &lt; UTOP)&#123;</span><br><span class="line">			<span class="hljs-keyword">if</span>((error = page_insert(receiverEnv-&gt;env_pgdir, pageInfo, receiverEnv-&gt;env_ipc_dstva, perm)) &lt; <span class="hljs-number">0</span>)<span class="hljs-keyword">return</span> error;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-comment">// restore status.</span></span><br><span class="line">	receiverEnv-&gt;env_ipc_recving = <span class="hljs-number">0</span>;</span><br><span class="line">	receiverEnv-&gt;env_ipc_value = value;</span><br><span class="line">	receiverEnv-&gt;env_ipc_from = currentEnv-&gt;env_id;</span><br><span class="line">	receiverEnv-&gt;env_ipc_perm = perm;</span><br><span class="line">	<span class="hljs-comment">// Then we should mark the receiver environment as ENV_RUNNABLE.</span></span><br><span class="line">	receiverEnv-&gt;env_status = ENV_RUNNABLE;</span><br><span class="line">	<span class="hljs-comment">// Return 0 from the paused sys_env_recv system call.</span></span><br><span class="line">	<span class="hljs-comment">// Howerver,the corresponding sys_ipc_recv function will never return,so we need to modify receiver's environment's trapframe.</span></span><br><span class="line">	receiverEnv-&gt;env_tf.tf_regs.reg_eax = <span class="hljs-number">0</span>;</span><br><span class="line">	<span class="hljs-comment">// sys_ipc_try_send could return 0.</span></span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span></span><br><span class="line">sys_ipc_recv(<span class="hljs-keyword">void</span> *dstva)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">if</span>((<span class="hljs-keyword">uintptr_t</span>)dstva &lt; UTOP &amp;&amp; (<span class="hljs-keyword">uintptr_t</span>)dstva &amp; (PGSIZE - <span class="hljs-number">1</span>))<span class="hljs-keyword">return</span> -E_INVAL;</span><br><span class="line">	<span class="hljs-comment">// Willing wo receive a page of data.</span></span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Env</span> *<span class="hljs-title">currentEnv</span>;</span></span><br><span class="line">	envid2env(<span class="hljs-number">0</span>, &amp;currentEnv, <span class="hljs-number">0</span>);</span><br><span class="line">	assert(currentEnv);</span><br><span class="line"></span><br><span class="line">	currentEnv-&gt;env_status = ENV_NOT_RUNNABLE;</span><br><span class="line">	currentEnv-&gt;env_ipc_recving = <span class="hljs-number">1</span>;</span><br><span class="line">	currentEnv-&gt;env_ipc_dstva = dstva;</span><br><span class="line">	sys_yield();</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>; <span class="hljs-comment">// eliminate compile error.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>并且需要实现lib中封装的ipc_send和ipc_recv:</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">int32_t</span></span><br><span class="line">ipc_recv(<span class="hljs-keyword">envid_t</span> *from_env_store, <span class="hljs-keyword">void</span> *pg, <span class="hljs-keyword">int</span> *perm_store)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">int</span> error;</span><br><span class="line">	<span class="hljs-keyword">if</span>(!pg)pg = (<span class="hljs-keyword">void</span> *)UTOP; <span class="hljs-comment">// see more details in kern/syscall.c:sys_ipc_try_send and sys_ipc_recv.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>((error = sys_ipc_recv(pg)) &lt; <span class="hljs-number">0</span>)&#123;</span><br><span class="line">		<span class="hljs-keyword">if</span>(from_env_store)*from_env_store = <span class="hljs-number">0</span>;</span><br><span class="line">		<span class="hljs-keyword">if</span>(perm_store)*perm_store = <span class="hljs-number">0</span>;</span><br><span class="line">		<span class="hljs-keyword">return</span> error;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	thisenv = &amp;envs[ENVX(sys_getenvid())]; <span class="hljs-comment">// for lab4's challenge sfork().</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">if</span>(from_env_store)*from_env_store = thisenv-&gt;env_ipc_from;</span><br><span class="line">	<span class="hljs-keyword">if</span>(perm_store)*perm_store = thisenv-&gt;env_ipc_perm;</span><br><span class="line">	<span class="hljs-keyword">return</span> thisenv-&gt;env_ipc_value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">ipc_send(<span class="hljs-keyword">envid_t</span> to_env, <span class="hljs-keyword">uint32_t</span> val, <span class="hljs-keyword">void</span> *pg, <span class="hljs-keyword">int</span> perm)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">if</span>(!pg)pg = (<span class="hljs-keyword">void</span> *)UTOP; <span class="hljs-comment">// see more details in kern/syscall.c:sys_ipc_try_send</span></span><br><span class="line">	<span class="hljs-keyword">int</span> error;</span><br><span class="line">	<span class="hljs-comment">// Keep trying until it succeeds.</span></span><br><span class="line">	<span class="hljs-keyword">while</span>((error = sys_ipc_try_send(to_env, val, pg, perm)) &lt; <span class="hljs-number">0</span>)&#123;</span><br><span class="line">		<span class="hljs-keyword">if</span>(error != -E_IPC_NOT_RECV)&#123;</span><br><span class="line">			panic(<span class="hljs-string">"sys_ipc_try_send:%e"</span>, error);</span><br><span class="line">		&#125;</span><br><span class="line">		sys_yield(); <span class="hljs-comment">// To be CPU-friendly.</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1><span id="test"><span id="OSELAB4_TEST">TEST</span></span><a href="#test" class="header-anchor">#</a></h1><hr>
+<figure class="highlight angelscript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">dumbfork: OK (<span class="hljs-number">1.8</span>s) </span><br><span class="line">Part A score: <span class="hljs-number">5</span>/<span class="hljs-number">5</span></span><br><span class="line"></span><br><span class="line">faultread: OK (<span class="hljs-number">1.6</span>s) </span><br><span class="line">faultwrite: OK (<span class="hljs-number">2.1</span>s) </span><br><span class="line">faultdie: OK (<span class="hljs-number">3.8</span>s) </span><br><span class="line">faultregs: OK (<span class="hljs-number">2.0</span>s) </span><br><span class="line">faultalloc: OK (<span class="hljs-number">3.1</span>s) </span><br><span class="line">faultallocbad: OK (<span class="hljs-number">1.9</span>s) </span><br><span class="line">faultnostack: OK (<span class="hljs-number">2.2</span>s) </span><br><span class="line">faultbadhandler: OK (<span class="hljs-number">2.2</span>s) </span><br><span class="line">faultevilhandler: OK (<span class="hljs-number">2.0</span>s) </span><br><span class="line">forktree: OK (<span class="hljs-number">2.1</span>s) </span><br><span class="line">Part B score: <span class="hljs-number">50</span>/<span class="hljs-number">50</span></span><br><span class="line"></span><br><span class="line">spin: OK (<span class="hljs-number">1.9</span>s) </span><br><span class="line">stresssched: OK (<span class="hljs-number">2.5</span>s) </span><br><span class="line">sendpage: OK (<span class="hljs-number">1.6</span>s) </span><br><span class="line">pingpong: OK (<span class="hljs-number">2.0</span>s) </span><br><span class="line">primes: OK (<span class="hljs-number">5.4</span>s) </span><br><span class="line">Part C score: <span class="hljs-number">25</span>/<span class="hljs-number">25</span></span><br><span class="line"></span><br><span class="line">Score: <span class="hljs-number">80</span>/<span class="hljs-number">80</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1><span id="references"><div align="center"><span id="OSELAB4_REFERENCES">REFERENCES</span></div></span><a href="#references" class="header-anchor">#</a></h1><p>【1】 <a href="https://pdos.csail.mit.edu/6.828/2018/readings/ia32/IA32-3A.pdf" target="_blank" rel="noopener">Intel® 64 and IA-32 Architectures Software Developer’s Manual</a><br>【2】 Liedtke, Jochen. Improving IPC by kernel design[J]. ACM SIGOPS Operating Systems Review, 1993, 27(5):175-188.<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.158.4191&rep=rep1&type=pdf" target="_blank" rel="noopener">PDF</a></p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/MIT6-828/">MIT6.828</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">MIT-6.828-LAB5 File system,Spawn and Shell</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/01/16/MIT-6-828-LAB3-User-Environments/">
+                <span class="level-item">MIT-6.828-LAB3 User Environments</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>Contents#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>Part A:Multiprocessor Support and Cooperative Mutitasking#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1</span>
+        <span>Exercise 1#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.2</span>
+        <span>Exercise 2#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.2.1</span>
+        <span>Question#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.3</span>
+        <span>Exercise 3#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.4</span>
+        <span>Exercise 4#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.5</span>
+        <span>Exercise 5#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.5.1</span>
+        <span>Question#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.6</span>
+        <span>Exercise 6 : Round-Robin Scheduling#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.6.1</span>
+        <span>Question#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.6.2</span>
+        <span>Challenge : Extend More Complex Scheduling Policy#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.7</span>
+        <span>Exercise 7#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>Part B : Copy-on-Write Fork#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.1</span>
+        <span>Exercise 8#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.2</span>
+        <span>Exercise 9#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.3</span>
+        <span>Exercise 10#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.4</span>
+        <span>Exercise 11#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.5</span>
+        <span>Exercise 12#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.5.1</span>
+        <span>Challenge : Implement Shared-Memory sfork#</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>Part C : Preemptive Multitasking and Inter-Process Communication(IPC)#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.1</span>
+        <span>Exercise 13#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.2</span>
+        <span>Exercise 14#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.3</span>
+        <span>Exercise 15#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">5</span>
+        <span>TEST#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6</span>
+        <span>REFERENCES#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB3 User Environments">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time></div>
+                    <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB3 User Environments</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB2 Memory Management">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time></div>
+                    <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB2 Memory Management</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
+                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="MIT-6.828-LAB4 Preemptive Multitasking" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

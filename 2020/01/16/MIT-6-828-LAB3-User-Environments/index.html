@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>MIT-6.828-LAB3 User Environments - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="Contents Part A:User Environments and Exception Handling Exercise 1 Exercise 2 Exercise 3 Exercise 4 Challenge Question     Part B:Page Faults,Breakpoint Exceptions and System Calls Exercise 5 Exercis">
+<meta name="keywords" content="MIT6.828">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT-6.828-LAB3 User Environments">
+<meta property="og:url" content="https://qinstaunch.github.io/2020/01/16/MIT-6-828-LAB3-User-Environments/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="Contents Part A:User Environments and Exception Handling Exercise 1 Exercise 2 Exercise 3 Exercise 4 Challenge Question     Part B:Page Faults,Breakpoint Exceptions and System Calls Exercise 5 Exercis">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-01-25T05:19:54.593Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MIT-6.828-LAB3 User Environments">
+<meta name="twitter:description" content="Contents Part A:User Environments and Exception Handling Exercise 1 Exercise 2 Exercise 3 Exercise 4 Challenge Question     Part B:Page Faults,Breakpoint Exceptions and System Calls Exercise 5 Exercis">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="MIT-6.828-LAB3 User Environments" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    43 分钟 读完 (大约 6429 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                MIT-6.828-LAB3 User Environments
+            
+        </h1>
+        <div class="content">
+            <h1><span id="contents"><span>Contents</span></span><a href="#contents" class="header-anchor">#</a></h1><ul>
+<li><a href="#OSELAB3_A">Part A:User Environments and Exception Handling</a><ul>
+<li><a href="#OSELAB3_A.1">Exercise 1</a></li>
+<li><a href="#OSELAB3_A.2">Exercise 2</a></li>
+<li><a href="#OSELAB3_A.3">Exercise 3</a></li>
+<li><a href="#OSELAB3_A.4">Exercise 4</a><ul>
+<li><a href="#OSELAB3_A.4.Challenge">Challenge</a></li>
+<li><a href="#OSELAB3_A.4.Question">Question</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#OSELAB3_B">Part B:Page Faults,Breakpoint Exceptions and System Calls</a><ul>
+<li><a href="#OSELAB3_B.5">Exercise 5</a></li>
+<li><a href="#OSELAB3_B.6">Exercise 6</a><ul>
+<li><a href="#OSELAB3_B.6.Challenge">Challenge</a></li>
+<li><a href="#OSELAB3_B.6.Question">Question</a></li>
+</ul>
+</li>
+<li><a href="#OSELAB3_B.7">Exercise 7</a></li>
+<li><a href="#OSELAB3_B.8">Exercise 8</a></li>
+<li><a href="#OSELAB3_B.9">Exercise 9</a></li>
+<li><a href="#OSELAB3_B.10">Exercise 10</a></li>
+</ul>
+</li>
+<li><a href="#OSELAB3_TEST">TEST</a></li>
+<li><a href="#OSELAB3_REFERENCES">REFERENCES</a></li>
+</ul>
+<a id="more"></a>
+
+<hr>
+<h1><span id="part-a-user-environments-and-exception-handling"><span id="OSELAB3_A">Part A:User Environments and Exception Handling</span></span><a href="#part-a-user-environments-and-exception-handling" class="header-anchor">#</a></h1><hr>
+<h2><span id="exercise-1"><spab id="OSELAB3_A.1">Exercise 1</spab></span><a href="#exercise-1" class="header-anchor">#</a></h2><p>同pages一样，需要在物理内存中为User Environments分配内存来保存Env信息，在Lab2中，在Boot Loader引导加载了内核数据以及代码之后，我们在其后给Kernel Page Directory和Page Info分配了物理内存。 <div align="center"><img src="https://s2.ax1x.com/2020/01/16/lj35TI.png" alt="图1 物理内存和虚拟内存映射关系示意图"></div><br>Exercise1实际上就是完成了上图Environments内存的分配，并且将其映射到了图示位置，按道理来说，envs此时应该指向Environments的起始地址，但是由于<code>boot_alloc()</code>返回的是虚拟地址，即实际的物理地址+KERNBASE，因此envs对应的实际物理内存地址需要用宏PADDR(envs)得到。（在KERNBASE之上映射了从0开始的最多2GB的物理内存空间！）<br>除此之外，还有几个细节部分：</p>
+<ul>
+<li>Kernel Page Directory的物理地址同样会保存在控制寄存器%cr3中，这样通过向%cr3控制寄存器写入不同的值，就能在User Page Directory和Kernel Page Directory之间切换了，并且能辅助实现用户环境的切换，因为正如许多操作系统课程所说，每个进程都会有一张独立的Page Directory，这也是后续的Exercise需要实现的。</li>
+<li>Cur.Page Table是每个User Program独有的Page Table，也就是说，当创建一个environment时，会使用<code>page_alloc()</code>为该environment分配一页作为其独立的Page Table，并且将其映射到UVPT，同时将这种映射关系写入到每个environment独立的Page directory中，你可能注意到，并没有地方映射每个environment的Page directory，因此需要environment自己保留相应的page directory虚拟地址，在具体实现中就是Env结构体的env_pgdir指针了。</li>
+</ul>
+<p><strong>代码实现：</strong><br>为environment分配内存：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">envs = (struct Env *)boot_alloc(<span class="hljs-keyword">sizeof</span>(struct Env) * NENV);</span><br></pre></td></tr></table></figure>
+
+<p>完成映射关系，写入kern_pgdir：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boot_map_region(kern_pgdir, UENVS, PTSIZE, PADDR(envs), (PTE_U | PTE_P));</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-2"><span id="OSELAB3_A.2">Exercise 2</span></span><a href="#exercise-2" class="header-anchor">#</a></h2><p>首先将exercise 1中分配的environments组成链表，以便后续的env的创建和销毁：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">env_init</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-comment">// Set up envs array</span></span><br><span class="line">	env_free_list = envs;</span><br><span class="line">	env_free_list-&gt;env_id = <span class="hljs-number">0</span>;</span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Env</span> *<span class="hljs-title">tail</span> = <span class="hljs-title">envs</span>, *<span class="hljs-title">start</span> = <span class="hljs-title">envs</span> + 1,  *<span class="hljs-title">end</span> = <span class="hljs-title">envs</span> + <span class="hljs-title">NENV</span>;</span></span><br><span class="line">	<span class="hljs-keyword">for</span>(;start &lt; end; ++start)&#123;</span><br><span class="line">		tail-&gt;env_link = start;</span><br><span class="line">		tail = tail-&gt;env_link;</span><br><span class="line">		tail-&gt;env_id = <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Per-CPU part of the initialization</span></span><br><span class="line">	env_init_percpu();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后，正如上面所讨论的一样，需要每个environment维护一个独立的page directory，因此首先分配一页用来存储page directory，并且直接将kern page direcotyr复制过来，但是仅允许该environment对自己的page direcory有读取权限（除此之外，就是mem_init对user给与的权限，例如图1的READ-ONLY Pages和READ-ONLY ENVS）</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">env_setup_vm</span><span class="hljs-params">(struct Env *e)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">int</span> i;</span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">PageInfo</span> *<span class="hljs-title">p</span> = <span class="hljs-title">NULL</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Allocate a page for the page directory</span></span><br><span class="line">	<span class="hljs-keyword">if</span> (!(p = page_alloc(ALLOC_ZERO)))</span><br><span class="line">		<span class="hljs-keyword">return</span> -E_NO_MEM;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Now, set e-&gt;env_pgdir and initialize the page directory.</span></span><br><span class="line">	e-&gt;env_pgdir = (<span class="hljs-keyword">pde_t</span> *)page2kva(p);</span><br><span class="line">	<span class="hljs-built_in">memcpy</span>(e-&gt;env_pgdir, kern_pgdir, PGSIZE); <span class="hljs-comment">// Just copy the kern_pgdir because they are mostly the same.</span></span><br><span class="line">	++p-&gt;pp_ref;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// UVPT maps the env's own page table read-only.</span></span><br><span class="line">	<span class="hljs-comment">// Permissions: kernel R, user R</span></span><br><span class="line">	e-&gt;env_pgdir[PDX(UVPT)] = PADDR(e-&gt;env_pgdir) | PTE_P | PTE_U;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>随后实现<code>region_alloc</code>作用和<code>boot_map_region</code>很类似，但是除了按照指定的虚拟地址建立映射关系之外，还要按照指定的大小来分配页面。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">region_alloc</span><span class="hljs-params">(struct Env *e, <span class="hljs-keyword">void</span> *va, <span class="hljs-keyword">size_t</span> len)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">void</span>* end = ROUNDUP(va + len, PGSIZE);</span><br><span class="line">	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">void</span> *start = ROUNDDOWN(va, PGSIZE); start &lt; end; start += PGSIZE)&#123;</span><br><span class="line">		<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">PageInfo</span> *<span class="hljs-title">pg</span> = <span class="hljs-title">page_alloc</span>(<span class="hljs-title">ALLOC_ZERO</span>);</span></span><br><span class="line">		<span class="hljs-keyword">if</span>(!pg)panic(<span class="hljs-string">"All pages were assigned!"</span>);</span><br><span class="line">		page_insert(e-&gt;env_pgdir, pg, start, (PTE_W | PTE_U | PTE_P));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有了<code>region_alloc</code>之后就能够完成<code>load_code</code>来完成可执行文件的加载了，但是现在还没实现文件系统，因此这里加载的是MIT提供的静态二进制文件而不是通常意义上的.o文件。这部分参考boot loader的实现即可：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">load_icode</span><span class="hljs-params">(struct Env *e, <span class="hljs-keyword">uint8_t</span> *binary)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Proghdr</span> *<span class="hljs-title">ph</span>, *<span class="hljs-title">eph</span>;</span></span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Elf</span> *<span class="hljs-title">elfHeader</span> = (<span class="hljs-title">struct</span> <span class="hljs-title">Elf</span>*)<span class="hljs-title">binary</span>;</span></span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">// is this a valid ELF?</span></span><br><span class="line">	assert(elfHeader-&gt;e_magic == ELF_MAGIC);</span><br><span class="line"></span><br><span class="line">	ph = (struct Proghdr *)(binary + elfHeader-&gt;e_phoff);</span><br><span class="line">	eph = ph + elfHeader-&gt;e_phnum;</span><br><span class="line">	</span><br><span class="line">	lcr3(PADDR(e-&gt;env_pgdir)); <span class="hljs-comment">// switch to this environment's address space.cr3 register must be physical address.</span></span><br><span class="line">	<span class="hljs-keyword">for</span>(; ph &lt; eph; ++ph)&#123;</span><br><span class="line">		<span class="hljs-keyword">if</span>(ph-&gt;p_type == ELF_PROG_LOAD)&#123;</span><br><span class="line">			<span class="hljs-comment">// assert(ph-&gt;p_filesz &lt;= ph-&gt;p_memsz);</span></span><br><span class="line">			region_alloc(e, (<span class="hljs-keyword">void</span> *)ph-&gt;p_va, ph-&gt;p_memsz);</span><br><span class="line">			<span class="hljs-built_in">memset</span>((<span class="hljs-keyword">void</span> *)ph-&gt;p_va, <span class="hljs-number">0</span>, ph-&gt;p_memsz); <span class="hljs-comment">// cleard to zero</span></span><br><span class="line">			<span class="hljs-built_in">memcpy</span>((<span class="hljs-keyword">void</span> *)ph-&gt;p_va, (<span class="hljs-keyword">void</span> *)(binary + ph-&gt;p_offset), ph-&gt;p_filesz); <span class="hljs-comment">// copy contents according to comments above.</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-comment">// set current trap frame's eip(PC) of this environment with elfHeader-&gt;e_entry to</span></span><br><span class="line">	<span class="hljs-comment">// make sure that the environment starts executing there.</span></span><br><span class="line">	e-&gt;env_tf.tf_eip = elfHeader-&gt;e_entry;</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">// Now map one page for the program's initial stack</span></span><br><span class="line">	<span class="hljs-comment">// at virtual address USTACKTOP - PGSIZE.</span></span><br><span class="line">	region_alloc(e, (<span class="hljs-keyword">void</span> *)(USTACKTOP - PGSIZE), PGSIZE); <span class="hljs-comment">// map user stack.</span></span><br><span class="line">	lcr3(PADDR(kern_pgdir)); <span class="hljs-comment">// switch to kernel's address space.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当具备了向用户环境中加载代码和数据的能力之后，就能完成environment的创建功能了，分配环境并加载代码和数据：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">env_create</span><span class="hljs-params">(<span class="hljs-keyword">uint8_t</span> *binary, <span class="hljs-keyword">enum</span> EnvType type)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Env</span> *<span class="hljs-title">env</span>;</span></span><br><span class="line">	<span class="hljs-keyword">int32_t</span> flag;</span><br><span class="line">	<span class="hljs-keyword">if</span>((flag = env_alloc(&amp;env, (<span class="hljs-keyword">envid_t</span>)<span class="hljs-number">0</span>)) &lt; <span class="hljs-number">0</span>)&#123;</span><br><span class="line">		panic(<span class="hljs-string">"env_create:%e"</span>, flag);</span><br><span class="line">	&#125;</span><br><span class="line">	env-&gt;env_type = type;</span><br><span class="line">	load_icode(env, binary); <span class="hljs-comment">// restore this binary image to corresponding memory.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后实现env_run:</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">env_run</span><span class="hljs-params">(struct Env *e)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">if</span>(curenv &amp;&amp; curenv-&gt;env_status == ENV_RUNNING)&#123; <span class="hljs-comment">// is a context switch.</span></span><br><span class="line">		curenv-&gt;env_status = ENV_RUNNABLE;</span><br><span class="line">	&#125;</span><br><span class="line">	curenv = e;</span><br><span class="line">	curenv-&gt;env_status = ENV_RUNNING;</span><br><span class="line">	++curenv-&gt;env_runs; <span class="hljs-comment">// update the times of the environment has run.</span></span><br><span class="line">	lcr3(PADDR(curenv-&gt;env_pgdir)); <span class="hljs-comment">// switch to this new environment's address space.</span></span><br><span class="line"></span><br><span class="line">	env_pop_tf(&amp;(curenv-&gt;env_tf)); <span class="hljs-comment">// restore the environment's registers and drop into the user mode in the environment.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-3"><span id="OSELAB3_A.3">Exercise 3</span></span><a href="#exercise-3" class="header-anchor">#</a></h2><blockquote>
+<p>Read <a href="https://pdos.csail.mit.edu/6.828/2018/readings/i386/c09.htm" target="_blank" rel="noopener">Chapter 9, Exceptions and Interrupts</a> in the <a href="https://pdos.csail.mit.edu/6.828/2018/readings/i386/toc.htm" target="_blank" rel="noopener">80386 Programmer’s Manual</a> (or <a href="https://pdos.csail.mit.edu/6.828/2018/readings/ia32/IA32-3A.pdf" target="_blank" rel="noopener">Chapter 5 of the IA-32 Developer’s Manual</a>)</p>
+</blockquote>
+<p>对Lab3最重要的</p>
+<hr>
+<h2><span id="exercise-4"><span id="OSELAB3_A.4">Exercise 4</span></span><a href="#exercise-4" class="header-anchor">#</a></h2><p>正如exercise 3所讨论的，为了处理Interruption，我们需要设置IDT以及相应的Handler，并且为Handler传入它所需要的参数，并且保存现场，以便返回到被中断的Procedure或者Task，这部分给Handler传入的参数等实际上可通过Trapframe来访问。</p>
+<figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">+<span class="hljs-comment">------------------------------------------+                               +---------------------------+</span></span><br><span class="line">| Interrupt Signal detected by processor's | Invoke corresponding <span class="hljs-keyword">handler</span>  | The <span class="hljs-keyword">Handler</span> will push the | <span class="hljs-keyword">Each</span> <span class="hljs-keyword">Handler</span> will jump <span class="hljs-keyword">to</span> _alltraps</span><br><span class="line">| hardware such <span class="hljs-keyword">as</span> APIC(processor <span class="hljs-keyword">with</span> <span class="hljs-keyword">on</span>- | <span class="hljs-keyword">by</span> Iterrupt vector <span class="hljs-keyword">and</span> IDT    | the interrupt vector      | defined <span class="hljs-keyword">by</span> kern/trapentry.S</span><br><span class="line">| chip <span class="hljs-keyword">local</span> APIC),NMI pins <span class="hljs-keyword">or</span> INTR pins.  | ============================&gt; | <span class="hljs-built_in">number</span> onto kernel stack  | ===================================&gt;</span><br><span class="line">+<span class="hljs-comment">------------------------------------------+                               +---------------------------+</span></span><br><span class="line"></span><br><span class="line">+<span class="hljs-comment">-------------------------------------------+                              +---------------------------+</span></span><br><span class="line">| _alltraps should push the rest necessary  | _alltrps <span class="hljs-keyword">call</span> trap <span class="hljs-keyword">function</span>  | trap will <span class="hljs-keyword">save</span> <span class="hljs-keyword">some</span> states| trap pass control <span class="hljs-keyword">to</span></span><br><span class="line">| arguments <span class="hljs-keyword">in</span> <span class="hljs-keyword">struct</span> Trapframe such <span class="hljs-keyword">as</span> %ds | defined <span class="hljs-keyword">in</span> kern/trap.c       | such <span class="hljs-keyword">as</span> trapframe.        | trap_dispatch</span><br><span class="line">| %es <span class="hljs-keyword">and</span> <span class="hljs-keyword">some</span> registers.                   | ===========================&gt; |                           | ====================&gt;</span><br><span class="line">+<span class="hljs-comment">-------------------------------------------+                              +---------------------------+</span></span><br><span class="line"></span><br><span class="line">+<span class="hljs-comment">------------------------------------------------------------------------------------+</span></span><br><span class="line">| trap_dispatch invoke <span class="hljs-keyword">handler</span> <span class="hljs-keyword">function</span>(differs <span class="hljs-keyword">from</span> the <span class="hljs-keyword">handler</span> <span class="hljs-keyword">in</span> trapentry.S)     |</span><br><span class="line">| we defined such <span class="hljs-keyword">as</span> page_fault_handler <span class="hljs-keyword">in</span> kern/trap.c <span class="hljs-keyword">and</span> monitor <span class="hljs-keyword">in</span> kern/monitor.c |</span><br><span class="line">+<span class="hljs-comment">------------------------------------------------------------------------------------+</span></span><br><span class="line"></span><br><span class="line">****************************************</span><br><span class="line">*ABOVE <span class="hljs-keyword">ALL</span>,below <span class="hljs-keyword">is</span> a simple <span class="hljs-keyword">call</span> flow:*</span><br><span class="line">****************************************</span><br><span class="line">+<span class="hljs-comment">-----------------+  +------------------+  +-------------------------+  +---------------------------+  +-----------------+  +--------------------------+  +----------------+</span></span><br><span class="line">|<span class="hljs-keyword">procedure</span> <span class="hljs-keyword">or</span> task|=&gt;|processor hardware|=&gt;|<span class="hljs-keyword">handler</span>(kern/trapentry.S)|=&gt;|_alltraps(kern/trapentry.S)|=&gt;|trap(kern/trap.c)|=&gt;|trap_dispatch(kern/trap.c)|=&gt;|<span class="hljs-keyword">handler</span> <span class="hljs-keyword">function</span>|</span><br><span class="line">+<span class="hljs-comment">-----------------+  +------------------+  +-------------------------+  +---------------------------+  +-----------------+  +--------------------------+  +----------------+</span></span><br></pre></td></tr></table></figure>
+
+<p>首先，为每个Interrupt vector编写相应的Handler，这里可以直接使用在trapentry.S中定义的宏，其中有两个宏，一个是不要error code的Interrupt，但是为了保持trapframe的格式一致性，需要存放一个值占位，这两个宏的作用都是直接定义Handler函数，.global的作用就是定义全局符号，这样才能在后续trap_init中绑定Interrupt vector和相应的Handler函数。至于哪些需要error code，哪些不需要，在IA-32 Developer’s mannual中写的很清楚。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">.text</span><br><span class="line"><span class="hljs-comment">// Exceptions without error code.</span></span><br><span class="line">TRAPHANDLER_NOEC(divideErrorHandler, T_DIVIDE);</span><br><span class="line">TRAPHANDLER_NOEC(debugHandler, T_DEBUG);</span><br><span class="line">TRAPHANDLER_NOEC(NMIHandler, T_NMI);</span><br><span class="line">TRAPHANDLER_NOEC(breakpointHandler, T_BRKPT);</span><br><span class="line">TRAPHANDLER_NOEC(overflowHandler, T_OFLOW);</span><br><span class="line">TRAPHANDLER_NOEC(BOUNDRangeExceededHandler, T_BOUND);</span><br><span class="line">TRAPHANDLER_NOEC(invalidOpcodeHandler, T_ILLOP);</span><br><span class="line">TRAPHANDLER_NOEC(deviceNotAvailableHandler, T_DEVICE);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Exceptions with error code.You can find this information in chapter 9.10 of 80386 programmer's references mannual.</span></span><br><span class="line">TRAPHANDLER(doubleFaultHandler, T_DBLFLT);</span><br><span class="line"><span class="hljs-comment">// TRAPHANDLER_NOEC(coprocessorSegmentOverrunHandler, T_COPROC); reserved,just ignore.</span></span><br><span class="line">TRAPHANDLER(invalidTSSHandler, T_TSS);</span><br><span class="line">TRAPHANDLER(segmentNotPresentHandler, T_SEGNP);</span><br><span class="line">TRAPHANDLER(stackFaultHandler, T_STACK);</span><br><span class="line">TRAPHANDLER(generalProtectionHandler, T_GPFLT);</span><br><span class="line">TRAPHANDLER(pageFaultHandler, T_PGFLT);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Exceptions without error code.</span></span><br><span class="line">TRAPHANDLER_NOEC(floatingPointErrorHandler, T_FPERR);</span><br><span class="line">TRAPHANDLER_NOEC(alignmentCheckHandler, T_ALIGN);</span><br><span class="line">TRAPHANDLER_NOEC(machineCheckHandler, T_MCHK);</span><br><span class="line">TRAPHANDLER_NOEC(SIMDFloatingPointExceptionHandler, T_SIMDERR);</span><br></pre></td></tr></table></figure>
+
+<p>实现_alltraps汇编代码（因为这段代码对所有trap都一样，所以才将其剥离出来）：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * Key point from lab reference:</span><br><span class="line"> * 	1. push values to make the stack look like a struct Trapframe;</span><br><span class="line"> * 	2. load GD_KD into %ds and %es;</span><br><span class="line"> * 	3. pushl %esp to pass a pointer to the Trapframe as an argument to trap();</span><br><span class="line"> * 	4. call trap (can trap ever return?Yes);</span><br><span class="line"> * According to inc/trap.h and the macro TRAPHANDLER,we can know that we should push %ds and %es register after</span><br><span class="line"> * the tf_trapno because the tf_trapno was pushed onto stack by x86 hardware.</span><br><span class="line"> * TIPS:pushal instruction will save all registers that trapframe need.</span><br><span class="line"> */</span><br><span class="line">.global _alltraps</span><br><span class="line">_alltraps:</span><br><span class="line">	pushl %ds</span><br><span class="line">	pushl %es</span><br><span class="line">	pushal</span><br><span class="line">	movw $GD_KD, %ax</span><br><span class="line">	movw %ax, %ds</span><br><span class="line">	movw %ax, %es</span><br><span class="line">	pushl %esp</span><br><span class="line">	call trap</span><br></pre></td></tr></table></figure>
+
+<p>最后在kern/trap.c的<code>trap_init</code>中设置idt，绑定Interrupt vector和Handler(虽然我们在trapentry.S中定义了trap handler function，为了在trap.c中引用到这些handler，我们还需要在trap.c中声明这些函数签名，这样才能够在编译阶段做符号解析时才能不报错，或者声明在头文件中也可以)，这里暂时先将所有Gate的Descriptor privileged level设置为0（内核级）：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">trap_init(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">extern</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Segdesc</span> <span class="hljs-title">gdt</span>[];</span></span><br><span class="line">	<span class="hljs-comment">// Generate corresponding exception handler function's signature.</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">divideErrorHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">debugHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">NMIHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">breakpointHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">overflowHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">BOUNDRangeExceededHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">invalidOpcodeHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">deviceNotAvailableHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">doubleFaultHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">invalidTSSHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">segmentNotPresentHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">stackFaultHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">generalProtectionHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">pageFaultHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">floatingPointErrorHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">alignmentCheckHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">machineCheckHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">SIMDFloatingPointExceptionHandler</span><span class="hljs-params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// set IDT with macro SETGATE in inc/mmu.h</span></span><br><span class="line">	SETGATE(idt[T_DIVIDE], <span class="hljs-number">0</span>, GD_KT, divideErrorHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_DEBUG], <span class="hljs-number">0</span>, GD_KT, debugHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_NMI], <span class="hljs-number">0</span>, GD_KT, NMIHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_BRKPT], <span class="hljs-number">0</span>, GD_KT, breakpointHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_OFLOW], <span class="hljs-number">0</span>, GD_KT, overflowHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_BOUND], <span class="hljs-number">0</span>, GD_KT, BOUNDRangeExceededHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_ILLOP], <span class="hljs-number">0</span>, GD_KT, invalidOpcodeHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_DEVICE], <span class="hljs-number">0</span>, GD_KT, deviceNotAvailableHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_DBLFLT], <span class="hljs-number">0</span>, GD_KT, doubleFaultHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_TSS], <span class="hljs-number">0</span>, GD_KT, invalidTSSHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_SEGNP], <span class="hljs-number">0</span>, GD_KT, segmentNotPresentHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_STACK], <span class="hljs-number">0</span>, GD_KT, stackFaultHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_GPFLT], <span class="hljs-number">0</span>, GD_KT, generalProtectionHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_PGFLT], <span class="hljs-number">0</span>, GD_KT, pageFaultHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_FPERR], <span class="hljs-number">0</span>, GD_KT, floatingPointErrorHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_ALIGN], <span class="hljs-number">0</span>, GD_KT, alignmentCheckHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_MCHK], <span class="hljs-number">0</span>, GD_KT, machineCheckHandler, <span class="hljs-number">0</span>);</span><br><span class="line">	SETGATE(idt[T_SIMDERR], <span class="hljs-number">0</span>, GD_KT, SIMDFloatingPointExceptionHandler, <span class="hljs-number">0</span>);</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Per-CPU setup </span></span><br><span class="line">	trap_init_percpu();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3><span id="challenge"><span id="OSELAB3_A.4.Challenge">Challenge</span></span><a href="#challenge" class="header-anchor">#</a></h3><hr>
+<p>trap_init太多重复代码了，可以通过在trapentry.S中的.data节中定义一段内存来存储Gate相关参数，从而在trap_init函数中直接通过数组来获取这些参数，然后直接通过一个循环完成Interrupt vector和Handler的绑定。这里我一开始实现的时候，没有考虑太多，仅仅只存储了Handler的函数指针，因此导致后面exercise 7需要为系统调用添加Handler的时候，还是得额外写SETGATE，因此，建议可以多存储一些信息，例如Handler name以及Interrupt vector还有DPL。<br>首先实现自己宏，实际就是添加了.data节用来存储数据。然后定义全局符号entryPointOfTraps以便后续在trap.c中引用数据。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/*</span></span><br><span class="line"><span class="hljs-comment"> * My own macro for exercise 4's chanllenge of lab3.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> TRAPHANDLER_MINE(name, num)                                 \</span></span><br><span class="line">.data;                                                              \</span><br><span class="line">	.<span class="hljs-keyword">long</span> name;             <span class="hljs-comment">/* entry point's symbol */</span>              \</span><br><span class="line">.text;                                                              \</span><br><span class="line">	.global name;		    <span class="hljs-comment">/* define global symbol for 'name' */</span>   \</span><br><span class="line">	.type name, @function;  <span class="hljs-comment">/* symbol type is function */</span>           \</span><br><span class="line">	.align <span class="hljs-number">2</span>;               <span class="hljs-comment">/* align function definition */</span>         \</span><br><span class="line">name:                       <span class="hljs-comment">/* function starts here */</span>              \</span><br><span class="line">	pushl $(num);                                                   \</span><br><span class="line">	jmp _alltraps</span><br><span class="line"></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> TRAPHANDLER_NOEC_MINE(name, num)                            \</span></span><br><span class="line">.data;                                                              \</span><br><span class="line">	.<span class="hljs-keyword">long</span> name;                                                     \</span><br><span class="line">.text;                                                              \</span><br><span class="line">	.global name;		    <span class="hljs-comment">/* define global symbol for 'name' */</span>   \</span><br><span class="line">	.type name, @function;  <span class="hljs-comment">/* symbol type is function */</span>           \</span><br><span class="line">	.align <span class="hljs-number">2</span>;               <span class="hljs-comment">/* align function definition */</span>         \</span><br><span class="line">name:                       <span class="hljs-comment">/* function starts here */</span>              \</span><br><span class="line">	pushl $<span class="hljs-number">0</span>;                                                       \</span><br><span class="line">	pushl $(num);                                                   \</span><br><span class="line">	jmp _alltraps</span><br><span class="line"></span><br><span class="line">.data</span><br><span class="line">	.global entryPointOfTraps</span><br><span class="line">	entryPointOfTraps:</span><br><span class="line">.text</span><br><span class="line"><span class="hljs-comment">// Exceptions without error code.</span></span><br><span class="line">TRAPHANDLER_NOEC_MINE(divideErrorHandler, T_DIVIDE);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(debugHandler, T_DEBUG);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(NMIHandler, T_NMI);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(breakpointHandler, T_BRKPT);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(overflowHandler, T_OFLOW);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(BOUNDRangeExceededHandler, T_BOUND);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(invalidOpcodeHandler, T_ILLOP);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(deviceNotAvailableHandler, T_DEVICE);</span><br><span class="line">TRAPHANDLER_MINE(doubleFaultHandler, T_DBLFLT);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(coprocessorSegmentOverrunHandler, T_COPROC);<span class="hljs-comment">// Just padding.</span></span><br><span class="line">TRAPHANDLER_MINE(invalidTSSHandler, T_TSS);</span><br><span class="line">TRAPHANDLER_MINE(segmentNotPresentHandler, T_SEGNP);</span><br><span class="line">TRAPHANDLER_MINE(stackFaultHandler, T_STACK);</span><br><span class="line">TRAPHANDLER_MINE(generalProtectionHandler, T_GPFLT);</span><br><span class="line">TRAPHANDLER_MINE(pageFaultHandler, T_PGFLT);</span><br><span class="line">TRAPHANDLER_MINE(reserved, T_RES); <span class="hljs-comment">// Just padding.</span></span><br><span class="line">TRAPHANDLER_NOEC_MINE(floatingPointErrorHandler, T_FPERR);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(alignmentCheckHandler, T_ALIGN);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(machineCheckHandler, T_MCHK);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(SIMDFloatingPointExceptionHandler, T_SIMDERR);</span><br><span class="line">TRAPHANDLER_NOEC_MINE(syscallHandler, T_SYSCALL);</span><br></pre></td></tr></table></figure>
+
+<p>随后trap.c中就可以直接用循环来设置idt了：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">trap_init(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">extern</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Segdesc</span> <span class="hljs-title">gdt</span>[];</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-title">void</span><span class="hljs-params">(*entryPointOfTraps[])</span><span class="hljs-params">()</span></span>;</span><br><span class="line">	<span class="hljs-keyword">int32_t</span> i;</span><br><span class="line">	<span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">20</span>; ++i)&#123;</span><br><span class="line">		<span class="hljs-keyword">if</span>(i == T_BRKPT)&#123;</span><br><span class="line">			SETGATE(idt[i], <span class="hljs-number">0</span>, GD_KT, entryPointOfTraps[i], <span class="hljs-number">3</span>);</span><br><span class="line">		&#125;<span class="hljs-keyword">else</span> SETGATE(idt[i], <span class="hljs-number">0</span>, GD_KT, entryPointOfTraps[i], <span class="hljs-number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-comment">// set syscall gate</span></span><br><span class="line">	SETGATE(idt[T_SYSCALL], <span class="hljs-number">0</span>, GD_KT, entryPointOfTraps[i], <span class="hljs-number">3</span>); <span class="hljs-comment">// syscall entry was in index 20.</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Per-CPU setup </span></span><br><span class="line">	trap_init_percpu();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>【更新-2020/1/25】</strong>：由于之前的不合理考虑，后面的LAB4我增加了这里Challenge中保存的信息，方便后续的设置：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * My own macro for exercise 4&apos;s chanllenge of lab3.</span><br><span class="line"> */</span><br><span class="line">#define TRAPHANDLER_MINE(name, num)                                 \</span><br><span class="line">.data;                                                              \</span><br><span class="line">	.long name, num;             /* entry point&apos;s symbol */              \</span><br><span class="line">.text;                                                              \</span><br><span class="line">	.global name;		    /* define global symbol for &apos;name&apos; */   \</span><br><span class="line">	.type name, @function;  /* symbol type is function */           \</span><br><span class="line">	.align 2;               /* align function definition */         \</span><br><span class="line">name:                       /* function starts here */              \</span><br><span class="line">	pushl $(num);                                                   \</span><br><span class="line">	jmp _alltraps</span><br><span class="line"></span><br><span class="line">#define TRAPHANDLER_NOEC_MINE(name, num)                            \</span><br><span class="line">.data;                                                              \</span><br><span class="line">	.long name, num;                                                     \</span><br><span class="line">.text;                                                              \</span><br><span class="line">	.global name;		    /* define global symbol for &apos;name&apos; */   \</span><br><span class="line">	.type name, @function;  /* symbol type is function */           \</span><br><span class="line">	.align 2;               /* align function definition */         \</span><br><span class="line">name:                       /* function starts here */              \</span><br><span class="line">	pushl $0;                                                       \</span><br><span class="line">	pushl $(num);                                                   \</span><br><span class="line">	jmp _alltraps</span><br></pre></td></tr></table></figure>
+
+<p>可以看到实际上就是增加了Exception Vector的存储。后续在kern/trap.c中初始化trap handler:</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">trap_init(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-keyword">extern</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Segdesc</span> <span class="hljs-title">gdt</span>[];</span></span><br><span class="line">	<span class="hljs-keyword">extern</span> <span class="hljs-keyword">long</span> *entryPointOfTraps[<span class="hljs-number">2</span>];</span><br><span class="line">	<span class="hljs-keyword">int32_t</span> i;</span><br><span class="line">	<span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt;= <span class="hljs-number">20</span>; ++i)&#123;</span><br><span class="line">		<span class="hljs-keyword">if</span>(entryPointOfTraps[i][<span class="hljs-number">1</span>] == T_BRKPT || entryPointOfTraps[i][<span class="hljs-number">1</span>] == T_SYSCALL)&#123;</span><br><span class="line">			SETGATE(idt[entryPointOfTraps[i][<span class="hljs-number">1</span>]], <span class="hljs-number">0</span>, GD_KT, entryPointOfTraps[i][<span class="hljs-number">0</span>], <span class="hljs-number">3</span>);</span><br><span class="line">		&#125;<span class="hljs-keyword">else</span> SETGATE(idt[entryPointOfTraps[i][<span class="hljs-number">1</span>]], <span class="hljs-number">0</span>, GD_KT, entryPointOfTraps[i][<span class="hljs-number">0</span>], <span class="hljs-number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Per-CPU setup </span></span><br><span class="line">	trap_init_percpu();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3><span id="question"><span id="OSELAB3_A.4.Question">Question</span></span><a href="#question" class="header-anchor">#</a></h3><hr>
+<blockquote>
+<p>1.What is the purpose of having an individual handler function for each exception/interrupt? (i.e., if all exceptions/interrupts were delivered to the same handler, what feature that exists in the current implementation could not be provided?)</p>
+</blockquote>
+<p>在SETGATE中，不仅仅是将每个exception/interrupt的vector与相应的handler function绑定，并且Interrupt gate用了一些bit来作为控制位，例如DPL能标识能够调用该Interrupt gate对应的handler function需要的特权级别(privileged level)，这样就能够提供一些保护。以下内容引自Lab reference:</p>
+<blockquote>
+<p>The Interrupt Descriptor Table. The processor ensures that interrupts and exceptions can only cause the kernel to be entered at a few specific, well-defined entry-points determined by the kernel itself, and not by the code running when the interrupt or exception is taken.An interrupt’s vector is determined by the source of the interrupt: different devices, error conditions, and application requests to the kernel generate interrupts with different vectors. The CPU uses the vector as an index into the processor’s interrupt descriptor table (IDT), which the kernel sets up in kernel-private memory, much like the GDT. From the appropriate entry in this table the processor loads:</p>
+<ul>
+<li>the value to load into the instruction pointer (EIP) register, pointing to the kernel code designated to handle that type of exception.</li>
+<li>the value to load into the code segment (CS) register, which includes in bits 0-1 the privilege level at which the exception handler is to run. (In JOS, all exceptions are handled in kernel mode, privilege level 0.)</li>
+</ul>
+</blockquote>
+<p>显然，如果所有的exceptions/interrupts都绑定到相同的handler function，那么这样的机制就没办法实现。</p>
+<blockquote>
+<p>2.Did you have to do anything to make the user/softint program behave correctly? The grade script expects it to produce a general protection fault (trap 13), but softint’s code says int $14. Why should this produce interrupt vector 13? What happens if the kernel actually allows softint’s int $14 instruction to invoke the kernel’s page fault handler (which is interrupt vector 14)?</p>
+</blockquote>
+<p>虽然user/softint是通过<code>int</code>指令，想要触发page fault，但是，由于user/softint运行在用户态下，而page fault的Interrupt descriptor中的DPL标识调用page fault的handler function需要内核级别特权，即0，因此，根据Intel IA-32 developer’s manual，会由硬件检测出general protection exception：</p>
+<blockquote>
+<p>【Intel IA-32 developer’s manual:5.12.1.1】The processor does not permit transfer of execution to an exception- or interrupt-handler procedure in a less privileged code segment(numerically greater privilege level) than the CPL.An attempt to violate this rule results in a general-protection exception.<strong>The processor checks the DPL of the interrupt or trap gate only if an exception or interrupt is generated with an INT n, INT 3, or INTO instruction. Here, the CPL must be less than or equal to the DPL of the gate.</strong> This restriction prevents application programs or procedures running at privilege level 3 from using a software interrupt to access critical exception handlers, such as the page-fault<br>handler.</p>
+</blockquote>
+<p>因此如果想要触发page fault而不是general-protection exception，可以在trap_init初始化Interrupt Gate时，将page fault的DPL设置为3即可，这样就能满足CPL &lt;= DPL的要求了。</p>
+<hr>
+<h1><span id="part-b-page-faults-breakpoint-exceptions-and-system-calls"><span id="OSELAB3_B">Part B:Page Faults,Breakpoint Exceptions and System Calls</span></span><a href="#part-b-page-faults-breakpoint-exceptions-and-system-calls" class="header-anchor">#</a></h1><hr>
+<h2><span id="exercise-5"><span id="OSELAB3_B.5">Exercise 5</span></span><a href="#exercise-5" class="header-anchor">#</a></h2><p>还记得<a href="#OSELAB3_A.4">Exercise 4</a>中的Call Flow吗，它能够帮助你理解trap_dispatch所处的位置和所起到的作用。实际上，此时trap_dispatch根据tf-&gt;tf_trapno(实际上就是Interrupt vector)来调用相应的处理函数即可（这里的处理函数<strong>不等价</strong>于前面SETGATE绑定的Handler function）</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">trap_dispatch</span><span class="hljs-params">(struct Trapframe *tf)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-comment">// Handle processor exceptions.</span></span><br><span class="line">	<span class="hljs-keyword">switch</span>(tf-&gt;tf_trapno)&#123;</span><br><span class="line">		<span class="hljs-keyword">case</span> T_PGFLT:page_fault_handler(tf);<span class="hljs-keyword">return</span>;</span><br><span class="line">		<span class="hljs-keyword">case</span> T_BRKPT:monitor(tf);<span class="hljs-keyword">return</span>;</span><br><span class="line">		<span class="hljs-keyword">case</span> T_DEBUG:monitor_debug(tf);<span class="hljs-keyword">return</span>;</span><br><span class="line">		<span class="hljs-keyword">case</span> T_SYSCALL:&#123;</span><br><span class="line">			tf-&gt;tf_regs.reg_eax = syscall(tf-&gt;tf_regs.reg_eax, tf-&gt;tf_regs.reg_edx, tf-&gt;tf_regs.reg_ecx, tf-&gt;tf_regs.reg_ebx, tf-&gt;tf_regs.reg_edi, tf-&gt;tf_regs.reg_esi);</span><br><span class="line">			<span class="hljs-keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="hljs-keyword">default</span>:<span class="hljs-keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Unexpected trap: The user process or the kernel has a bug.</span></span><br><span class="line">	print_trapframe(tf);</span><br><span class="line">	<span class="hljs-keyword">if</span> (tf-&gt;tf_cs == GD_KT)</span><br><span class="line">		panic(<span class="hljs-string">"unhandled trap in kernel"</span>);</span><br><span class="line">	<span class="hljs-keyword">else</span> &#123;</span><br><span class="line">		env_destroy(curenv);</span><br><span class="line">		<span class="hljs-keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码直接将后续的Exercise都放上去了，对于Exercise 5，只需要添加case T_PGFLT即可。然后修改page_fault_handler即可：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">page_fault_handler</span><span class="hljs-params">(struct Trapframe *tf)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">uint32_t</span> fault_va;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Read processor's CR2 register to find the faulting address</span></span><br><span class="line">	fault_va = rcr2();</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Handle kernel-mode page faults.Beacuse it should never triger page fault in kernel-mode,just panic!</span></span><br><span class="line">	<span class="hljs-keyword">if</span>((tf-&gt;tf_cs &amp; <span class="hljs-number">3</span>) == <span class="hljs-number">0</span>)&#123;</span><br><span class="line">		panic(<span class="hljs-string">"Your kernel triger a page fault!Bad kernel:("</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// We've already handled kernel-mode exceptions, so if we get here,</span></span><br><span class="line">	<span class="hljs-comment">// the page fault happened in user mode.</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Destroy the environment that caused the fault.</span></span><br><span class="line">	cprintf(<span class="hljs-string">"[%08x] user fault va %08x ip %08x\n"</span>,</span><br><span class="line">		curenv-&gt;env_id, fault_va, tf-&gt;tf_eip);</span><br><span class="line">	print_trapframe(tf);</span><br><span class="line">	env_destroy(curenv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>内核态之下是绝对不可能触发page fault的!</p>
+<hr>
+<h2><span id="exercise-6"><span id="OSELAB3_B.6">Exercise 6</span></span><a href="#exercise-6" class="header-anchor">#</a></h2><p>实现已经在<a href="#OSELAB3_B.5">Exercise 5</a>中了。如果<code>make grade</code>在breakpoint test case上失败了，那么可以通过<code>make run-breakpoint</code>或者<code>make run-breakpoint-nox</code>来执行user/breakpoint.c来进行调试。</p>
+<hr>
+<h3><span id="challenge"><span id="OSELAB3_B.6.Challenge">Challenge</span></span><a href="#challenge" class="header-anchor">#</a></h3><p>这个Challenge让我们修改monitor从而实现单步调试的功能，根据提示，查阅Intel IA-32 developer’s manual：</p>
+<blockquote>
+<p>【Intel IA-32 developer’s manual:2.3】TF Trap(bit 8)-Set to enable<br>single-step mode for debugging;clear to disable single-step mode.<strong>In single-step mode,the processor generates a debug exception after each instruction</strong>.This allows the execution state of a program to be inspected after each instruction.</p>
+</blockquote>
+<p>这样，就有思路了。触发Breakpoint exception进入monitor之后，需要设置EFLAGS寄存器值的TF位（在实际实现中就是修改trapframe的tf_eflags），随后退出monitor，将控制权交还给被该Breakpoint exception中断的procedure或task，因为将控制权交还给用户程序时，也会把进入中断处理程序时保存的eflags寄存器的值恢复到EFLAGS寄存器之中，而我们在monitor中修改了所保存的eflags寄存器值的TF位，这样后续用户程序再执行一条指令，就会触发<strong>Debug Exception</strong>，因此，我们还需要修改trap_dispatch，使其能够对Debug Exception进行处理，此时只需要让处理程序继续设置一次TF位然后又返回，这样不断往复，就能够实现逐步调试的功能了。以下是我的实现的简易Call flow:</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">                        +-----------------------------+   +-----------------+   +-----------+ <span class="hljs-built_in">set</span> TF bit</span><br><span class="line">                        |monitor_debug(kern/monitor.c)|==&gt;|run_cmd(buf,tf,<span class="hljs-number">1</span>)|==&gt;|debug_stepi|===========&gt;</span><br><span class="line">                        +-----------------------------+   +-----------------+   +-----------+           |</span><br><span class="line">                                  ^                                                                     |</span><br><span class="line">                                  | T_DEBUG                                                             |</span><br><span class="line">                                  |                                                                     |</span><br><span class="line">+-----------------+ *** +-------------+ T_BRKPT  +-----------------------+   +-----------------+        |</span><br><span class="line">|procedure <span class="hljs-keyword">or</span> task|====&gt;|trap_dispatch|=========&gt;|monitor(kern/monitor.c)|==&gt;|run_cmd(buf,tf,<span class="hljs-number">0</span>)|========|=====</span><br><span class="line">+-----------------+     +-------------+          +-----------------------+   +-----------------+        |    |</span><br><span class="line">        ^                                                                                               |    |</span><br><span class="line">        |         Return Control to procefure.                                                          |    |</span><br><span class="line">        &lt;================================================================================               |    |</span><br><span class="line">                                                                                        |               |    |</span><br><span class="line">   +---------------------------------+   +-----------------+   +-----------+ <span class="hljs-built_in">set</span> TF bit |               |    |</span><br><span class="line">==&gt;|mon_intoDebugMode(kern/monitor.c)|==&gt;|run_cmd(buf,tf,<span class="hljs-number">1</span>)|==&gt;|debug_stepi|============&gt;&lt;===============    |</span><br><span class="line">|  +---------------------------------+   +-----------------+   +-----------+                                 |</span><br><span class="line">|                                                                                                            |</span><br><span class="line">==============================================================================================================</span><br></pre></td></tr></table></figure>
+
+<p>注意<code>mon_intoDebugMode</code>是接在<code>run_cmd(buf,tf,0)</code>之后的。这里就只给出最关键的debug_stepi和debug_continue的代码，完整实现见<a href="https://github.com/QinStaunch/MIT-6.828" target="_blank" rel="noopener">Github:YanTang Qin</a></p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">debug_stepi</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>** argv, struct Trapframe *tf)</span></span>&#123;</span><br><span class="line">	<span class="hljs-comment">// This function service for trap.c at the time when the kernel encounter Debug or Breakpoint exceptions.</span></span><br><span class="line">	<span class="hljs-comment">// Just a simple stpei function.</span></span><br><span class="line">	<span class="hljs-keyword">if</span>(tf-&gt;tf_trapno == T_BRKPT || tf-&gt;tf_trapno == T_DEBUG)&#123;</span><br><span class="line">		tf-&gt;tf_eflags |= FL_TF; <span class="hljs-comment">// Set EFLAGS register with Trap flag which is a control flag.</span></span><br><span class="line">	&#125;<span class="hljs-keyword">else</span>&#123;</span><br><span class="line">		cprintf(<span class="hljs-string">"You can only use stepi when the processor encounter Debug or Breakpoint exceptions.\n"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>; <span class="hljs-comment">// must return -1 because we should leave monitor and let user program proceed.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">debug_continue</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> **argv, struct Trapframe *tf)</span></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">if</span>(tf-&gt;tf_trapno == T_BRKPT || tf-&gt;tf_trapno == T_DEBUG)&#123;</span><br><span class="line">		tf-&gt;tf_eflags &amp;= ~FL_TF;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3><span id="question"><span id="OSELAB3_B.6.Question">Question</span></span><a href="#question" class="header-anchor">#</a></h3><blockquote>
+<p>3.The break point test case will either generate a break point exception or a general protection fault depending on how you initialized the break point entry in the IDT (i.e., your call to SETGATE from trap_init). Why? How do you need to set it up in order to get the breakpoint exception to work as specified above and what incorrect setup would cause it to trigger a general protection fault?</p>
+</blockquote>
+<p>事实上，答案已经在上面的Question中的2讨论过了，若想要使其正常工作，就需要CPL &lt;= DPL，因此我们要将Breakpoint Gate的DPL设置为3即可正常工作。</p>
+<blockquote>
+<p>4.What do you think is the point of these mechanisms, particularly in light of what the user/softint test program does?</p>
+</blockquote>
+<p>为了安全吧，避免优先级低的代码段尝试去执行优先级高的代码段，从而进一步限制用户程序对一些内核代码或内存的访问。</p>
+<hr>
+<h2><span id="exercise-7"><span id="OSELAB3_B.7">Exercise 7</span></span><a href="#exercise-7" class="header-anchor">#</a></h2><p>为T_SYSCALL添加GATE在<a href="#OSELAB3_A.4.Challenge">Part A:Exercise 4的Challenge</a>中已经给出，而在trap_dispatch中增加处理也在<a href="#OSELAB3_B.5">Exercise 5</a>中给出，这里就不再赘述。</p>
+<p>先看一下lib/syscall.c中提供给用户使用的接口做了什么：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">inline</span> int32_t <span class="hljs-title">syscall</span><span class="hljs-params">(<span class="hljs-keyword">int</span> num, <span class="hljs-keyword">int</span> check, <span class="hljs-keyword">uint32_t</span> a1, <span class="hljs-keyword">uint32_t</span> a2, <span class="hljs-keyword">uint32_t</span> a3, <span class="hljs-keyword">uint32_t</span> a4, <span class="hljs-keyword">uint32_t</span> a5)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">int32_t</span> ret;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Generic system call: pass system call number in AX,</span></span><br><span class="line">	<span class="hljs-comment">// up to five parameters in DX, CX, BX, DI, SI.</span></span><br><span class="line">	<span class="hljs-comment">// Interrupt kernel with T_SYSCALL.</span></span><br><span class="line">	<span class="hljs-comment">//</span></span><br><span class="line">	<span class="hljs-comment">// The "volatile" tells the assembler not to optimize</span></span><br><span class="line">	<span class="hljs-comment">// this instruction away just because we don't use the</span></span><br><span class="line">	<span class="hljs-comment">// return value.</span></span><br><span class="line">	<span class="hljs-comment">//</span></span><br><span class="line">	<span class="hljs-comment">// The last clause tells the assembler that this can</span></span><br><span class="line">	<span class="hljs-comment">// potentially change the condition codes and arbitrary</span></span><br><span class="line">	<span class="hljs-comment">// memory locations.</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">asm</span> <span class="hljs-title">volatile</span><span class="hljs-params">(<span class="hljs-string">"int %1\n"</span></span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		     : <span class="hljs-string">"=a"</span> (ret)</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		     : <span class="hljs-string">"i"</span> (T_SYSCALL),</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		       <span class="hljs-string">"a"</span> (num),</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		       <span class="hljs-string">"d"</span> (a1),</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		       <span class="hljs-string">"c"</span> (a2),</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		       <span class="hljs-string">"b"</span> (a3),</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		       <span class="hljs-string">"D"</span> (a4),</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		       <span class="hljs-string">"S"</span> (a5)</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">		     : <span class="hljs-string">"cc"</span>, <span class="hljs-string">"memory"</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">if</span>(check &amp;&amp; ret &gt; <span class="hljs-number">0</span>)</span><br><span class="line">		panic(<span class="hljs-string">"syscall %d returned %d (&gt; 0)"</span>, num, ret);</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">sys_cputs</span><span class="hljs-params">(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *s, <span class="hljs-keyword">size_t</span> len)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	syscall(SYS_cputs, <span class="hljs-number">0</span>, (<span class="hljs-keyword">uint32_t</span>)s, len, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">sys_cgetc</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> syscall(SYS_cgetc, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">sys_env_destroy</span><span class="hljs-params">(<span class="hljs-keyword">envid_t</span> envid)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> syscall(SYS_env_destroy, <span class="hljs-number">1</span>, envid, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">envid_t</span> sys_getenvid(<span class="hljs-keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	 <span class="hljs-keyword">return</span> syscall(SYS_getenvid, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>lib/syscall.c是提供给用户的接口，可以看到<code>sys_cputs</code>等接口是对lib/syscall.c中的<code>syscall</code>的一层封装，而<code>lib/syscall.c:syscall</code>的嵌入汇编代码使用了<code>int</code>触发软件中断（因此根据前面的exercise的讨论，必须将T_SYSCALL对应的Interrupt gate的DPL设置为3，才能正常通过<code>int</code>触发T_SYSCALL软件中断，否则会被处理器检测到General-protection exception）,并且该汇编代码声明了将输入值存放进%eax,%edx,%ecx,%ebx,%edi和%esi，输出值存放至%eax。</p>
+<p>除此之外，<code>volatile</code>关键字在并发编程中很常见，它主要有两个作用：</p>
+<ol>
+<li>保证内存的可见性；</li>
+<li>禁止指令重排序；</li>
+</ol>
+<p>但是在这里，根据注释，它的主要作用应该是告诉编译器不要优化，禁止指令重排序。</p>
+<p>随之，在<code>lib/syscall.c:syscall</code>触发了T_SYSCALL中断之后，又会进入到之前<a href="#OSELAB3_A.4">Exercise 4</a>的call flow，最终进入<code>kern/trap.c:trap_dispatch</code>，并且调用<code>kern/syscall.c:syscall</code>，而这个函数就是该exercise要我们实现的，实现不难，这里就不再赘述：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// Dispatches to the correct kernel function, passing the arguments.</span></span><br><span class="line"><span class="hljs-keyword">int32_t</span> syscall(<span class="hljs-keyword">uint32_t</span> syscallno, <span class="hljs-keyword">uint32_t</span> a1, <span class="hljs-keyword">uint32_t</span> a2, <span class="hljs-keyword">uint32_t</span> a3, <span class="hljs-keyword">uint32_t</span> a4, <span class="hljs-keyword">uint32_t</span> a5)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="hljs-comment">// Call the function corresponding to the 'syscallno' parameter.</span></span><br><span class="line">	<span class="hljs-comment">// Return any appropriate return value.</span></span><br><span class="line">	<span class="hljs-keyword">switch</span> (syscallno) &#123;</span><br><span class="line">	<span class="hljs-keyword">case</span> SYS_cputs:sys_cputs((<span class="hljs-keyword">char</span> *)a1, (<span class="hljs-keyword">size_t</span>)a2);<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	<span class="hljs-keyword">case</span> SYS_cgetc:<span class="hljs-keyword">return</span> sys_cgetc();</span><br><span class="line">	<span class="hljs-keyword">case</span> SYS_getenvid:<span class="hljs-keyword">return</span> (<span class="hljs-keyword">envid_t</span>)sys_getenvid();</span><br><span class="line">	<span class="hljs-keyword">case</span> SYS_env_destroy:<span class="hljs-keyword">return</span> sys_env_destroy((<span class="hljs-keyword">envid_t</span>)a1);</span><br><span class="line">	<span class="hljs-keyword">default</span>:</span><br><span class="line">		<span class="hljs-keyword">return</span> -E_INVAL;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2><span id="exercise-8"><span id="OSELAB3_B.8">Exercise 8</span></span><a href="#exercise-8" class="header-anchor">#</a></h2><p>在libmain中添加：<br><code>thisenv = &amp;envs[ENVX(sys_getenvid())];</code><br>即可。</p>
+<hr>
+<h2><span id="exercise-9"><span id="OSELAB3_B.9">Exercise 9</span></span><a href="#exercise-9" class="header-anchor">#</a></h2><p>cs段寄存器的低两位用来标识privileged level，因此在<code>page_fault_handler</code>中可以通过检查tf-&gt;tf_cs的低两位来判断是kernel mode还是user mode：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">page_fault_handler</span><span class="hljs-params">(struct Trapframe *tf)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">uint32_t</span> fault_va;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Read processor's CR2 register to find the faulting address</span></span><br><span class="line">	fault_va = rcr2();</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Handle kernel-mode page faults.Beacuse it should never triger page fault in kernel-mode,just panic!</span></span><br><span class="line">	<span class="hljs-keyword">if</span>((tf-&gt;tf_cs &amp; <span class="hljs-number">3</span>) == <span class="hljs-number">0</span>)&#123;</span><br><span class="line">		panic(<span class="hljs-string">":( Your kernel triger a page fault at va@0x%08x !Bad kernel"</span>, fault_va);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// We've already handled kernel-mode exceptions, so if we get here,</span></span><br><span class="line">	<span class="hljs-comment">// the page fault happened in user mode.</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Destroy the environment that caused the fault.</span></span><br><span class="line">	cprintf(<span class="hljs-string">"[%08x] user fault va %08x ip %08x\n"</span>,</span><br><span class="line">		curenv-&gt;env_id, fault_va, tf-&gt;tf_eip);</span><br><span class="line">	print_trapframe(tf);</span><br><span class="line">	env_destroy(curenv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后就是内存访问权限的校验函数的实现，这部分有点坑，后面花了我很多时间找这个bug，如果不是我在写这部分的时候，就注释了我对这里理解可能有问题的话，可能会花更多时间：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">user_mem_check</span><span class="hljs-params">(struct Env *env, <span class="hljs-keyword">const</span> <span class="hljs-keyword">void</span> *va, <span class="hljs-keyword">size_t</span> len, <span class="hljs-keyword">int</span> perm)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-comment">// LAB 3: Your code here.</span></span><br><span class="line">	<span class="hljs-keyword">uintptr_t</span> startVa = ROUNDDOWN((<span class="hljs-keyword">uintptr_t</span>)va, PGSIZE), endVa = ROUNDUP((<span class="hljs-keyword">uintptr_t</span>)(va + len), PGSIZE);</span><br><span class="line">	<span class="hljs-keyword">pte_t</span> *pte;</span><br><span class="line">	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">PageInfo</span> *<span class="hljs-title">pageInfo</span>;</span></span><br><span class="line">	<span class="hljs-keyword">uint32_t</span> permissions = perm | PTE_P;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">for</span>(; startVa &lt; endVa; startVa += PGSIZE)&#123;</span><br><span class="line">		pageInfo = page_lookup(env-&gt;env_pgdir, (<span class="hljs-keyword">void</span> *)startVa, &amp;pte);</span><br><span class="line">		<span class="hljs-keyword">if</span>(!pageInfo || startVa &gt; (<span class="hljs-keyword">uintptr_t</span>)ULIM || ((*pte) &amp; permissions) != permissions)&#123;</span><br><span class="line">			<span class="hljs-comment">// cprintf("startVa=&gt;0x%08x vaFromPte=&gt;0x%08x *pte=&gt;0x%08x\n", startVa, KADDR(PTE_ADDR(*pte)), *pte);</span></span><br><span class="line">			<span class="hljs-comment">// if there is an error,set the 'user_mem_check_addr' variable to the first erroneous virtual address.</span></span><br><span class="line">			<span class="hljs-comment">// :( well,sorry I can't really understand the meaning of "first erroneous virtual address."</span></span><br><span class="line">			<span class="hljs-comment">// Holy shit,this takes me really a lot of time to fix this bug to pass the whole test cases.</span></span><br><span class="line">			user_mem_check_addr = (startVa &lt; (<span class="hljs-keyword">uintptr_t</span>)va?(<span class="hljs-keyword">uintptr_t</span>)va:startVa);</span><br><span class="line">			<span class="hljs-keyword">return</span> -E_FAULT;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时运行<code>make run-breakpoint</code>并且调用<code>backtrace</code>后会触发page fault:</p>
+<figure class="highlight 1c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">K&gt; backtrace'</span><br><span class="line">ebp efffff00 eip f<span class="hljs-number">0100</span>8fd args <span class="hljs-number">00000001</span> efffff28 f01b<span class="hljs-number">4000</span> 0a<span class="hljs-number">100188</span> f<span class="hljs-number">0105</span>d53</span><br><span class="line">	     kern/monitor.c:268: runcmd+-<span class="hljs-number">26738484</span>0</span><br><span class="line">ebp efffff80 eip f<span class="hljs-number">0100</span>c03 args <span class="hljs-number">00000002</span> <span class="hljs-number">00000000</span> efffffb0 f<span class="hljs-number">010382</span>1 f01b<span class="hljs-number">4000</span></span><br><span class="line">	     kern/monitor.c:289: monitor+-<span class="hljs-number">26738388</span>8</span><br><span class="line">ebp efffff90 eip f<span class="hljs-number">010382</span>1 args f01b<span class="hljs-number">4000</span> efffffbc <span class="hljs-number">00000000</span> <span class="hljs-number">00000082</span> <span class="hljs-number">00000000</span></span><br><span class="line">	     kern/trap.c:203: trap+-<span class="hljs-number">26737269</span>2</span><br><span class="line">ebp efffffb0 eip f<span class="hljs-number">010394</span>3 args efffffbc <span class="hljs-number">00000000</span> <span class="hljs-number">00000000</span> eebfdfd0 efffffdc</span><br><span class="line">	     kern/syscall.c:69: syscall+-<span class="hljs-number">26737222</span>1</span><br><span class="line">ebp eebfdfd0 eip <span class="hljs-number">800073</span> args <span class="hljs-number">00000000</span> <span class="hljs-number">00000000</span> eebfdff0 <span class="hljs-number">00800049</span> <span class="hljs-number">00000000</span></span><br><span class="line">	     lib/libmain.c:26: libmain+<span class="hljs-number">838866</span>5</span><br><span class="line">Incoming TRAP frame at 0xeffffe8c</span><br><span class="line">kernel panic at kern/trap.c:271: :( Your kernel triger a page fault at va@0xeebfe008 !Bad kernel</span><br><span class="line"></span><br><span class="line">K&gt; showMappings 0xeebfe008 0xeebfe008</span><br><span class="line">va@start: eebfe000 va@end: eebff000</span><br><span class="line">va@page: eebfe000 pa@page: <span class="hljs-number">00000000</span> @perm:PTE_P 0 PTE_U 0 PTE_W 0;</span><br></pre></td></tr></table></figure>
+
+<p>showMappings的其它值都不重要，可以看到0xeebfe008对应的页的起始地址为0xeebfe000，而在memlayout.h中标明了0xeebfe000为USTACKTOP，也就是说backtrace最后触发page fault就是因为其尝试访问高于USTACKTOP的地址了。</p>
+<hr>
+<h2><span id="exercise-10"><span id="OSELAB3_B.10">Exercise 10</span></span><a href="#exercise-10" class="header-anchor">#</a></h2><p><code>make run-evilhello</code>，如果这个test case无法通过，可能就是上面的<code>user_mem_check</code>那里那个比较坑的地方不对。</p>
+<hr>
+<h1><span id="test"><span id="OSELAB3_TEST">TEST</span></span><a href="#test" class="header-anchor">#</a></h1><hr>
+<figure class="highlight angelscript hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">divzero: OK (<span class="hljs-number">2.0</span>s) </span><br><span class="line">softint: OK (<span class="hljs-number">0.8</span>s) </span><br><span class="line">badsegment: OK (<span class="hljs-number">1.0</span>s) </span><br><span class="line">Part A score: <span class="hljs-number">30</span>/<span class="hljs-number">30</span></span><br><span class="line"></span><br><span class="line">faultread: OK (<span class="hljs-number">2.0</span>s) </span><br><span class="line">faultreadkernel: OK (<span class="hljs-number">1.0</span>s) </span><br><span class="line">faultwrite: OK (<span class="hljs-number">1.9</span>s) </span><br><span class="line">faultwritekernel: OK (<span class="hljs-number">1.2</span>s) </span><br><span class="line">breakpoint: OK (<span class="hljs-number">1.8</span>s) </span><br><span class="line">testbss: OK (<span class="hljs-number">2.3</span>s) </span><br><span class="line">hello: OK (<span class="hljs-number">1.0</span>s) </span><br><span class="line">buggyhello: OK (<span class="hljs-number">1.7</span>s) </span><br><span class="line">buggyhello2: OK (<span class="hljs-number">2.5</span>s) </span><br><span class="line">evilhello: OK (<span class="hljs-number">2.0</span>s) </span><br><span class="line">Part B score: <span class="hljs-number">50</span>/<span class="hljs-number">50</span></span><br><span class="line"></span><br><span class="line">Score: <span class="hljs-number">80</span>/<span class="hljs-number">80</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1><span id="references"><div align="center"><span id="OSELAB3_REFERENCES">REFERENCES</span><div></div></div></span><a href="#references" class="header-anchor">#</a></h1><p>【1】 <a href="https://pdos.csail.mit.edu/6.828/2018/readings/i386/toc.htm" target="_blank" rel="noopener">Intel 80386 Reference Programmer’s Manual</a><br>【2】 <a href="https://pdos.csail.mit.edu/6.828/2018/readings/ia32/IA32-3A.pdf" target="_blank" rel="noopener">Intel® 64 and IA-32 Architectures Software Developer’s Manual</a><br>【3】 <a href="https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev10.pdf" target="_blank" rel="noopener">XV6 - a simple, Unix-like teaching operating system - Reference Book</a><br>【4】 《Computer Systems: A Programmer’s Perspective (3rd Edition)》.Randal E.Bryant / David O’Hallaron.<br>【5】 《Modern Opeation Systems (Fourth Edition)》.Andrew S.Tanenbaum / Herbert Bos.</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/MIT6-828/">MIT6.828</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">MIT-6.828-LAB4 Preemptive Multitasking</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/">
+                <span class="level-item">MIT-6.828-LAB2 Memory Management</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2020/01/16/MIT-6-828-LAB3-User-Environments/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>Contents#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>Part A:User Environments and Exception Handling#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1</span>
+        <span>Exercise 1#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.2</span>
+        <span>Exercise 2#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.3</span>
+        <span>Exercise 3#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.4</span>
+        <span>Exercise 4#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.4.1</span>
+        <span>Challenge#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.4.2</span>
+        <span>Question#</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>Part B:Page Faults,Breakpoint Exceptions and System Calls#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.1</span>
+        <span>Exercise 5#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.2</span>
+        <span>Exercise 6#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.2.1</span>
+        <span>Challenge#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.2.2</span>
+        <span>Question#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.3</span>
+        <span>Exercise 7#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.4</span>
+        <span>Exercise 8#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.5</span>
+        <span>Exercise 9#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3.6</span>
+        <span>Exercise 10#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>TEST#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">5</span>
+        <span>REFERENCES#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB3 User Environments">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time></div>
+                    <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB3 User Environments</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB2 Memory Management">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time></div>
+                    <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB2 Memory Management</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
+                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="MIT-6.828-LAB3 User Environments" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

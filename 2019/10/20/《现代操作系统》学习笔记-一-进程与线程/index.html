@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>《现代操作系统》学习笔记(一):进程与线程 - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="@[TOC] 一、进程与线程的简单回顾进程与线程的简单回顾 《Modern Operating System》：进程就是一个正在执行的程序的实例，包括程序计数器、寄存器和变量的当前值。  每一个进程都拥有自己独立的地址空间（这源于虚拟内存技术），其中有程序和数据以及独立的用户栈和独立的堆空间等。例如在UNIX系统中，可以调用系统级函数fork()来创建一个子进程，在还未加载新的代码之前，此时子进程">
+<meta name="keywords" content="操作系统,进程,线程,互斥,临界区">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《现代操作系统》学习笔记(一):进程与线程">
+<meta property="og:url" content="https://qinstaunch.github.io/2019/10/20/《现代操作系统》学习笔记-一-进程与线程/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="@[TOC] 一、进程与线程的简单回顾进程与线程的简单回顾 《Modern Operating System》：进程就是一个正在执行的程序的实例，包括程序计数器、寄存器和变量的当前值。  每一个进程都拥有自己独立的地址空间（这源于虚拟内存技术），其中有程序和数据以及独立的用户栈和独立的堆空间等。例如在UNIX系统中，可以调用系统级函数fork()来创建一个子进程，在还未加载新的代码之前，此时子进程">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2019-12-23T01:24:48.904Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《现代操作系统》学习笔记(一):进程与线程">
+<meta name="twitter:description" content="@[TOC] 一、进程与线程的简单回顾进程与线程的简单回顾 《Modern Operating System》：进程就是一个正在执行的程序的实例，包括程序计数器、寄存器和变量的当前值。  每一个进程都拥有自己独立的地址空间（这源于虚拟内存技术），其中有程序和数据以及独立的用户栈和独立的堆空间等。例如在UNIX系统中，可以调用系统级函数fork()来创建一个子进程，在还未加载新的代码之前，此时子进程">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="《现代操作系统》学习笔记(一):进程与线程" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-10-20T04:57:36.000Z">2019-10-20</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    25 分钟 读完 (大约 3682 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                《现代操作系统》学习笔记(一):进程与线程
+            
+        </h1>
+        <div class="content">
+            <p>@[TOC]</p>
+<h2><span id="yi-jin-cheng-yu-xian-cheng-de-jian-dan-hui-gu">一、进程与线程的简单回顾</span><a href="#yi-jin-cheng-yu-xian-cheng-de-jian-dan-hui-gu" class="header-anchor">#</a></h2><h3><span id="jin-cheng-yu-xian-cheng-de-jian-dan-hui-gu">进程与线程的简单回顾</span><a href="#jin-cheng-yu-xian-cheng-de-jian-dan-hui-gu" class="header-anchor">#</a></h3><blockquote>
+<p>《Modern Operating System》：<strong>进程</strong>就是一个正在执行的程序的实例，包括程序计数器、寄存器和变量的当前值。</p>
+</blockquote>
+<p>每一个<strong>进程</strong>都拥有自己独立的地址空间（这源于虚拟内存技术），其中有程序和数据以及独立的用户栈和独立的堆空间等。例如在UNIX系统中，可以调用系统级函数fork()来创建一个子进程，在还未加载新的代码之前，此时子进程与父进程拥有几乎完全相同的内存映像、同样的环境字符串和同样的打开文件，可以通过execve()来重新加载新的程序（可执行文件），但是execve仅仅只是分配了虚拟页，此时并没有实际将程序从磁盘中调入内存，只有当某一条指令触发了缺页故障的时候，此时将陷入内核态，将该条指令虚拟页所指定的内容调入物理内存，并且修改相应的PTE条目（Page Table Entry)，然后系统调用返回到这条指令，再一次执行该指令时就不再会触发缺页故障了（详情可参考机械工业出版社的《深入理解计算机系统》第三版）。<br><strong>线程</strong>不准确地理解的话，可以将其看作一种轻量级的进程，同一个进程中的线程都有完全一样的地址空间，共享同样的全局变量，由于各个线程都可以放你问进程地址空间中的每一个内存地址，所以一个线程可以读、写甚至清除另一个线程的堆栈，也就是说，线程之间是没有保护的。除了共享地址空间外，还共享同一个打开文件集、子进程、定时器以及相关信号（因为这些基本上都是操作系统维护在进程的上下文中的）</p>
+<a id="more"></a>
+
+<hr>
+<h3><span id="wei-shi-me-xu-yao-xian-cheng">为什么需要线程？</span><a href="#wei-shi-me-xu-yao-xian-cheng" class="header-anchor">#</a></h3><ol>
+<li>线程拥有<strong>共享同一个地址空间和所有可用数据的能力</strong>，但是多进程模型无法做到；</li>
+<li>线程比进程更<strong>轻量级</strong>，创建线程的开销比创建进程的<strong>开销要小得多</strong>（无论是时间上还是空间上），也更容易撤销；</li>
+<li><strong>性能</strong>。若多个线程都是CPU密集型的，那么不能获得性能上的增强（线程的调度也是需要开销的），但是如果存在着大量的计算和I/O处理，拥有多个线程允许这些活动彼此重叠进行，从而会加快应用程序执行的速度</li>
+</ol>
+<hr>
+<h3><span id="xian-cheng-bao-de-shi-xian-fang-shi">线程包的实现方式</span><a href="#xian-cheng-bao-de-shi-xian-fang-shi" class="header-anchor">#</a></h3><p> <strong>线程包</strong>有两种实现方式：在用户空间中和在内核中。除此之外还有混合实现方式。</p>
+<ol>
+<li>第一种实现方式就是把整个线程包放在用户空间中，而内核对线程包一无所知。在这种方式下，进程中有一个运行时系统，管理着该进程特有的线程表（thread table），用来跟踪该进程中的线程。</li>
+<li>第二种实现方式就不需要运行时系统了，每个进程也不要存储和管理各自的线程表了，相反，在内核当中有用来记录系统中所有线程的线程表（进程通常运行在用户模式下，对内存的访问通常是受限的）。当某个线程希望创建一个新线程或者撤销一个已有线程时，它进行一个系统调用（系统调用实际上是一种异常控制流，注意和Java的异常区别开来，中断、陷阱、故障等实际上都是一种异常控制流），该系统调用将切换到内核模式（内核模式拥有最高访问权限），并且通过对线程表的更新完成线程创建或撤销工作。</li>
+</ol>
+<hr>
+<h3><span id="liang-chong-xian-cheng-bao-de-shi-xian-fang-shi-ge-zi-de-you-que-dian-zong-jie">两种线程包的实现方式各自的优缺点总结</span><a href="#liang-chong-xian-cheng-bao-de-shi-xian-fang-shi-ge-zi-de-you-que-dian-zong-jie" class="header-anchor">#</a></h3><p>在用户空间中实现线程包：</p>
+<ul>
+<li>优点：<pre><code>1. 用户级线程包可以在不支持线程的操作系统上实现；
+2. 允许每个进程有自己定制的调度算法；
+3. 当某个线程做了一些会引起在**本地阻塞**的事情之后，运行时系统将会调度该进程中的其它线程来运行，并且如果机器有一条保存所有寄存器的指令和另一条装入全部寄存器的指令，那么整个线程的切换就可以在几条指令内完成，这比内核级线程的切换的代价要小得多（因为内核级线程的切换首先陷入内核，切换上下文，这个开销是巨大的）；</code></pre></li>
+<li>缺点：<pre><code>1. 阻塞系统调用。如果进程P中的某一个线程产生了一个阻塞系统调用，那么由于会进行上下文的切换，整个进程都将被阻塞，从而导致该进程中的其它线程也被迫进入阻塞状态，这显然违背了线程本身出现的原因；
+2. 缺页中断问题。在《深入理解计算机系统》这本书中，对程序的加载进行了详细的解释与说明，以UNIX系统为例，调用execve()之后，只是分配了虚拟页，程序实际上还并没有加载进内存，详细可自行查阅。如果某个程序调用或者跳转到了一条不在内存上的指令时，将会引发缺页故障，从而导致整个**进程**陷入内核态，然后内核异常处理程序将对应的虚拟页调入物理内存当中，并且修改相应的PTE，然后返回到引发该缺页故障的指令，该指令将会重新执行，这一次就不会再触发缺页故障了。显然，缺页中断将会导致整个进程中的线程都被阻塞直到缺页故障被处理完毕；
+3. 在用户级线程包中，如果一个线程开始运行，那么在该进程中的其它线程就不能运行，除非第一个线程自动放弃CPU。</code></pre></li>
+</ul>
+<p>在内核中实现线程:</p>
+<ul>
+<li>优点：<pre><code>1. 不再需要运行时系统了，每个进程中也没有线程表，相反，线程统一由内核维护在内核区域中；
+2. 解决了阻塞系统调用的问题。所有能够阻塞线程的调用都以系统调用的形式实现，当一个线程阻塞时，内核根据相应的调度算法而调度其它就绪状态的线程的运行；
+3. 解决了缺页中断问题。同样的，当一个线程引发了缺页故障需要将所需要的页面调入物理内存时，内核可选择调度其它线程来运行；</code></pre></li>
+<li>缺点：<pre><code>1. 信号（Signal）是发送给进程的（在进程的上下文中由内核维护着一个bind向量，详情请查看《深入理解计算机系统》），当一个信号到达的时候，那么这个信号应该由哪一个线程来处理？
+2. 当一个进程创建了一个子进程的时候，新的进程是应该拥有与父进程一样的线程吗？等等这些问题都是值得考虑的。</code></pre></li>
+</ul>
+<hr>
+<h2><span id="er-jin-cheng-jian-tong-xin">二、进程间通信</span><a href="#er-jin-cheng-jian-tong-xin" class="header-anchor">#</a></h2><h3><span id="jing-zheng-tiao-jian-hu-chi-yu-lin-jie-qu">竞争条件、互斥与临界区</span><a href="#jing-zheng-tiao-jian-hu-chi-yu-lin-jie-qu" class="header-anchor">#</a></h3><blockquote>
+<p>《Modern Operating Systems》：</p>
+<blockquote>
+<ul>
+<li><strong>竞争条件</strong>（Race Condition）即两个或者多个进程读写某些共享数据，而最后的结果取决于进程运行的精确时序。</li>
+<li><strong>互斥</strong>（Mutual Exclusion）即以某种手段确保当一个进程在使用一个共享变量或文件时，其它进程不能做同样的操作。</li>
+<li><strong>临界区</strong>（Critical Region）即对共享内存进行访问的程序片段。</li>
+</ul>
+</blockquote>
+</blockquote>
+<hr>
+<h3><span id="jie-jue-gong-xiang-shu-ju-de-bing-fa-jin-cheng-xu-yao-man-zu-de-tiao-jian">解决共享数据的并发进程需要满足的条件</span><a href="#jie-jue-gong-xiang-shu-ju-de-bing-fa-jin-cheng-xu-yao-man-zu-de-tiao-jian" class="header-anchor">#</a></h3><ol>
+<li><strong>任何</strong>两个进程不能同时处于其临界区中；</li>
+<li>不应对CPU的速度和数量做<strong>任何</strong>假设；</li>
+<li>临界区外运行的进程不得阻塞其它进程；</li>
+<li>不能够使进程无限期等待进入临界区；</li>
+</ol>
+<hr>
+<h3><span id="hu-chi-de-shi-xian-fang-shi-gai-shu">互斥的实现方式概述</span><a href="#hu-chi-de-shi-xian-fang-shi-gai-shu" class="header-anchor">#</a></h3><p>在软件层面上和硬件层面上都可以实现互斥：</p>
+<ul>
+<li><strong>软件层面</strong>：<ul>
+<li>锁变量</li>
+<li>严格轮换法（Busy Waiting）</li>
+<li>Peterson解法（Busy Waiting）</li>
+<li>…</li>
+</ul>
+</li>
+<li><strong>硬件层面</strong>：<ul>
+<li>屏蔽中断（仅适用于单处理器操作系统）</li>
+<li>专用机器指令（例如TSL指令，XCHG指令，保证了操作的原子性）</li>
+<li>Semaphore信号量（很重要，既能够实现互斥也能够实现同步）</li>
+<li>管程（一个编程语言概念，不是所有语言都支持管程，Java支持）</li>
+<li>消息传递（Message Passing）<h4><span id="hu-chi-de-shi-xian-fang-shi-xiang-jie-ruan-jian-ceng-mian">互斥的实现方式详解：软件层面</span><a href="#hu-chi-de-shi-xian-fang-shi-xiang-jie-ruan-jian-ceng-mian" class="header-anchor">#</a></h4></li>
+</ul>
+</li>
+<li>锁变量：设定有一个进程间共享锁，初始值为0，当一个进程想要进入临界区时，首先测试这把锁，如果值为0，则该进程将其设置为1并且进入临界区；若为1，则该进程将等待直到其值变为0。<ul>
+<li>实际上并没有解决互斥问题，仍然存在竞争条件，仍有可能导致多个进程同时进入临界区之中。</li>
+</ul>
+</li>
+<li>严格轮换法：共享一个整型变量turn，初始值为0，用于记录轮到哪个进程进入临界区，并且检查或共享内存。开始时，进程0检查其值为0，于是进入临界区，进程1也发现其值为0，所以在一个等待循环中不停地测试turn，看其值何时变为1。（本质上就是busy waiting)<ul>
+<li>显然，假设进程0在非临界区中运行的速度很慢而导致其慢于进程1的运行速度，当进程0离开临界区之后并且将turn置为1，然后进程1进入临界区并且很快执行完毕，那么进程1将会由于进程0的非临界区代码的运行速度太慢而迟迟不将turn置为1，从而被阻塞，<strong>换而言之，进程1是被一个临界区外之外的进程所阻塞</strong>。这显然违反了之前所说的四个条件中的第三个。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/* </span></span><br><span class="line"><span class="hljs-comment">** 严格轮换法示意</span></span><br><span class="line"><span class="hljs-comment">** from Modern Operating Systems</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-comment">/* 进程0 */</span></span><br><span class="line"><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;t</span><br><span class="line">	<span class="hljs-keyword">while</span>(turn!=<span class="hljs-number">0</span>);</span><br><span class="line">	critical_region(); <span class="hljs-comment">// 临界区</span></span><br><span class="line">	turn=<span class="hljs-number">1</span>;</span><br><span class="line">	noncritical_region();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/* 进程1 */</span></span><br><span class="line"><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;</span><br><span class="line">	<span class="hljs-keyword">while</span>(turn!=<span class="hljs-number">1</span>);</span><br><span class="line">	critical_region(); <span class="hljs-comment">// 临界区</span></span><br><span class="line">	turn=<span class="hljs-number">0</span>;</span><br><span class="line">	noncritical_region();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4><span id="hu-chi-de-shi-xian-fang-shi-xiang-jie-ying-jian-ceng-mian">互斥的实现方式详解：硬件层面</span><a href="#hu-chi-de-shi-xian-fang-shi-xiang-jie-ying-jian-ceng-mian" class="header-anchor">#</a></h4><ul>
+<li>屏蔽中断：即使每个进程在刚刚进入临界区后立即屏蔽所有中断，并且在离开临界区时打开中断。屏蔽中断后，时钟中断也被屏蔽，因此不会发生进程的切换，从而也就实现了进程的互斥。<ul>
+<li>缺点是仅仅适用于单处理系统，但是屏蔽中断对于操作系统本身而言是一项很有用的技术。</li>
+</ul>
+</li>
+<li>专用机器指令<ul>
+<li>优点是：1、不管是在单处理器还是多处理器上，对任意数量的进程都使用；2、原理很简单并且很容易实现；3、能够支持多个临界资源访问的控制；</li>
+<li>缺点是：1、忙等待；2、可能会有饥饿现象（Starvation）；3、可能导致死锁；</li>
+</ul>
+</li>
+<li><strong>Semaphore信号量</strong>：信号量是一种信号变量，其中它有一个整型值，并且还有一个队列表明阻塞在该信号量上的进程。（注：后续的内容在术语上与《现代操作系统》有出入，但是原理一致）<br>提供了wait和signal两个通信原语（即具有原子性，无法被中断），即以前所说的PV操作。<br>Wait操作对信号量的值做减W法，即：<br>Wait(s): s-1   等价于  P(s)   申请资源可能会阻塞自己（s&lt;0）<br>Signal操作对信号量的值做加法，即：<br>Signal(s): s+1   等价于  V(s)   释放资源并且唤醒阻塞在该信号量上的进程（s≤0）<br>信号量不仅能实现互斥，也能够实现同步。<br>信号量也可以划分为：互斥信号量（P74）和资源信号量。互斥信号量用于申请或释放资源的使用权，常初始化为1；资源信号量用于申请或归还资源，可以初始化为大于的1的正整数，表示系统中某类资源的可用个数。<br>信号量中s.count的意义为：若s.count≥0，表示还可以执行wait(s)而不会阻塞的进程数（可用资源数）；若s.count&lt;0，表示s.queue队列中阻塞进程的个数（被阻塞进程数）。<br>当用s来实现n个进程的互斥时，假设初始资源数为1，那么s.count的取值范围为1~ -(n-1)；</li>
+<li>管程：一个管程是一个由过程、变量及数据结构等组成的一个集合，它们组成一个特殊的模块或软件包。进程可以在任何需要的时候调用管程中的过程，但是它们能在管程之外声明的过程中直接访问管程内的数据结构。</li>
+<li>消息传递（message passing）：这种进程间通信的方法使用两条原语send和receive，它们像信号量而不像管程，是系统调用而不是语言成分。</li>
+</ul>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/临界区/">临界区</a>, <a class="has-link-grey -link" href="/tags/互斥/">互斥</a>, <a class="has-link-grey -link" href="/tags/操作系统/">操作系统</a>, <a class="has-link-grey -link" href="/tags/线程/">线程</a>, <a class="has-link-grey -link" href="/tags/进程/">进程</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/10/25/MySQL学习笔记学习笔记-一-存储引擎和事务/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">MySQL学习笔记（一）：存储引擎和事务</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/10/11/浅谈装饰器设计模式/">
+                <span class="level-item">浅谈装饰器设计模式</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2019/10/20/《现代操作系统》学习笔记-一-进程与线程/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>一、进程与线程的简单回顾#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1.1</span>
+        <span>进程与线程的简单回顾#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1.2</span>
+        <span>为什么需要线程？#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1.3</span>
+        <span>线程包的实现方式#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1.4</span>
+        <span>两种线程包的实现方式各自的优缺点总结#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>二、进程间通信#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1</span>
+        <span>竞争条件、互斥与临界区#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.2</span>
+        <span>解决共享数据的并发进程需要满足的条件#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.3</span>
+        <span>互斥的实现方式概述#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.3.1</span>
+        <span>互斥的实现方式详解：软件层面#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.3.2</span>
+        <span>互斥的实现方式详解：硬件层面#</span>
+        </a></li></ul></li></ul></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB3 User Environments">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time></div>
+                    <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB3 User Environments</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB2 Memory Management">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time></div>
+                    <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB2 Memory Management</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
+                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="《现代操作系统》学习笔记(一):进程与线程" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

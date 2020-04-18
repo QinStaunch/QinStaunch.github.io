@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>HashMap+ConcurrentHashMap+同步HashMap - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="文章目录: 一、概述 二、Hash算法概述 三、红黑树原理 四、HashMap源码分析 内部Node结点 putVal方法 获取散列桶索引值的方法 整个put方法流程图 为什么自己定义的类作为键值需要重写hashCode()以及equals()方法？   get方法 resize方法 计算新的散列表容量以及实际能容纳的键值对的数量的阈值 对一个给定值p，如何计算相应的小于P的2的幂的最大值？如何计">
+<meta name="keywords" content="并发控制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HashMap+ConcurrentHashMap+同步HashMap">
+<meta property="og:url" content="https://qinstaunch.github.io/2019/12/05/HashMap-ConcurrentHashMap-同步HashMap/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="文章目录: 一、概述 二、Hash算法概述 三、红黑树原理 四、HashMap源码分析 内部Node结点 putVal方法 获取散列桶索引值的方法 整个put方法流程图 为什么自己定义的类作为键值需要重写hashCode()以及equals()方法？   get方法 resize方法 计算新的散列表容量以及实际能容纳的键值对的数量的阈值 对一个给定值p，如何计算相应的小于P的2的幂的最大值？如何计">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2019-12-23T01:24:19.052Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HashMap+ConcurrentHashMap+同步HashMap">
+<meta name="twitter:description" content="文章目录: 一、概述 二、Hash算法概述 三、红黑树原理 四、HashMap源码分析 内部Node结点 putVal方法 获取散列桶索引值的方法 整个put方法流程图 为什么自己定义的类作为键值需要重写hashCode()以及equals()方法？   get方法 resize方法 计算新的散列表容量以及实际能容纳的键值对的数量的阈值 对一个给定值p，如何计算相应的小于P的2的幂的最大值？如何计">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="HashMap+ConcurrentHashMap+同步HashMap" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-12-05T12:12:25.000Z">2019-12-05</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Java/">Java</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/Java/并发控制/">并发控制</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    42 分钟 读完 (大约 6359 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                HashMap+ConcurrentHashMap+同步HashMap
+            
+        </h1>
+        <div class="content">
+            <h1><span id="wen-zhang-mu-lu"><span>文章目录:</span></span><a href="#wen-zhang-mu-lu" class="header-anchor">#</a></h1><ul>
+<li><a href="#1">一、概述</a></li>
+<li><a href="#2">二、Hash算法概述</a></li>
+<li><a href="#3">三、红黑树原理</a></li>
+<li><a href="#4">四、HashMap源码分析</a><ul>
+<li><a href="#4.1">内部Node结点</a></li>
+<li><a href="#4.2">putVal方法</a><ul>
+<li><a href="#4.2.1">获取散列桶索引值的方法</a></li>
+<li><a href="#4.2.2">整个put方法流程图</a></li>
+<li><a href="#4.2.3">为什么自己定义的类作为键值需要重写hashCode()以及equals()方法？</a></li>
+</ul>
+</li>
+<li><a href="#4.3">get方法</a></li>
+<li><a href="#4.4">resize方法</a><ul>
+<li><a href="#4.4.1">计算新的散列表容量以及实际能容纳的键值对的数量的阈值</a><ul>
+<li><a href="#4.4.1.1">对一个给定值p，如何计算相应的小于P的2的幂的最大值？如何计算大于p的2的幂的最小值？</a></li>
+</ul>
+</li>
+<li><a href="#4.4.2">需要改变位置的键值对放置到散列桶中</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#5">五、同步容器SynchronizedMap</a></li>
+<li><a href="#6">六、使用了“魔法”的并发容器ConcurrentHashMap</a><ul>
+<li><a href="#6.1">“黑魔法”sun.misc.Unsafe</a></li>
+<li><a href="#6.2">Volatile table element access</a></li>
+<li><a href="#6.3">多线程环境下初始化散列表initTable()</a></li>
+<li><a href="#6.4">putVal</a></li>
+<li><a href="#6.5">helpTransfer</a>[to do]</li>
+<li><a href="#6.6">addCount</a>[to do]</li>
+</ul>
+</li>
+<li><a href="#8">参考资料</a></li>
+</ul>
+<h1><span id="yi-gai-shu"><span id="1">一、概述</span></span><a href="#yi-gai-shu" class="header-anchor">#</a></h1><a id="more"></a>
+
+<h1><span id="er-hash-biao-gai-nian-hui-gu"><span id="2">二、Hash表概念回顾</span></span><a href="#er-hash-biao-gai-nian-hui-gu" class="header-anchor">#</a></h1><blockquote>
+<p>【1】<strong>哈希表</strong>：根据设定的哈希函数<code>H(key)</code>和处理冲突的方法将一组关键字映像到一个有限的连续的地址集（区间）上，并以关键字在地址集中的“像”作为记录在表中的存储位置，这种表便称为<strong>哈希表</strong>，这一映像过程称为哈希造表或散列，所得存储位置称为哈希地址或散列地址。</p>
+</blockquote>
+<p>常见的几种哈希函数的构造方法：  </p>
+<ol>
+<li>直接定址法：取关键字或关键字的某个线性函数值为哈希地址。即：  <center>*H(key)=key或H(key)=a·key+b*</center></li>
+<li>数字分析法：假设关键字是以r为基的数，并且哈希表中可能出现的关键字都是事先知道的，则可取关键字的若干数位组成哈希地址。</li>
+<li>平方取中法：取关键字平方后的中间几位为哈希地址。</li>
+<li>折叠法：将关键字分割成位数相同的几部分，然后取这几部分的叠加和作为哈希地址。</li>
+<li>除留取余法：取关键字被某个不大于哈希表表长m的数p除后所得余数为哈希地址，通常取素数，因为使用素数会降低发生哈希冲突的概率。即：  <center>*H(key)=key MOD p,p<=m*< center></=m*<></center></li>
+<li>随机数法：选择一个随机函数，取关键字的随机函数值作为它的哈希地址，即:  <center>*H(key)=random(key),random为随机函数*</center>
+
+</li>
+</ol>
+<p>处理冲突的方法：  </p>
+<ol>
+<li>开放定址法：  <center>*H'=(H(key)+d) MOD m*</center></li>
+<li>再哈希法：  <center>*H=RH(key)*</center>  </li>
+<li>链地址法：将所有关键字为同义词的记录存储在同一线性链表中。假设某哈希函数产生的哈希地址在区间[0,m-1]上，则设立一个指针型向量：  <center>*Chain ChainHash[m]*</center>
+其每个分量的初始状态都为空指针，凡哈希地址为i的记录都插入到头指针为`ChainHash[i]`的链表中。
+# <span id="3">三、红黑树原理</span>
+## <span id="3.1">红黑树概念及性质</span>
+>【2】红黑树：红黑树是一颗每个节点都带有颜色属性的二叉查找树，在每个节点的属性除了1个key和3个指针：parent,lchild,rchild之外，还具有额外的color属性，要求每个节点为红色或黑色。在二叉查找树的一般要求之外，同时增加了如下的额外定义：
+>1. 节点是红色或黑色。
+>2. 根节点是黑色。
+>3. 每个叶节点（NIL节点，空结点）是黑色的。
+>4. 每个红色节点的两个子节点都是黑色（从每个叶子到根的所有路径上不能有两个连续的红色节点）。
+>5. **从任一节点到其每个叶子的所有路径都包含相同数目的黑色节点。**
+
+</li>
+</ol>
+<p>红黑树是近似平衡的二叉查找树（不同于平衡二叉树的完美平衡），同样，相较于平衡二叉树使用四种旋转操作来实现完美平衡，红黑树通过左旋、右旋以及节点的变色来满足红黑树的性质，实现近似平衡。其中，左旋以及右旋操作与平衡二叉树完全一致。不同的点在于，红黑树还需要对颜色进行变换。<br>其次，红黑树在我的理解当中可以看作2-3树的变形，设计红黑树的作者使用颜色巧妙地改造了2-3树，从而使得2-3树能够通过二叉树的方式进行算法设计，</p>
+<p>其实自己一开始写了一版自己的，但是后来我搜索了红黑树，找到了一些博客，发现自己写的那一版就是shit，因此这里推荐阅读它们的，更好懂，更形象：  <a href="https://www.jianshu.com/p/e136ec79235c" target="_blank" rel="noopener">30张图带你彻底理解红黑树</a></p>
+<h1><span id="si-hashmap-yuan-ma-fen-xi"><span id="4">四、HashMap源码分析</span></span><a href="#si-hashmap-yuan-ma-fen-xi" class="header-anchor">#</a></h1><h2><span id="nei-bu-node-jie-dian"><span id="4.1">内部Node结点</span></span><a href="#nei-bu-node-jie-dian" class="header-anchor">#</a></h2><p>这一部分没有什么注意的点，就是简单的链表的形式。</p>
+<h2><span id="putval-fang-fa"><span id="4.2">putVal方法</span></span><a href="#putval-fang-fa" class="header-anchor">#</a></h2><p>put方法会调用内部的putval方法，putval方法的方法签名为：<br><code>final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+boolean evict)</code><br>可以看到在调用内部<code>putVal</code>方法时，已经通过<code>hash(key)</code>计算出了键的hash值：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> V <span class="hljs-title">put</span><span class="hljs-params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> putVal(hash(key), key, value, <span class="hljs-keyword">false</span>, <span class="hljs-keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> <span class="hljs-title">hash</span><span class="hljs-params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">int</span> h;</span><br><span class="line">    <span class="hljs-keyword">return</span> (key == <span class="hljs-keyword">null</span>) ? <span class="hljs-number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="hljs-number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该哈希算法调用键的<code>hashCode()</code>方法得到初步hash值并且将高16位与低16位进行异或得到最终的hash值，为什么要这么做？不能够直接使用键本身的hash值吗？在JDK8中的源码注释是这样解释的：</p>
+<blockquote>
+<p>【注3】Because the table uses power-of-two masking, sets of hashes that vary only in bits above the current mask will always collide. (Among known examples are sets of Float keys holding consecutive whole numbers in small tables.)  So we apply a transform that spreads the impact of higher bits downward.</p>
+</blockquote>
+<p>解释得很清楚，由于hashMap散列桶的个数总是2的幂，并且hashMap使用其作为掩码实现快速除留取余的求散列桶索引的算法（在Hash算法概述当中，提到了通常使用素数作为散列桶的个数，而这里使用2的幂的原因稍后会给出答案），因此，对于那些哈希值的二进制1分布在掩码以上的位的时候，那么就必然会发生冲突，在很极端的条件下，假设此刻hashMap散列桶的数量为16，此时插入12个键的hash值都为16的倍数的不同键值对，若直接使用该hash值除留取余，那么该12个键值对都会发生冲突。<br><strong>对上面引用的JDK源码注释给出的例子的解释</strong>:并且，在注释中给出了一个更有说服力的例子，那就是使用浮点数作为键，但是浮点数都用来存储整数（误，这里说法不太对，大概是那么个意思），不如回想浮点数在计算中的编码方式，通常都是遵循IEEE754标准：<br><img src="https://img-blog.csdnimg.cn/20191203194649771.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MTcyNDAwMA==,size_16,color_FFFFFF,t_70" alt="图4-1 IEEE754标准单精度及双精度编码格式(图源哈尔滨工业大学CSAPP课程课件)"><br>因此，若散列表大小较小，那么基本上大多数浮点数键都会发生冲突，导致大量的键值对堆积在一个散列桶中，严重影响查找性能。<br>但是通过让高位与低位异或产生hash值就能显著消除这种现象的发生，换而言之，这个操作就是为了使hash值分布更均匀，减少哈希冲突的产生从而提高查找性能。</p>
+<p><span id="4.2.1"><strong>获取散列桶索引值的方法</strong>:</span>在上面也提到了，得到键的hash值之后还要通过除留取余法得到该键值对对应的散列桶索引，JDK8使用的方式是：  </p>
+<center>`(n-1) & hash`</center>其中n为散列表大小，在hashMap中始终为2的幂，为什么要求是2的幂，其实就是为了更快速地除留取余（相较于除法使用多个寄存器以及多条指令，这种方式仅仅需要一条指令，仅消耗一个指令周期的时间），其次，也方便后续hashMap的扩容`resize()`。
+
+<p><span id="4.2.2"><strong>整个put方法流程图</strong>：</span><br><img src="https://img-blog.csdnimg.cn/20191203200858997.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MTcyNDAwMA==,size_16,color_FFFFFF,t_70" alt="图4-2 put方法流程图"><br>在上述图中有两处注释点（并非参考资料注释）：</p>
+<ul>
+<li>注1：此处与源码略有差异，这里简化了流程；</li>
+<li>注2：此处阈值指的是将链表转换为红黑树的阈值，默认为8；</li>
+<li>注3：此处阈值指的是散列表大小*装载因子。比如初始散列表大小为16，装载因子为0.75，则该阈值为12；</li>
+</ul>
+<p><span id="4.2.3"><strong>为什么自己定义的类作为键值需要重写hashCode()以及equals()方法？</strong>：</span>因为hashMap使用键的hashCode方法获取hash值以计算散列桶索引，而当散列桶索引发生冲突的时候将比较键对象内存地址或者调用equals方法来判断是否是同一个键值：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span> (p.hash == hash &amp;&amp; ((k = p.key) == key || (key != <span class="hljs-keyword">null</span> &amp;&amp; key.equals(k))))&#123;</span><br><span class="line">	e = p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2><span id="get-fang-fa"><span id="4.3">get方法</span></span><a href="#get-fang-fa" class="header-anchor">#</a></h2><p>逻辑很简单，可见有时候重写hashCode()方法和equals()方法有多么重要：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> <span class="hljs-function"><span class="hljs-keyword">final</span> Node&lt;K,V&gt; <span class="hljs-title">getNode</span><span class="hljs-params">(<span class="hljs-keyword">int</span> hash, Object key)</span> </span>&#123;</span><br><span class="line">     Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; <span class="hljs-keyword">int</span> n; K k;</span><br><span class="line">     <span class="hljs-keyword">if</span> ((tab = table) != <span class="hljs-keyword">null</span> &amp;&amp; (n = tab.length) &gt; <span class="hljs-number">0</span> &amp;&amp; (first = tab[(n - <span class="hljs-number">1</span>) &amp; hash]) != <span class="hljs-keyword">null</span>) &#123;</span><br><span class="line"><span class="hljs-comment">// 检查第一个结点是否就是要查找的结点，同样比较内存地址或者调用equals方法</span></span><br><span class="line">         <span class="hljs-keyword">if</span> (first.hash == hash &amp;&amp; <span class="hljs-comment">// always check first node</span></span><br><span class="line">             ((k = first.key) == key || (key != <span class="hljs-keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">             <span class="hljs-keyword">return</span> first;</span><br><span class="line">         <span class="hljs-keyword">if</span> ((e = first.next) != <span class="hljs-keyword">null</span>) &#123;</span><br><span class="line">	<span class="hljs-comment">// 若是树结点，则调用红黑树的查找方法</span></span><br><span class="line">             <span class="hljs-keyword">if</span> (first <span class="hljs-keyword">instanceof</span> TreeNode)</span><br><span class="line">                 <span class="hljs-keyword">return</span> ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">	<span class="hljs-comment">// 否则就逐个比较链表上的结点是否是要找的结点</span></span><br><span class="line">             <span class="hljs-keyword">do</span> &#123;</span><br><span class="line">                 <span class="hljs-keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                     ((k = e.key) == key || (key != <span class="hljs-keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                     <span class="hljs-keyword">return</span> e;</span><br><span class="line">             &#125; <span class="hljs-keyword">while</span> ((e = e.next) != <span class="hljs-keyword">null</span>);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h2><span id="resize-fang-fa"><span id="4.4">resize方法</span></span><a href="#resize-fang-fa" class="header-anchor">#</a></h2><p>当达到散列表阈值之后需要对散列表进行扩容，这部分代码很长，因此将其分为两部分：</p>
+<ol>
+<li>计算新的散列表容量以及实际能容纳的键值对的数量的阈值；</li>
+<li>需要改变位置的键值对放置到散列桶中；</li>
+</ol>
+<p><span id="4.4.1"><strong>1.计算新的散列表容量以及实际能容纳的键值对的数量的阈值</strong>：</span><br>这部分代码如下：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">    <span class="hljs-keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">        <span class="hljs-keyword">int</span> oldCap = (oldTab == <span class="hljs-keyword">null</span>) ? <span class="hljs-number">0</span> : oldTab.length;</span><br><span class="line">        <span class="hljs-keyword">int</span> oldThr = threshold;</span><br><span class="line">        <span class="hljs-keyword">int</span> newCap, newThr = <span class="hljs-number">0</span>;</span><br><span class="line">		<span class="hljs-comment">// 【1】</span></span><br><span class="line">        <span class="hljs-keyword">if</span> (oldCap &gt; <span class="hljs-number">0</span>) &#123;</span><br><span class="line">            <span class="hljs-keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">                threshold = Integer.MAX_VALUE;</span><br><span class="line">                <span class="hljs-keyword">return</span> oldTab;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="hljs-number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp; oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">                newThr = oldThr &lt;&lt; <span class="hljs-number">1</span>; <span class="hljs-comment">// double threshold</span></span><br><span class="line">        &#125;</span><br><span class="line">		【<span class="hljs-number">2</span>】</span><br><span class="line">        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (oldThr &gt; <span class="hljs-number">0</span>) <span class="hljs-comment">// initial capacity was placed in threshold</span></span><br><span class="line">            newCap = oldThr;</span><br><span class="line">		【<span class="hljs-number">3</span>】</span><br><span class="line">        <span class="hljs-keyword">else</span> &#123;               <span class="hljs-comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">            newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">            newThr = (<span class="hljs-keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="hljs-keyword">if</span> (newThr == <span class="hljs-number">0</span>) &#123;</span><br><span class="line">            <span class="hljs-keyword">float</span> ft = (<span class="hljs-keyword">float</span>)newCap * loadFactor;</span><br><span class="line">            newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="hljs-keyword">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">                      (<span class="hljs-keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">        &#125;</span><br><span class="line">        threshold = newThr;</span><br><span class="line">		</span><br><span class="line">		......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于上面这段代码，三种情况：</p>
+<ul>
+<li>[1]：调用resize时，hashMap中有键值对映射，并且已经达到当前容量的阈值。并且，若此时散列表的容量已达到MAXIMUM_CAPACITY(2^30)，那么此时已经无法在扩容，只能无视装载因子的设定，将阈值提升至Integer.MAX_VALUE。否则，就将容量与阈值都增加到原来的两倍。</li>
+<li>[2]：此时是<strong>指定了容量</strong>的HashMap的初始化(e.g:new HashMap&lt;Integer,String&gt;(20))，也就是此时散列表还为null，但是前面提到了，HashMap要求散列表的容量必须为2的幂，那么这里指定20为初始容量应该报错才对，其实不然，在HashMap中会调用<code>tableSizeFor(int cap)</code>方法计算大于20的最小的2的幂，该函数引用了《Hackers Delight》中的一个算法来计算最接近你所给定的值的2的幂，后面会提到。</li>
+<li>[3]：此时是<strong>未指定容量</strong>的HashMap的初始化(e.g:new HashMap&lt;Integer,String&gt;())，于是会使用默认的初始容量16。</li>
+</ul>
+<p><span id="4.4.1.1">【注4】【注5】<strong>对一个给定值p，如何计算相应的小于P的2的幂的最大值？如何计算大于p的2的幂的最小值？</strong></span><br>在此之前不妨考虑这样一个问题：对任意一个数n=2^k(k=1,2,3…)，其二进制形式都会是这样的：000…010000..000(其中1后面有k个0),如何快速将1后面的0全部变为1？不妨可以这样考虑：<br><img src="https://img-blog.csdnimg.cn/20191204121809567.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MTcyNDAwMA==,size_16,color_FFFFFF,t_70" alt="图4-3 快速将最高位1后的0全部变为1"><br>若你之前不太明白HashMap中采用的算法的话，看到上面这个图，你也必然已经恍然大悟了。将上面的算法推广到一般情况，给定任意一个数，上面的算法显然也是适用的，因为该算法依靠的是最高位的1，无论后面数位是1还是0，进行⌈log2(k)⌉次运算之后，必然已经将最高位之后的位全部变为1了。</p>
+<p>下面我们再来看HashMap中的算法，源码如下：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> <span class="hljs-title">tableSizeFor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">int</span> n = cap - <span class="hljs-number">1</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="hljs-number">1</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="hljs-number">2</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="hljs-number">4</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="hljs-number">8</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="hljs-number">16</span>;</span><br><span class="line">    <span class="hljs-keyword">return</span> (n &lt; <span class="hljs-number">0</span>) ? <span class="hljs-number">1</span> : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + <span class="hljs-number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这时候再看这个算法是不是就已经很简单了，但是还有部分细节：  </p>
+<ol>
+<li><strong>为什么开始要减一？</strong>若cap本身就是2的幂，那么若直接移位运算，将最高位后面的0全部变为1，最后再加1，得到的结果将是2倍cap，这显然不对，应该就是cap才对，那么减去1就能完美解决这个问题。</li>
+<li><strong>为什么进行了5次无符号右移并异或的运算？</strong>很简单，HashMap将散列表的最大容量限定为2^30次方，那么最多只需要⌈log2(30)⌉=5次就能完成目标了。</li>
+<li>为什么最后要加1？额…如果你有这样的疑惑，说明你还没看懂。</li>
+</ol>
+<p>到这里，对于上面“对一个给定值p，如何计算相应的小于P的2的幂的最大值？如何计算大于p的2的幂的最小值？”的问题就完美解决啦~</p>
+<hr>
+<p><span id="4.4.2"><strong>2. 需要改变位置的键值对放置到散列桶中。</strong> </span><br>这部分代码如下所示：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line">     <span class="hljs-keyword">if</span> (oldTab != <span class="hljs-keyword">null</span>) &#123;</span><br><span class="line">         <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">             Node&lt;K,V&gt; e;</span><br><span class="line">             <span class="hljs-keyword">if</span> ((e = oldTab[j]) != <span class="hljs-keyword">null</span>) &#123;</span><br><span class="line">			<span class="hljs-comment">// 消除旧散列表的对结点的引用</span></span><br><span class="line">                 oldTab[j] = <span class="hljs-keyword">null</span>;</span><br><span class="line">			【<span class="hljs-number">1</span>】</span><br><span class="line">                 <span class="hljs-keyword">if</span> (e.next == <span class="hljs-keyword">null</span>)</span><br><span class="line">                     newTab[e.hash &amp; (newCap - <span class="hljs-number">1</span>)] = e;</span><br><span class="line">                 <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (e <span class="hljs-keyword">instanceof</span> TreeNode)</span><br><span class="line">                     ((TreeNode&lt;K,V&gt;)e).split(<span class="hljs-keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">                 <span class="hljs-keyword">else</span> &#123; <span class="hljs-comment">// preserve order</span></span><br><span class="line">                     Node&lt;K,V&gt; loHead = <span class="hljs-keyword">null</span>, loTail = <span class="hljs-keyword">null</span>;</span><br><span class="line">                     Node&lt;K,V&gt; hiHead = <span class="hljs-keyword">null</span>, hiTail = <span class="hljs-keyword">null</span>;</span><br><span class="line">                     Node&lt;K,V&gt; next;</span><br><span class="line">				【<span class="hljs-number">2</span>】</span><br><span class="line">                     <span class="hljs-keyword">do</span> &#123;</span><br><span class="line">                         next = e.next;</span><br><span class="line">                         <span class="hljs-keyword">if</span> ((e.hash &amp; oldCap) == <span class="hljs-number">0</span>) &#123;</span><br><span class="line">                             <span class="hljs-keyword">if</span> (loTail == <span class="hljs-keyword">null</span>)</span><br><span class="line">                                 loHead = e;</span><br><span class="line">                             <span class="hljs-keyword">else</span></span><br><span class="line">                                 loTail.next = e;</span><br><span class="line">                             loTail = e;</span><br><span class="line">                         &#125;</span><br><span class="line">                         <span class="hljs-keyword">else</span> &#123;</span><br><span class="line">                             <span class="hljs-keyword">if</span> (hiTail == <span class="hljs-keyword">null</span>)</span><br><span class="line">                                 hiHead = e;</span><br><span class="line">                             <span class="hljs-keyword">else</span></span><br><span class="line">                                 hiTail.next = e;</span><br><span class="line">                             hiTail = e;</span><br><span class="line">                         &#125;</span><br><span class="line">                     &#125; <span class="hljs-keyword">while</span> ((e = next) != <span class="hljs-keyword">null</span>);</span><br><span class="line">				【<span class="hljs-number">3</span>】</span><br><span class="line">                     <span class="hljs-keyword">if</span> (loTail != <span class="hljs-keyword">null</span>) &#123;</span><br><span class="line">                         loTail.next = <span class="hljs-keyword">null</span>;</span><br><span class="line">                         newTab[j] = loHead;</span><br><span class="line">                     &#125;</span><br><span class="line">                     <span class="hljs-keyword">if</span> (hiTail != <span class="hljs-keyword">null</span>) &#123;</span><br><span class="line">                         hiTail.next = <span class="hljs-keyword">null</span>;</span><br><span class="line">                         newTab[j + oldCap] = hiHead;</span><br><span class="line">                     &#125;</span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="hljs-keyword">return</span> newTab;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这部分代码值得注意得就是3个点：</p>
+<ul>
+<li>[1]：该散列桶中只有一个键值对，则根据新的散列表容量直接重新计算相应的散列索引并放入即可；</li>
+<li>[2]：这部分将该散列桶中链表的每个结点划分为两类，一类是loHead(lowerHead)，这部分在扩容后的散列表中散列索引不变，另一类是hiHead(HigherHead)，这部分在扩容后的散列表中散列索引发生了变化)；</li>
+<li>[3]：结束了划分之后，就将两个链表各自放在新散列表中的相应位置。</li>
+</ul>
+<p><strong>对第[2]部分的详细解释：</strong><br><code>e.hash &amp; oldCap</code> 做了什么？<br><img src="https://img-blog.csdnimg.cn/20191204141848978.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MTcyNDAwMA==,size_16,color_FFFFFF,t_70" alt="图4-4 详细解释"><br><strong>对第[3]部分的详细解释：</strong><br>明白了第[2]部分在做什么，第三部分其实就是把loHead放入索引相同的位置，把hiHead放入新的索引（因为hiHead连接的结点键的hash值都是扩容后增加的那一位为1的结点）</p>
+<h1><span id="wu-tong-bu-hashmap"><span id="5">五、同步HashMap</span></span><a href="#wu-tong-bu-hashmap" class="header-anchor">#</a></h1><p>同步容器基本上就是对线程不安全的容器进行了再次封装，【注6】这种技术通常可认为是实例封闭机制(Instance Confinement)。<code>Collections</code>类提供了包装器工厂方法，以HashMap的工厂方法为例：<code>Collections.synchronizedMap(new HashMap&lt;Integer,String&gt;())</code>，看到这样的形式就基本上能猜测，这里应用了装饰器设计模式的思想，(注：<a href="https://qinstaunch.github.io/2019/10/11/%E6%B5%85%E8%B0%88%E8%A3%85%E9%A5%B0%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">浅谈装饰器设计模式</a>)事实也的确是这样，在<code>Collections</code>类中有一个内部类<code>SynchronizedMap</code>，该内部类就是<code>Collections</code>为我们提供的装饰器类，它与<code>HashMap</code>暴露相同的接口，并且对该装饰器接口的调用最终会委派到内部你所传入的<code>Map</code>的相同接口上。</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// 工厂方法返回被装饰的对象</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;K,V&gt; <span class="hljs-function">Map&lt;K,V&gt; <span class="hljs-title">synchronizedMap</span><span class="hljs-params">(Map&lt;K,V&gt; m)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> SynchronizedMap&lt;&gt;(m);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而同步容器在并发的场景下能保证线程安全，但是吞吐量也是很低，因为其内部仅使用了一把锁，并且使用了重量级锁：Java对象监视器（Monitor）,在同一时刻仅仅允许一个线程对同步容器进行操作，无论是读操作，还是写操作：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">final</span> Object      mutex;        <span class="hljs-comment">// Object on which to synchronize</span></span><br></pre></td></tr></table></figure>
+
+<p>专门使用一个Object作为互斥锁，非常重量级、大范围、粗粒度地加锁：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> V <span class="hljs-title">put</span><span class="hljs-params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">synchronized</span> (mutex) &#123;<span class="hljs-keyword">return</span> m.put(key, value);&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1><span id="liu-shi-yong-liao-mo-fa-de-concurrenthashmap"><span id="6">六、使用了“魔法”的ConcurrentHashMap</span></span><a href="#liu-shi-yong-liao-mo-fa-de-concurrenthashmap" class="header-anchor">#</a></h1><p><strong>首先，声明！在ConcurrentHashMap中有许多与HashMap相同的原理就不再赘述！</strong><br>同步容器在并发环境下仅仅能保证线程安全，但是性能非常差，实际上，即便是小白都能对同步容器的性能进行优化，而并发包中的<code>ConcurrentHashMap</code>在保证线程安全性上采用了<strong>CAS+synchronized</strong>的组合，并且降低锁的粒度与范围，从而提高<code>ConcurrentHashMap</code>在并发环境下的吞吐量，提高性能。</p>
+<h2><span id="hei-mo-fa-sun-misc-unsafe"><span id="6.1">“黑魔法”sun.misc.Unsafe</span></span><a href="#hei-mo-fa-sun-misc-unsafe" class="header-anchor">#</a></h2><p>关于<code>Unsafe</code>类，建议阅读：  </p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/56772793" target="_blank" rel="noopener">【基本功】Java魔法类：Unsafe应用解析</a></li>
+<li><a href="http://mishadoff.com/blog/java-magic-part-4-sun-dot-misc-dot-unsafe/" target="_blank" rel="noopener">Java Magic. Part 4: sun.misc.Unsafe</a>  </li>
+</ul>
+<p>关于CAS(Compare and set),建议阅读：  </p>
+<ul>
+<li>《现代操作系统》，机械工业出版社；</li>
+<li>《深入理解Java虚拟机-JVM高级特性与最佳实践》第二版，机械工业出版社。第13章，线程安全与锁优化的非阻塞同步，或者说乐观锁。</li>
+</ul>
+<p>简而言之，CAS是一种非阻塞同步方式，也可以看作是乐观锁。【注7】CAS指令需要3个操作数，分别是内存位置（V）、旧的预期值（A）和新值（B），CAS指令执行时，当且仅当V符合旧预期值A时，处理器用新值B更新V的值，否则它就不执行更新，并且由于其通常依赖于与平台相关的处理器CAS指令（例如XCHG），因此虽然没有使用锁，但由于其具有原子性，不可被中断，就对CAS方法本身来说，是线程安全的。（注：关于CAS，这里有个小插曲，见：）</p>
+<h2><span id="volatile-table-element-access"><span id="6.2">Volatile table element access</span></span><a href="#volatile-table-element-access" class="header-anchor">#</a></h2><p>由ConcurrentHashMap提供的散列表元素访问函数，保证多处理器环境下的内存可见性与原子性。<br>以<code>casTabAt</code>方法为例（其它方法都是相同的原理）：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> sun.misc.Unsafe U;</span><br><span class="line"><span class="hljs-comment">// 直接将该Node放置在散列表的索引i处</span></span><br><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> &lt;K,V&gt; <span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">casTabAt</span><span class="hljs-params">(Node&lt;K,V&gt;[] tab, <span class="hljs-keyword">int</span> i,</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-params">                                    Node&lt;K,V&gt; c, Node&lt;K,V&gt; v)</span> </span>&#123;</span><br><span class="line">    <span class="hljs-keyword">return</span> U.compareAndSwapObject(tab, ((<span class="hljs-keyword">long</span>)i &lt;&lt; ASHIFT) + ABASE, c, v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ConcurrentHashMap中的静态代码块会初始化<code>U</code>以及<code>ABASE,ASHIFT</code>等，这里截取了一部分：  </p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; ak = Node[].class;</span><br><span class="line">ABASE = U.arrayBaseOffset(ak);</span><br><span class="line"><span class="hljs-keyword">int</span> scale = U.arrayIndexScale(ak);</span><br><span class="line"><span class="hljs-keyword">if</span> ((scale &amp; (scale - <span class="hljs-number">1</span>)) != <span class="hljs-number">0</span>)</span><br><span class="line">    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error(<span class="hljs-string">"data type scale not a power of two"</span>);</span><br><span class="line">ASHIFT = <span class="hljs-number">31</span> - Integer.numberOfLeadingZeros(scale);</span><br></pre></td></tr></table></figure>
+
+<p><code>ABASE</code>就是你所生成的ConcurrentHashMap类中散列表（本质上是Node数组）的基地址，而<code>ASHIFT</code>就是每个<code>Node</code>节点所占的字节数，并且必然是2的幂（《深入理解计算机系统》介绍了在C语言会要求对象的起始地址必须是2的倍数，并且还要满足数据类型对齐的要求，同样的，在HotSpot VM中也要求对象的起始地址为8字节的整数倍，因此对象大小也必须为8字节的整数倍），因此，索引为i的散列桶在内存中的起始基地址为<code>ABASE+ASHIFT*i</code>由于<code>ASHIFT</code>是2的幂，因此上式等价于<code>((long)i&lt;&lt;ASHIFT+ABASE)</code></p>
+<p>注：<code>Integer.numberOfLeadingZeros()</code>是求32位二进制前导0的算法，给我的感觉很像二分法的一种变体，先确定一半，再确定一半….,若感兴趣，建议参考《Hacker Delight》这本书的第五章Counting bits。</p>
+<p>因此，上面<code>casTabAt</code>方法逻辑就很简单了，给出了散列桶的基址，以及旧值c，希望放入的新值v，若不成功则表明已经有其它线程在该散列桶处放入了结点。</p>
+<h2><span id="chu-shi-hua-san-lie-biao-inittable"><span id="6.3">初始化散列表initTable()</span></span><a href="#chu-shi-hua-san-lie-biao-inittable" class="header-anchor">#</a></h2><p>在多线程的环境下，如若多个线程都调用了<code>iniTable()</code>，应该如何处理？用<code>synchronized</code>吗或者<code>ReetrantLock</code>吗？但是初始化的速度是很快的，使用这样重量级的锁，会不断阻塞线程，唤醒线程，进行上下文的切换，严重影响初始化速度。那么就直接使用一个标志位，只让一个线程去执行初始化，其它线程自旋吧，这正是它所使用的基本原理，我做了一个流程图（不规范）：<br><img src="https://img-blog.csdnimg.cn/20191205161853138.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MTcyNDAwMA==,size_16,color_FFFFFF,t_70" alt="图6-1 散列表的初始化"><br>这段代码真的考虑得太周到了，尤其是特别容易忽视的一点就是考虑了一个线程为散列表分配内存空间失败的时候，使用了try…finally块，保证了能恢复<code>sizeCtl</code>的状态，倘若不恢复，则<code>sizeCtl</code>的值将永远是-1，那么其它线程就会不断自旋，产生死锁。（注：其实在看许多并发书籍的时候，也会强调要考虑失败时的状态恢复，最好是使用try..finally来保证能够恢复状态，但是自己在看源码过程中一开始完全没有这样的考虑，可见实践出真知！）<br><strong>最后：</strong>  </p>
+<ol>
+<li>思考最后所有调用该方法的线程是怎么退出的?</li>
+<li>为什么有两条到达初始化结束的路径？</li>
+<li>为什么不恢复状态会产生死锁？</li>
+</ol>
+<p>如果你迟疑了，说明你还没看懂，就多看几遍图或者源码吧!</p>
+<h2><span id="putval"><span id="6.4">putVal</span></span><a href="#putval" class="header-anchor">#</a></h2><p>与HashMap的<a href="#4.2">putVal</a>方法逻辑上差别不是很大，换了写法，但是关于并发有几个注意的点：  </p>
+<ol>
+<li><code>if (casTabAt(tab, i, null, new Node&lt;K,V&gt;(hash, key, value, null)))</code>直接将结点放置在散列桶位置可能会被其它线程捷足先登，因此，失败后会继续循环（源码最外面有一层for循环），由于是CAS，因此无需加锁。</li>
+<li><code>else if ((fh = f.hash) == MOVED)tab = helpTransfer(tab, f);</code>说明此时正在扩容。</li>
+<li><code>synchronized (f)</code>这后面一段基本都是加锁的，可以看到锁的范围被限制在只有该线程想要插入的键值对的键的hash值计算出来的散列表索引处发生冲突的时候才加锁，并且不是全局锁，而仅仅是锁住了该散列桶，因此可以说相比于同步容器，其锁的范围与粒度都是大大减小了的。</li>
+</ol>
+<h2><span id="helptransfer"><span id="6.5">helpTransfer</span></span><a href="#helptransfer" class="header-anchor">#</a></h2><h1><span id="can-kao-zi-liao"><center><span id="8">参考资料</span></center></span><a href="#can-kao-zi-liao" class="header-anchor">#</a></h1><p>【1】 《数据结构(C语言版)》/严蔚敏，吴伟民编著. -北京：清华大学出版社，1997.4(2017,10 重印) ISBN 978-7-302-02368-5.<br>【2】 马博韬,孙鹏,朱小勇.红黑树算法研究综述[J].网络新媒体技术,2018,7(04):56-62.<br>【3】 JDK8源码,HashMap,hash()方法注释<br>【4】 <a href="https://bits.stephan-brumme.com/roundUpToNextPowerOfTwo.html" target="_blank" rel="noopener">Round up to the next power of 2.Stephan Brumme</a><br>【5】 《Hacker’s delight》/Henry S. Warren,Jr. – 2nd ed.p.cm ISBN 0-321-84268-5.<br>【6】 《Java Concurrency in Practice》/(美)盖茨(Goetz,B.)等著. 机械工业出版社,2012.2.<br>【7】 《深入理解Java虚拟机-JVM高级特性与最佳实践》第二版，周志明著.机械工业出版社</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/并发控制/">并发控制</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/12/17/关于动态规划的一点简单思考/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">关于动态规划的一点简单思考</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/11/25/踩过的Mybatis坑及一些注意事项总结/">
+                <span class="level-item">踩过的Mybatis坑及一些注意事项总结</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2019/12/05/HashMap-ConcurrentHashMap-同步HashMap/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        13
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>文章目录:#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>一、概述#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>二、Hash表概念回顾#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>四、HashMap源码分析#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.1</span>
+        <span>内部Node结点#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.2</span>
+        <span>putVal方法#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.3</span>
+        <span>get方法#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.4</span>
+        <span>resize方法#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">5</span>
+        <span>五、同步HashMap#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6</span>
+        <span>六、使用了“魔法”的ConcurrentHashMap#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6.1</span>
+        <span>“黑魔法”sun.misc.Unsafe#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6.2</span>
+        <span>Volatile table element access#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6.3</span>
+        <span>初始化散列表initTable()#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6.4</span>
+        <span>putVal#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6.5</span>
+        <span>helpTransfer#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">7</span>
+        <span>参考资料#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">9</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB3 User Environments">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-16T04:32:08.000Z">2020-01-16</time></div>
+                    <a href="/2020/01/16/MIT-6-828-LAB3-User-Environments/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB3 User Environments</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB2 Memory Management">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-01T12:45:55.000Z">2020-01-01</time></div>
+                    <a href="/2020/01/01/MIT-6-828-LAB2-Memory-Management/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB2 Memory Management</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
+                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="HashMap+ConcurrentHashMap+同步HashMap" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
