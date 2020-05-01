@@ -19,7 +19,7 @@
 <meta property="og:description" content="@[TOC](Java I/O库结合装饰器设计模式的一点理解) 一、概述关于I/O库使用的设计模式-装饰器模式 《Thinking in Java》: 装饰器模式使用分层对象来动态透明地向单个对象中添加责任。装饰器指定包装在最初地对象周围地所有对象都具有相同的基本接口。某些事物是可装饰的，可以通过将其它类包装在这个可装饰对象的四周，从而将功能分层，这使得对装饰器的使用是透明的——无论对象是否被装饰">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
-<meta property="og:updated_time" content="2019-12-23T01:23:57.417Z">
+<meta property="og:updated_time" content="2019-12-23T01:23:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java I&#x2F;O结合装饰器设计模式的一点理解">
 <meta name="twitter:description" content="@[TOC](Java I/O库结合装饰器设计模式的一点理解) 一、概述关于I/O库使用的设计模式-装饰器模式 《Thinking in Java》: 装饰器模式使用分层对象来动态透明地向单个对象中添加责任。装饰器指定包装在最初地对象周围地所有对象都具有相同的基本接口。某些事物是可装饰的，可以通过将其它类包装在这个可装饰对象的四周，从而将功能分层，这使得对装饰器的使用是透明的——无论对象是否被装饰">
@@ -169,38 +169,38 @@
             
         </h1>
         <div class="content">
-            <p>@[TOC](Java I/O库结合装饰器设计模式的一点理解)</p>
+            <html><head></head><body><p>@[TOC](Java I/O库结合装饰器设计模式的一点理解)</p>
 <h2><span id="yi-gai-shu">一、概述</span><a href="#yi-gai-shu" class="header-anchor">#</a></h2><h3><span id="guan-yu-i-o-ku-shi-yong-de-she-ji-mo-shi-zhuang-shi-qi-mo-shi">关于I/O库使用的设计模式-装饰器模式</span><a href="#guan-yu-i-o-ku-shi-yong-de-she-ji-mo-shi-zhuang-shi-qi-mo-shi" class="header-anchor">#</a></h3><blockquote>
 <p>《Thinking in Java》: <strong>装饰器</strong>模式使用分层对象来动态透明地向单个对象中添加责任。装饰器指定包装在最初地对象周围地所有对象都具有相同的基本接口。某些事物是可装饰的，可以通过将其它类包装在这个可装饰对象的四周，从而将功能分层，这使得对装饰器的使用是透明的——无论对象是否被装饰，你都拥有一个可以向对象发送的公共消息集。</p>
 </blockquote>
 <p>Java I/O库实际是很多功能的组合，所以使用装饰器设计模式。<br>至于装饰器设计模式，在我的另外一篇笔记中也进行了学习，这里就不再赘述。</p>
 <h3><span id="zhuang-shi-qi-mo-shi-zai-i-o-ku-zhong-de-shi-ji-ying-yong">装饰器模式在I/O库中的实际应用</span><a href="#zhuang-shi-qi-mo-shi-zai-i-o-ku-zhong-de-shi-ji-ying-yong" class="header-anchor">#</a></h3><p>就以字节输入流系列为例:<br><em>InputStream</em>是一个抽象类，在装饰器设计模式当中，充当了抽象构件的角色，它为所有被修饰的对象提供通用接口，通过查看源码也能知道这点。</p>
 <p><em>FilterInputStream</em>继承自<em>InputStream</em>，充当装饰角色(Decorator)，该类应当持有一个构件角色对象的实例，在<em>FilterInputStream</em>中含有一个输入流对象的保护成员：</p>
-<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">volatile</span> InputStream in;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">volatile</span> InputStream in;</span><br></pre></td></tr></tbody></table></figure>
 
 <a id="more"></a>
 
 <p>通过给构造方法传递InputStream子类对象的引用就可以初始化该保护成员，该保护成员其实就是JDK文档中I/O部分提到的<em>underlying stream</em>，详细可自己查看JDK文档。</p>
 <p><em>FilterInputStream</em>只有一个子类<em>BufferedInputStream</em>，其充当了具体装饰角色(Concrete Decorator)，给具体构件提供额外的功能（如我们所知，<em>BufferedInputStream</em>给输入流提供了缓冲功能，减少了I/O次数)。</p>
 <p><em>FileInputStream</em>等则充当的是具体构件角色，可以把具体构件角色的对象传递给具体装饰器角色，如之前所示，其内部的保护成员in会被初始化，指向该具体构件角色的对象。典型的：</p>
-<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BufferedInputStream bis = <span class="hljs-keyword">new</span> BufferedInputStream(<span class="hljs-keyword">new</span> FileInputStream(file));</span><br></pre></td></tr></table></figure>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BufferedInputStream bis = <span class="hljs-keyword">new</span> BufferedInputStream(<span class="hljs-keyword">new</span> FileInputStream(file));</span><br></pre></td></tr></tbody></table></figure>
 
 <h3><span id="bufferedinputstream-shi-xian-yuan-li-jian-shu">BufferedInputStream实现原理简述</span><a href="#bufferedinputstream-shi-xian-yuan-li-jian-shu" class="header-anchor">#</a></h3><p>通过上面的分析我们知道<em>BufferedInputStream</em>实际就是一个装饰器，它为输入流提供了缓冲功能，实际上就是内置了一个字节数组buf，默认大小是8192，大小也可以自己指定，除此之外，在<em>BufferedInputStream</em>中还提供了其它一些比较关键的保护成员（指的是对于缓冲功能实现相对比较重要）：</p>
-<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">volatile</span> <span class="hljs-keyword">byte</span> buf[];</span><br><span class="line"> <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">  * The index one greater than the index of the last valid byte in</span></span><br><span class="line"><span class="hljs-comment">  * the buffer.This value is always in the range 0 through buf.length;</span></span><br><span class="line"><span class="hljs-comment">  * elements buf[0]  through buf[count-1] contain buffered input data obtained from the underlying  </span></span><br><span class="line"><span class="hljs-comment">  * input stream.</span></span><br><span class="line"><span class="hljs-comment">  */</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> count;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * The current position in the buffer. This is the index of the next</span></span><br><span class="line"><span class="hljs-comment"> * character to be read from the buf array.</span></span><br><span class="line"><span class="hljs-comment"> * This value is always in the range 0 through count. If it is less</span></span><br><span class="line"><span class="hljs-comment"> * than count, then buf[pos] is the next byte to be supplied as input;</span></span><br><span class="line"><span class="hljs-comment"> * if it is equal to count, then the  next read or skip operation will require</span></span><br><span class="line"><span class="hljs-comment"> * more bytes to be read from the contained  input stream.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> pos;</span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> markpos = -<span class="hljs-number">1</span>;</span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> marklimit;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">volatile</span> <span class="hljs-keyword">byte</span> buf[];</span><br><span class="line"> <span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">  * The index one greater than the index of the last valid byte in</span></span><br><span class="line"><span class="hljs-comment">  * the buffer.This value is always in the range 0 through buf.length;</span></span><br><span class="line"><span class="hljs-comment">  * elements buf[0]  through buf[count-1] contain buffered input data obtained from the underlying  </span></span><br><span class="line"><span class="hljs-comment">  * input stream.</span></span><br><span class="line"><span class="hljs-comment">  */</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> count;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * The current position in the buffer. This is the index of the next</span></span><br><span class="line"><span class="hljs-comment"> * character to be read from the buf array.</span></span><br><span class="line"><span class="hljs-comment"> * This value is always in the range 0 through count. If it is less</span></span><br><span class="line"><span class="hljs-comment"> * than count, then buf[pos] is the next byte to be supplied as input;</span></span><br><span class="line"><span class="hljs-comment"> * if it is equal to count, then the  next read or skip operation will require</span></span><br><span class="line"><span class="hljs-comment"> * more bytes to be read from the contained  input stream.</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> pos;</span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> markpos = -<span class="hljs-number">1</span>;</span><br><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> marklimit;</span><br></pre></td></tr></tbody></table></figure>
 
 <p>其中两个比较关键的字段count和pos已经给出了注释，注释来源于JDK源代码的注释，count和pos其实就是两个指针，count指向buf中最后一个有效字节之后的那个位置，而pos指向buf中下一个要读取的位置（即pos处还未被读取)。</p>
-<p>buf缓冲数组中的数据则来源于<em>underlying stream</em>即之前被初始化的in，在<em>BufferedInputStream</em>中还增加了一个私有函数fill()，该函数实际上就是完成了从输入流到缓冲数组的数据的读取，其功能依赖于count,pos,mark等指针，每当pos&gt;=count(这说明buf中的有效数据已经读取完毕)就会调用fill()方法，往buf数组中填充数据，若buf中除了有效数据还有位置，则会紧接着有效位置填充来自于in的数据。</p>
+<p>buf缓冲数组中的数据则来源于<em>underlying stream</em>即之前被初始化的in，在<em>BufferedInputStream</em>中还增加了一个私有函数fill()，该函数实际上就是完成了从输入流到缓冲数组的数据的读取，其功能依赖于count,pos,mark等指针，每当pos>=count(这说明buf中的有效数据已经读取完毕)就会调用fill()方法，往buf数组中填充数据，若buf中除了有效数据还有位置，则会紧接着有效位置填充来自于in的数据。</p>
 <p>那么为什么<em>BufferedInputStream</em>能够有效减少I/O次数，从而提高性能呢？<br>因为buf数组的存在，每一次其内部的输入流in调用read()方法，实际上都会读写很多个字节的数据，并且将其缓冲在buf数组当中，因此当调用BufferedInputStream的read方法时实际上就是从buf数组中读数据，但是如果我们直接使用输入流的read方法，那么每一次读取都要付出昂贵的磁盘IO的代价。因此，显然，从内存中读数据要比从磁盘上读数据快得多（通常每次读取可能会少上数十或者上百个时钟周期）。</p>
 <h3><span id="i-o-ku-liu-de-fen-lei">I/O库流的分类</span><a href="#i-o-ku-liu-de-fen-lei" class="header-anchor">#</a></h3><p>可以划分为字符流和字节流。字符流包括Reader，Writer及其子类，字节流包括InputStream，OutputStream及其子类，一般读取文本文件可以用字符流，图像等其它文件则可以使用字节流。</p>
-<h2><span id="er-jian-dan-shi-yong-fang-shi">二、简单使用方式</span><a href="#er-jian-dan-shi-yong-fang-shi" class="header-anchor">#</a></h2><h3><span id="zi-fu-liu">字符流</span><a href="#zi-fu-liu" class="header-anchor">#</a></h3><h4><span id="kong-zhi-tai-shu-ru">控制台输入</span><a href="#kong-zhi-tai-shu-ru" class="header-anchor">#</a></h4><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> InputStreamReader(System.in));</span><br></pre></td></tr></table></figure>
+<h2><span id="er-jian-dan-shi-yong-fang-shi">二、简单使用方式</span><a href="#er-jian-dan-shi-yong-fang-shi" class="header-anchor">#</a></h2><h3><span id="zi-fu-liu">字符流</span><a href="#zi-fu-liu" class="header-anchor">#</a></h3><h4><span id="kong-zhi-tai-shu-ru">控制台输入</span><a href="#kong-zhi-tai-shu-ru" class="header-anchor">#</a></h4><figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> InputStreamReader(System.in));</span><br></pre></td></tr></tbody></table></figure>
 
 <p>因为System.in是InputStream类型，而BufferedReader需要接受Reader类型，因此需要<em>InputStreamReader</em>来进行字节流与字符流之间的转换，实际上<em>InputStreamReader</em>内置了一个解码器(Decoder)，因此可以指定字符集来对字节流进行解码。</p>
-<h4><span id="du-qu-wen-ben-wen-jian">读取文本文件</span><a href="#du-qu-wen-ben-wen-jian" class="header-anchor">#</a></h4><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>&#123;</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(<span class="hljs-string">"test.txt"</span>));</span><br><span class="line">        <span class="hljs-keyword">int</span> c;</span><br><span class="line">        <span class="hljs-keyword">while</span> ((c = br.read()) != -<span class="hljs-number">1</span>) &#123;</span><br><span class="line">            System.out.print((<span class="hljs-keyword">char</span>) c);</span><br><span class="line">        &#125;</span><br><span class="line">        br.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4><span id="du-qu-wen-ben-wen-jian">读取文本文件</span><a href="#du-qu-wen-ben-wen-jian" class="header-anchor">#</a></h4><figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>{</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException </span>{</span><br><span class="line">        BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(<span class="hljs-string">"test.txt"</span>));</span><br><span class="line">        <span class="hljs-keyword">int</span> c;</span><br><span class="line">        <span class="hljs-keyword">while</span> ((c = br.read()) != -<span class="hljs-number">1</span>) {</span><br><span class="line">            System.out.print((<span class="hljs-keyword">char</span>) c);</span><br><span class="line">        }</span><br><span class="line">        br.close();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
 <p>因为close()方法声明抛出了IOException异常，必须对其处理，这里选择继续向上层调用栈抛出。</p>
-<h4><span id="xiang-wen-jian-xie-ru-wen-ben">向文件写入文本</span><a href="#xiang-wen-jian-xie-ru-wen-ben" class="header-anchor">#</a></h4><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>&#123;</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        BufferedWriter bw = <span class="hljs-keyword">new</span> BufferedWriter(<span class="hljs-keyword">new</span> FileWriter(<span class="hljs-string">"write_in.txt"</span>));</span><br><span class="line">        bw.write(<span class="hljs-string">"感谢您看我的博客文章！"</span>);</span><br><span class="line">        bw.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4><span id="xiang-wen-jian-xie-ru-wen-ben">向文件写入文本</span><a href="#xiang-wen-jian-xie-ru-wen-ben" class="header-anchor">#</a></h4><figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>{</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException </span>{</span><br><span class="line">        BufferedWriter bw = <span class="hljs-keyword">new</span> BufferedWriter(<span class="hljs-keyword">new</span> FileWriter(<span class="hljs-string">"write_in.txt"</span>));</span><br><span class="line">        bw.write(<span class="hljs-string">"感谢您看我的博客文章！"</span>);</span><br><span class="line">        bw.close();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
-<h3><span id="zi-jie-liu">字节流</span><a href="#zi-jie-liu" class="header-anchor">#</a></h3><h4><span id="fu-zhi-wen-jian">复制文件</span><a href="#fu-zhi-wen-jian" class="header-anchor">#</a></h4><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>&#123;</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        BufferedInputStream bis = <span class="hljs-keyword">new</span> BufferedInputStream(<span class="hljs-keyword">new</span> FileInputStream(<span class="hljs-string">"test.jpg"</span>));</span><br><span class="line">        BufferedOutputStream bos= <span class="hljs-keyword">new</span> BufferedOutputStream(<span class="hljs-keyword">new</span> FileOutputStream(<span class="hljs-string">"test_copy4.jpg"</span>));</span><br><span class="line">        <span class="hljs-keyword">byte</span>[] bytes=<span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[<span class="hljs-number">1024</span>];</span><br><span class="line">        <span class="hljs-keyword">int</span> len; <span class="hljs-comment">// 读取的有效字节数</span></span><br><span class="line">        <span class="hljs-keyword">while</span>((len=bis.read(bytes))!=-<span class="hljs-number">1</span>)&#123;</span><br><span class="line">            bos.write(bytes,<span class="hljs-number">0</span>,len); <span class="hljs-comment">// 将有效字节续写在文件后</span></span><br><span class="line">        &#125;</span><br><span class="line">        bos.close();</span><br><span class="line">        bis.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="zi-jie-liu">字节流</span><a href="#zi-jie-liu" class="header-anchor">#</a></h3><h4><span id="fu-zhi-wen-jian">复制文件</span><a href="#fu-zhi-wen-jian" class="header-anchor">#</a></h4><figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>{</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException </span>{</span><br><span class="line">        BufferedInputStream bis = <span class="hljs-keyword">new</span> BufferedInputStream(<span class="hljs-keyword">new</span> FileInputStream(<span class="hljs-string">"test.jpg"</span>));</span><br><span class="line">        BufferedOutputStream bos= <span class="hljs-keyword">new</span> BufferedOutputStream(<span class="hljs-keyword">new</span> FileOutputStream(<span class="hljs-string">"test_copy4.jpg"</span>));</span><br><span class="line">        <span class="hljs-keyword">byte</span>[] bytes=<span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[<span class="hljs-number">1024</span>];</span><br><span class="line">        <span class="hljs-keyword">int</span> len; <span class="hljs-comment">// 读取的有效字节数</span></span><br><span class="line">        <span class="hljs-keyword">while</span>((len=bis.read(bytes))!=-<span class="hljs-number">1</span>){</span><br><span class="line">            bos.write(bytes,<span class="hljs-number">0</span>,len); <span class="hljs-comment">// 将有效字节续写在文件后</span></span><br><span class="line">        }</span><br><span class="line">        bos.close();</span><br><span class="line">        bis.close();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></body></html>
         </div>
         
         <div class="level is-size-7 is-uppercase">
@@ -331,7 +331,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        18
+                        19
                     </p>
                 </div>
             </div>
@@ -525,7 +525,7 @@
                 <span class="level-item">Unclassified</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/操作系统/">
@@ -586,7 +586,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 13.33px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 16.67px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
     </div>
 </div>
     
@@ -595,6 +595,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Lightweight JSON Parser Based on C -- cJSON">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-01T13:35:53.000Z">2020-05-01</time></div>
+                    <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Lightweight JSON Parser Based on C -- cJSON</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unclassified/">Unclassified</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -672,25 +691,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
-                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -701,6 +701,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2020/01/">
@@ -808,7 +819,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/No-tags/">
                         <span class="tag">No-tags</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 

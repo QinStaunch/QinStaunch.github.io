@@ -168,7 +168,7 @@
             
         </h1>
         <div class="content">
-            <h1 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a><span>文章目录</span></h1><ul>
+            <html><head></head><body><h1 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a><span>文章目录</span></h1><ul>
 <li><p><a href="#1">一、Mybatis注意事项以及踩过的坑</a></p>
 <ul>
 <li><a href="#1_1">Mybatis主配置文件注意事项</a>  </li>
@@ -198,7 +198,7 @@
 <h1 id="一、Mybatis注意事项以及踩过的坑"><a href="#一、Mybatis注意事项以及踩过的坑" class="headerlink" title="一、Mybatis注意事项以及踩过的坑"></a><span id="1">一、Mybatis注意事项以及踩过的坑</span></h1><h2 id="Mybatis主配置文件注意事项"><a href="#Mybatis主配置文件注意事项" class="headerlink" title="Mybatis主配置文件注意事项"></a><span id="1_1">Mybatis主配置文件注意事项</span></h2><ul>
 <li>配置项标签的顺序很重要，不按照文档中介绍的顺序来配置就会报错（但是可以缺少配置项）。</li>
 <li>如果想要使用第三方DataSource，那么就可以通过实现DataSourceFactory接口来使用第三方数据源，例如Druid连接池等。然后再在dataSource type属性中配置上该实现类的名称即可，另外，为该第三方<br>数据源配置的配置项根据使用数据源的不同而有所不同，Mybatis只是解析你所配置的属性。以Druid连接池为例，通过自己实现DataSourceFactory接口，里面有两个方法，一个是setProperties，这个方法的<br>参数properties是mybatis自动解析了主配置文件中你所配置的属性得到的（可以自己输出验证一下，确实是这样），而Druid连接池产生DataSource往往通过DruidDataSourceFactory.createDataSource(properties)<br>，因此你就能理解我前面所说的配置项要根据使用数据源的不同而有所不同的含义啦。</li>
-</ul>
+</ul></body></html>
         </div>
         
         
@@ -265,7 +265,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        18
+                        19
                     </p>
                 </div>
             </div>
@@ -401,7 +401,7 @@
                 <span class="level-item">Unclassified</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/操作系统/">
@@ -462,7 +462,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 13.33px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 16.67px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
     </div>
 </div>
     
@@ -471,6 +471,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Lightweight JSON Parser Based on C -- cJSON">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-01T13:35:53.000Z">2020-05-01</time></div>
+                    <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Lightweight JSON Parser Based on C -- cJSON</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unclassified/">Unclassified</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -548,25 +567,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
-                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -577,6 +577,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2020/01/">
@@ -684,7 +695,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/No-tags/">
                         <span class="tag">No-tags</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 

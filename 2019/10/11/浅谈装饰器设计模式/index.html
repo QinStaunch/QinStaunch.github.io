@@ -19,7 +19,7 @@
 <meta property="og:description" content="文章目录： 一、概念 二、结构 如何理解装饰器设计模式的运行原理？ 下面给出一个简单的示例    一、概念 《Thinking in Java》: 装饰器模式使用分层对象来动态透明地向单个对象中添加责任。装饰器指定包装在最初地对象周围地所有对象都具有相同的基本接口。某些事物是可装饰的，可以通过将其它类包装在这个可装饰对象的四周，从而将功能分层，这使得对装饰器的使用是透明的——无论对象是否被装饰，你">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
-<meta property="og:updated_time" content="2019-12-23T01:21:44.609Z">
+<meta property="og:updated_time" content="2019-12-23T01:21:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈装饰器设计模式">
 <meta name="twitter:description" content="文章目录： 一、概念 二、结构 如何理解装饰器设计模式的运行原理？ 下面给出一个简单的示例    一、概念 《Thinking in Java》: 装饰器模式使用分层对象来动态透明地向单个对象中添加责任。装饰器指定包装在最初地对象周围地所有对象都具有相同的基本接口。某些事物是可装饰的，可以通过将其它类包装在这个可装饰对象的四周，从而将功能分层，这使得对装饰器的使用是透明的——无论对象是否被装饰，你">
@@ -169,7 +169,7 @@
             
         </h1>
         <div class="content">
-            <h1><span id="wen-zhang-mu-lu"><span>文章目录：</span></span><a href="#wen-zhang-mu-lu" class="header-anchor">#</a></h1><ul>
+            <html><head></head><body><h1><span id="wen-zhang-mu-lu"><span>文章目录：</span></span><a href="#wen-zhang-mu-lu" class="header-anchor">#</a></h1><ul>
 <li><a href="#1">一、概念</a></li>
 <li><a href="#2">二、结构</a><ul>
 <li><a href="#2.1">如何理解装饰器设计模式的运行原理？</a></li>
@@ -191,16 +191,16 @@
 </ol>
 <h3><span id="ru-he-li-jie-zhuang-shi-qi-she-ji-mo-shi-de-yun-xing-yuan-li"><span id="2.1">如何理解装饰器设计模式的运行原理？</span></span><a href="#ru-he-li-jie-zhuang-shi-qi-she-ji-mo-shi-de-yun-xing-yuan-li" class="header-anchor">#</a></h3><p>在上图中，<em>ConcreteDecoratorA</em>与<em>ConcreteDecoratorB</em>都是具体装饰器，它们的构造函数接收一个具体构件（<em>Concrete Component</em>）角色对象，由于具体装饰器器继承自装饰角色，其内部都声明了一个能够指向具体构件的变量，因此该变量最后会指向我们向装饰器传递的具体构件的对象，而具体装饰器角色对象也有具体构件角色的接口（这就是抽象构件角色所起到的作用之一，规范接口），因此，装饰器就可以调用具体构件的接口了，并且，还可以增加功能。</p>
 <h3><span id="xia-mian-gei-chu-yi-ge-jian-dan-de-shi-li"><span id="2.2">下面给出一个简单的示例</span></span><a href="#xia-mian-gei-chu-yi-ge-jian-dan-de-shi-li" class="header-anchor">#</a></h3><p>抽象构件</p>
-<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Component</span></span>&#123;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Component</span></span>{</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">()</span></span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
 <p>装饰角色</p>
-<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Decorator</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Component</span></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">protected</span> Component component;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Decorator</span><span class="hljs-params">(Component component)</span></span>&#123;</span><br><span class="line">		<span class="hljs-keyword">this</span>.component = component;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-meta">@override</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">		<span class="hljs-comment">// 可以增加功能，调用具体构件的接口</span></span><br><span class="line">		component.operation();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Decorator</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Component</span></span>{</span><br><span class="line">	<span class="hljs-keyword">protected</span> Component component;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Decorator</span><span class="hljs-params">(Component component)</span></span>{</span><br><span class="line">		<span class="hljs-keyword">this</span>.component = component;</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="hljs-meta">@override</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">()</span></span>{</span><br><span class="line">		<span class="hljs-comment">// 可以增加功能，调用具体构件的接口</span></span><br><span class="line">		component.operation();</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
 <p>具体装饰器角色</p>
-<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pubic <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SpecialDecorator</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Decorator</span></span>&#123;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SpecialDecorator</span><span class="hljs-params">(Component component)</span></span>&#123;</span><br><span class="line">		<span class="hljs-keyword">super</span>(component);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-meta">@override</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">		<span class="hljs-comment">// 可以增加功能，也可以调用具体构件接口</span></span><br><span class="line">		<span class="hljs-keyword">super</span>.operation();</span><br><span class="line">		System.out.print(<span class="hljs-string">"我是具体装饰器角色增加的功能"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pubic <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SpecialDecorator</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Decorator</span></span>{</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SpecialDecorator</span><span class="hljs-params">(Component component)</span></span>{</span><br><span class="line">		<span class="hljs-keyword">super</span>(component);</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="hljs-meta">@override</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">()</span></span>{</span><br><span class="line">		<span class="hljs-comment">// 可以增加功能，也可以调用具体构件接口</span></span><br><span class="line">		<span class="hljs-keyword">super</span>.operation();</span><br><span class="line">		System.out.print(<span class="hljs-string">"我是具体装饰器角色增加的功能"</span>);</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
 <p>具体构件角色</p>
-<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConcreteComponent</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Component</span></span>&#123;</span><br><span class="line">	<span class="hljs-meta">@override</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">		<span class="hljs-comment">// 业务代码</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConcreteComponent</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Component</span></span>{</span><br><span class="line">	<span class="hljs-meta">@override</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">()</span></span>{</span><br><span class="line">		<span class="hljs-comment">// 业务代码</span></span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></body></html>
         </div>
         
         <div class="level is-size-7 is-uppercase">
@@ -331,7 +331,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        18
+                        19
                     </p>
                 </div>
             </div>
@@ -497,7 +497,7 @@
                 <span class="level-item">Unclassified</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/操作系统/">
@@ -558,7 +558,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 13.33px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 16.67px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
     </div>
 </div>
     
@@ -567,6 +567,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Lightweight JSON Parser Based on C -- cJSON">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-01T13:35:53.000Z">2020-05-01</time></div>
+                    <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Lightweight JSON Parser Based on C -- cJSON</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unclassified/">Unclassified</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -644,25 +663,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
-                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -673,6 +673,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2020/01/">
@@ -780,7 +791,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/No-tags/">
                         <span class="tag">No-tags</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 

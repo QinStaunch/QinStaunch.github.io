@@ -19,7 +19,7 @@
 <meta property="og:description" content="@[TOC] 一、进程与线程的简单回顾进程与线程的简单回顾 《Modern Operating System》：进程就是一个正在执行的程序的实例，包括程序计数器、寄存器和变量的当前值。  每一个进程都拥有自己独立的地址空间（这源于虚拟内存技术），其中有程序和数据以及独立的用户栈和独立的堆空间等。例如在UNIX系统中，可以调用系统级函数fork()来创建一个子进程，在还未加载新的代码之前，此时子进程">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
-<meta property="og:updated_time" content="2019-12-23T01:24:48.904Z">
+<meta property="og:updated_time" content="2019-12-23T01:24:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《现代操作系统》学习笔记(一):进程与线程">
 <meta name="twitter:description" content="@[TOC] 一、进程与线程的简单回顾进程与线程的简单回顾 《Modern Operating System》：进程就是一个正在执行的程序的实例，包括程序计数器、寄存器和变量的当前值。  每一个进程都拥有自己独立的地址空间（这源于虚拟内存技术），其中有程序和数据以及独立的用户栈和独立的堆空间等。例如在UNIX系统中，可以调用系统级函数fork()来创建一个子进程，在还未加载新的代码之前，此时子进程">
@@ -169,7 +169,7 @@
             
         </h1>
         <div class="content">
-            <p>@[TOC]</p>
+            <html><head></head><body><p>@[TOC]</p>
 <h2><span id="yi-jin-cheng-yu-xian-cheng-de-jian-dan-hui-gu">一、进程与线程的简单回顾</span><a href="#yi-jin-cheng-yu-xian-cheng-de-jian-dan-hui-gu" class="header-anchor">#</a></h2><h3><span id="jin-cheng-yu-xian-cheng-de-jian-dan-hui-gu">进程与线程的简单回顾</span><a href="#jin-cheng-yu-xian-cheng-de-jian-dan-hui-gu" class="header-anchor">#</a></h3><blockquote>
 <p>《Modern Operating System》：<strong>进程</strong>就是一个正在执行的程序的实例，包括程序计数器、寄存器和变量的当前值。</p>
 </blockquote>
@@ -251,7 +251,7 @@
 </ul>
 </li>
 </ul>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/* </span></span><br><span class="line"><span class="hljs-comment">** 严格轮换法示意</span></span><br><span class="line"><span class="hljs-comment">** from Modern Operating Systems</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-comment">/* 进程0 */</span></span><br><span class="line"><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;t</span><br><span class="line">	<span class="hljs-keyword">while</span>(turn!=<span class="hljs-number">0</span>);</span><br><span class="line">	critical_region(); <span class="hljs-comment">// 临界区</span></span><br><span class="line">	turn=<span class="hljs-number">1</span>;</span><br><span class="line">	noncritical_region();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/* 进程1 */</span></span><br><span class="line"><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)&#123;</span><br><span class="line">	<span class="hljs-keyword">while</span>(turn!=<span class="hljs-number">1</span>);</span><br><span class="line">	critical_region(); <span class="hljs-comment">// 临界区</span></span><br><span class="line">	turn=<span class="hljs-number">0</span>;</span><br><span class="line">	noncritical_region();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/* </span></span><br><span class="line"><span class="hljs-comment">** 严格轮换法示意</span></span><br><span class="line"><span class="hljs-comment">** from Modern Operating Systems</span></span><br><span class="line"><span class="hljs-comment">*/</span></span><br><span class="line"><span class="hljs-comment">/* 进程0 */</span></span><br><span class="line"><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>){t</span><br><span class="line">	<span class="hljs-keyword">while</span>(turn!=<span class="hljs-number">0</span>);</span><br><span class="line">	critical_region(); <span class="hljs-comment">// 临界区</span></span><br><span class="line">	turn=<span class="hljs-number">1</span>;</span><br><span class="line">	noncritical_region();</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/* 进程1 */</span></span><br><span class="line"><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>){</span><br><span class="line">	<span class="hljs-keyword">while</span>(turn!=<span class="hljs-number">1</span>);</span><br><span class="line">	critical_region(); <span class="hljs-comment">// 临界区</span></span><br><span class="line">	turn=<span class="hljs-number">0</span>;</span><br><span class="line">	noncritical_region();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
 <h4><span id="hu-chi-de-shi-xian-fang-shi-xiang-jie-ying-jian-ceng-mian">互斥的实现方式详解：硬件层面</span><a href="#hu-chi-de-shi-xian-fang-shi-xiang-jie-ying-jian-ceng-mian" class="header-anchor">#</a></h4><ul>
 <li>屏蔽中断：即使每个进程在刚刚进入临界区后立即屏蔽所有中断，并且在离开临界区时打开中断。屏蔽中断后，时钟中断也被屏蔽，因此不会发生进程的切换，从而也就实现了进程的互斥。<ul>
@@ -263,11 +263,11 @@
 <li>缺点是：1、忙等待；2、可能会有饥饿现象（Starvation）；3、可能导致死锁；</li>
 </ul>
 </li>
-<li><strong>Semaphore信号量</strong>：信号量是一种信号变量，其中它有一个整型值，并且还有一个队列表明阻塞在该信号量上的进程。（注：后续的内容在术语上与《现代操作系统》有出入，但是原理一致）<br>提供了wait和signal两个通信原语（即具有原子性，无法被中断），即以前所说的PV操作。<br>Wait操作对信号量的值做减W法，即：<br>Wait(s): s-1   等价于  P(s)   申请资源可能会阻塞自己（s&lt;0）<br>Signal操作对信号量的值做加法，即：<br>Signal(s): s+1   等价于  V(s)   释放资源并且唤醒阻塞在该信号量上的进程（s≤0）<br>信号量不仅能实现互斥，也能够实现同步。<br>信号量也可以划分为：互斥信号量（P74）和资源信号量。互斥信号量用于申请或释放资源的使用权，常初始化为1；资源信号量用于申请或归还资源，可以初始化为大于的1的正整数，表示系统中某类资源的可用个数。<br>信号量中s.count的意义为：若s.count≥0，表示还可以执行wait(s)而不会阻塞的进程数（可用资源数）；若s.count&lt;0，表示s.queue队列中阻塞进程的个数（被阻塞进程数）。<br>当用s来实现n个进程的互斥时，假设初始资源数为1，那么s.count的取值范围为1~ -(n-1)；</li>
+<li><strong>Semaphore信号量</strong>：信号量是一种信号变量，其中它有一个整型值，并且还有一个队列表明阻塞在该信号量上的进程。（注：后续的内容在术语上与《现代操作系统》有出入，但是原理一致）<br>提供了wait和signal两个通信原语（即具有原子性，无法被中断），即以前所说的PV操作。<br>Wait操作对信号量的值做减W法，即：<br>Wait(s): s-1   等价于  P(s)   申请资源可能会阻塞自己（s<0）<br>Signal操作对信号量的值做加法，即：<br>Signal(s): s+1   等价于  V(s)   释放资源并且唤醒阻塞在该信号量上的进程（s≤0）<br>信号量不仅能实现互斥，也能够实现同步。<br>信号量也可以划分为：互斥信号量（P74）和资源信号量。互斥信号量用于申请或释放资源的使用权，常初始化为1；资源信号量用于申请或归还资源，可以初始化为大于的1的正整数，表示系统中某类资源的可用个数。<br>信号量中s.count的意义为：若s.count≥0，表示还可以执行wait(s)而不会阻塞的进程数（可用资源数）；若s.count<0，表示s.queue队列中阻塞进程的个数（被阻塞进程数）。<br>当用s来实现n个进程的互斥时，假设初始资源数为1，那么s.count的取值范围为1~ -(n-1)；</li>
 <li>管程：一个管程是一个由过程、变量及数据结构等组成的一个集合，它们组成一个特殊的模块或软件包。进程可以在任何需要的时候调用管程中的过程，但是它们能在管程之外声明的过程中直接访问管程内的数据结构。</li>
 <li>消息传递（message passing）：这种进程间通信的方法使用两条原语send和receive，它们像信号量而不像管程，是系统调用而不是语言成分。</li>
 </ul>
-
+</body></html>
         </div>
         
         <div class="level is-size-7 is-uppercase">
@@ -398,7 +398,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        18
+                        19
                     </p>
                 </div>
             </div>
@@ -588,7 +588,7 @@
                 <span class="level-item">Unclassified</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/操作系统/">
@@ -649,7 +649,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 13.33px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 16.67px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
     </div>
 </div>
     
@@ -658,6 +658,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Lightweight JSON Parser Based on C -- cJSON">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-01T13:35:53.000Z">2020-05-01</time></div>
+                    <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Lightweight JSON Parser Based on C -- cJSON</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unclassified/">Unclassified</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -735,25 +754,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
-                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -764,6 +764,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2020/01/">
@@ -871,7 +882,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/No-tags/">
                         <span class="tag">No-tags</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 

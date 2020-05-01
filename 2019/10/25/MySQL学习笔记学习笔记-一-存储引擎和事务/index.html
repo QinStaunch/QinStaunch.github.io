@@ -19,7 +19,7 @@
 <meta property="og:description" content="一、如何阅读官方文档官方中文文档传送门：MySQL5.1中文文档重点关注：  第七章 优化 第十一章 列类型 第十三章 SQL语句语法 第十五章 存储引擎和表类型  更好地阅读文档：注意方括号 [] 意味着该字段可以省略，也就是可选字段；当要用到圆括号字段修饰的字段的时候，圆括号()不可以省略；大括号{}意味着在该字段的给定值中进行选择，| 这个符号就意味着选择呗；啥符号都没带的就是必填字段呗。例">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
-<meta property="og:updated_time" content="2019-12-23T01:23:06.381Z">
+<meta property="og:updated_time" content="2019-12-23T01:23:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL学习笔记（一）：存储引擎和事务">
 <meta name="twitter:description" content="一、如何阅读官方文档官方中文文档传送门：MySQL5.1中文文档重点关注：  第七章 优化 第十一章 列类型 第十三章 SQL语句语法 第十五章 存储引擎和表类型  更好地阅读文档：注意方括号 [] 意味着该字段可以省略，也就是可选字段；当要用到圆括号字段修饰的字段的时候，圆括号()不可以省略；大括号{}意味着在该字段的给定值中进行选择，| 这个符号就意味着选择呗；啥符号都没带的就是必填字段呗。例">
@@ -169,7 +169,7 @@
             
         </h1>
         <div class="content">
-            <h1><span id="yi-ru-he-yue-du-guan-fang-wen-dang">一、如何阅读官方文档</span><a href="#yi-ru-he-yue-du-guan-fang-wen-dang" class="header-anchor">#</a></h1><p>官方中文文档传送门：<a href="https://www.mysqlzh.com" target="_blank" rel="noopener">MySQL5.1中文文档</a><br>重点关注：</p>
+            <html><head></head><body><h1><span id="yi-ru-he-yue-du-guan-fang-wen-dang">一、如何阅读官方文档</span><a href="#yi-ru-he-yue-du-guan-fang-wen-dang" class="header-anchor">#</a></h1><p>官方中文文档传送门：<a href="https://www.mysqlzh.com" target="_blank" rel="noopener">MySQL5.1中文文档</a><br>重点关注：</p>
 <ul>
 <li><a href="https://www.mysqlzh.com/doc/64.html" target="_blank" rel="noopener">第七章 优化</a></li>
 <li><a href="https://www.mysqlzh.com/doc/105.html" target="_blank" rel="noopener">第十一章 列类型</a></li>
@@ -179,13 +179,13 @@
 <p><strong>更好地阅读文档</strong>：注意方括号 [] 意味着该字段可以省略，也就是可选字段；当要用到圆括号字段修饰的字段的时候，圆括号()不可以省略；大括号{}意味着在该字段的给定值中进行选择，| 这个符号就意味着选择呗；啥符号都没带的就是必填字段呗。<br>例如下面由MySQL官方文档给出的select语法：<br>像[all | distinct | distinctrow] 这个字段本身是可选字段，写select语句的时候可加可不加，但是如果加上该字段的时候，就要在all，distinct，distinctrow中选择一个字段加上。<br>select_expr就是必选字段，必须要在select语句中写这个字段。<br>像[LIMIT {[offset,] row_count | row_count OFFSET offset}]这个，也就是说，这一整个字段是可选字段，但是如果加上该字段，就要在{}中给出选项中选择一个，offser加上了[]，说明它可有可无。</p>
 <a id="more"></a>
 
-<figure class="highlight sql hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># 以MySQL官方文档的SELECT语法说明为例</span></span><br><span class="line"><span class="hljs-keyword">SELECT</span></span><br><span class="line">    [<span class="hljs-keyword">ALL</span> | <span class="hljs-keyword">DISTINCT</span> | <span class="hljs-keyword">DISTINCTROW</span> ]</span><br><span class="line">      [<span class="hljs-keyword">HIGH_PRIORITY</span>]</span><br><span class="line">      [<span class="hljs-keyword">STRAIGHT_JOIN</span>]</span><br><span class="line">      [<span class="hljs-keyword">SQL_SMALL_RESULT</span>] [<span class="hljs-keyword">SQL_BIG_RESULT</span>] [<span class="hljs-keyword">SQL_BUFFER_RESULT</span>]</span><br><span class="line">      [<span class="hljs-keyword">SQL_CACHE</span> | SQL_NO_CACHE] [<span class="hljs-keyword">SQL_CALC_FOUND_ROWS</span>]</span><br><span class="line">    select_expr, ...</span><br><span class="line">    [<span class="hljs-keyword">INTO</span> <span class="hljs-keyword">OUTFILE</span> <span class="hljs-string">'file_name'</span> export_options</span><br><span class="line">      | <span class="hljs-keyword">INTO</span> <span class="hljs-keyword">DUMPFILE</span> <span class="hljs-string">'file_name'</span>]</span><br><span class="line">    [<span class="hljs-keyword">FROM</span> table_references</span><br><span class="line">    [<span class="hljs-keyword">WHERE</span> where_definition]</span><br><span class="line">    [<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> &#123;col_name | expr | <span class="hljs-keyword">position</span>&#125;</span><br><span class="line">      [<span class="hljs-keyword">ASC</span> | <span class="hljs-keyword">DESC</span>], ... [<span class="hljs-keyword">WITH</span> <span class="hljs-keyword">ROLLUP</span>]]</span><br><span class="line">    [<span class="hljs-keyword">HAVING</span> where_definition]</span><br><span class="line">    [<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> &#123;col_name | expr | <span class="hljs-keyword">position</span>&#125;</span><br><span class="line">      [<span class="hljs-keyword">ASC</span> | <span class="hljs-keyword">DESC</span>] , ...]</span><br><span class="line">    [<span class="hljs-keyword">LIMIT</span> &#123;[<span class="hljs-keyword">offset</span>,] <span class="hljs-keyword">row_count</span> | <span class="hljs-keyword">row_count</span> <span class="hljs-keyword">OFFSET</span> <span class="hljs-keyword">offset</span>&#125;]</span><br><span class="line">    [<span class="hljs-keyword">PROCEDURE</span> procedure_name(argument_list)]</span><br><span class="line">    [<span class="hljs-keyword">FOR</span> <span class="hljs-keyword">UPDATE</span> | <span class="hljs-keyword">LOCK</span> <span class="hljs-keyword">IN</span> <span class="hljs-keyword">SHARE</span> <span class="hljs-keyword">MODE</span>]]</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># 以MySQL官方文档的SELECT语法说明为例</span></span><br><span class="line"><span class="hljs-keyword">SELECT</span></span><br><span class="line">    [<span class="hljs-keyword">ALL</span> | <span class="hljs-keyword">DISTINCT</span> | <span class="hljs-keyword">DISTINCTROW</span> ]</span><br><span class="line">      [<span class="hljs-keyword">HIGH_PRIORITY</span>]</span><br><span class="line">      [<span class="hljs-keyword">STRAIGHT_JOIN</span>]</span><br><span class="line">      [<span class="hljs-keyword">SQL_SMALL_RESULT</span>] [<span class="hljs-keyword">SQL_BIG_RESULT</span>] [<span class="hljs-keyword">SQL_BUFFER_RESULT</span>]</span><br><span class="line">      [<span class="hljs-keyword">SQL_CACHE</span> | SQL_NO_CACHE] [<span class="hljs-keyword">SQL_CALC_FOUND_ROWS</span>]</span><br><span class="line">    select_expr, ...</span><br><span class="line">    [<span class="hljs-keyword">INTO</span> <span class="hljs-keyword">OUTFILE</span> <span class="hljs-string">'file_name'</span> export_options</span><br><span class="line">      | <span class="hljs-keyword">INTO</span> <span class="hljs-keyword">DUMPFILE</span> <span class="hljs-string">'file_name'</span>]</span><br><span class="line">    [<span class="hljs-keyword">FROM</span> table_references</span><br><span class="line">    [<span class="hljs-keyword">WHERE</span> where_definition]</span><br><span class="line">    [<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> {col_name | expr | <span class="hljs-keyword">position</span>}</span><br><span class="line">      [<span class="hljs-keyword">ASC</span> | <span class="hljs-keyword">DESC</span>], ... [<span class="hljs-keyword">WITH</span> <span class="hljs-keyword">ROLLUP</span>]]</span><br><span class="line">    [<span class="hljs-keyword">HAVING</span> where_definition]</span><br><span class="line">    [<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> {col_name | expr | <span class="hljs-keyword">position</span>}</span><br><span class="line">      [<span class="hljs-keyword">ASC</span> | <span class="hljs-keyword">DESC</span>] , ...]</span><br><span class="line">    [<span class="hljs-keyword">LIMIT</span> {[<span class="hljs-keyword">offset</span>,] <span class="hljs-keyword">row_count</span> | <span class="hljs-keyword">row_count</span> <span class="hljs-keyword">OFFSET</span> <span class="hljs-keyword">offset</span>}]</span><br><span class="line">    [<span class="hljs-keyword">PROCEDURE</span> procedure_name(argument_list)]</span><br><span class="line">    [<span class="hljs-keyword">FOR</span> <span class="hljs-keyword">UPDATE</span> | <span class="hljs-keyword">LOCK</span> <span class="hljs-keyword">IN</span> <span class="hljs-keyword">SHARE</span> <span class="hljs-keyword">MODE</span>]]</span><br></pre></td></tr></tbody></table></figure>
 
 <hr>
 <h1><span id="er-cun-chu-yin-qing">二、存储引擎</span><a href="#er-cun-chu-yin-qing" class="header-anchor">#</a></h1><h2><span id="cun-chu-yin-qing-jian-dan-zong-jie">存储引擎简单总结</span><a href="#cun-chu-yin-qing-jian-dan-zong-jie" class="header-anchor">#</a></h2><p><strong><em>以下内容基本来源于官方文档以及书籍《深入浅出MySQL》</em></strong></p>
 <center> 常用存储引擎的对比</center>
 <table border="1">
-<tr>
+<tbody><tr>
 <td>特点</td>
 <td>MyISAM</td>
 <td>InnoDB</td>
@@ -305,7 +305,7 @@
 <td> </td>
 <td> </td>
 </tr>
-</table>
+</tbody></table>
 
 <p>其中常用的几种就是MyISAM（默认存储引擎）、InnoDB、MEMORY和MERGE；</p>
 <ul>
@@ -314,7 +314,7 @@
 <li>MEMORY使用存在内存中的内容来创建表，因此它的表访问起来非常快，并且默认使用HASH索引（创建索引的时候也可以指定使用HASH索引还是BTREE索引，例如create index mem_hash USING HASH on tab_memory (city_id)），但是这只是临时表，服务关闭之后，数据就会丢失；</li>
 <li>MERGE是一组MyISAM表的组合，这些MyISAM表必须结构完全相同，而MERGE表本身没有数据，对MERGE类型的表可以进行查询、更新、删除的操作，但是其实际上就是对内部的MyISAM表进行的；</li>
 </ul>
-<figure class="highlight hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># 创建MERGE表示例，代码来源于《深入浅出MySQL》</span></span><br><span class="line"><span class="hljs-comment"># 三个关键点：</span></span><br><span class="line"><span class="hljs-comment"># 1. payment_2006与payment_2007都是使用MyISAM存储引擎的表，并且该MERGE表的</span></span><br><span class="line"><span class="hljs-comment"># 定义和payment_2006，payment_2007都一样；</span></span><br><span class="line"><span class="hljs-comment"># 2. INSERT_METHOD=LAST指定了当对该MERGE表进行插入时应当作用在最后一个表上</span></span><br><span class="line"><span class="hljs-comment"># 也可以指定为FIRST，如果创建MERGE表时不对该子句指定或者指定为NO，就不允许对</span></span><br><span class="line"><span class="hljs-comment"># 该MERGE表进行插入操作；</span></span><br><span class="line"><span class="hljs-comment"># 3. 对MERGE表进行DROP删除只会删除MERGE表的定义，对实际MyISAM表没有影响；</span></span><br><span class="line">mysql&gt; CREATE TABLE payment_all(</span><br><span class="line">	-&gt; country_id smallint,</span><br><span class="line">	-&gt; payment_date datetime,</span><br><span class="line">	-&gt; amount DECIMAL(15,2),</span><br><span class="line">	-&gt; INDEX(country_id)</span><br><span class="line">	-&gt; )engine=merge union=(payment_2006,payment_2007) INSERT_METHOD=LAST;</span><br></pre></td></tr></table></figure>
+<figure class="highlight hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># 创建MERGE表示例，代码来源于《深入浅出MySQL》</span></span><br><span class="line"><span class="hljs-comment"># 三个关键点：</span></span><br><span class="line"><span class="hljs-comment"># 1. payment_2006与payment_2007都是使用MyISAM存储引擎的表，并且该MERGE表的</span></span><br><span class="line"><span class="hljs-comment"># 定义和payment_2006，payment_2007都一样；</span></span><br><span class="line"><span class="hljs-comment"># 2. INSERT_METHOD=LAST指定了当对该MERGE表进行插入时应当作用在最后一个表上</span></span><br><span class="line"><span class="hljs-comment"># 也可以指定为FIRST，如果创建MERGE表时不对该子句指定或者指定为NO，就不允许对</span></span><br><span class="line"><span class="hljs-comment"># 该MERGE表进行插入操作；</span></span><br><span class="line"><span class="hljs-comment"># 3. 对MERGE表进行DROP删除只会删除MERGE表的定义，对实际MyISAM表没有影响；</span></span><br><span class="line">mysql> CREATE TABLE payment_all(</span><br><span class="line">	-> country_id smallint,</span><br><span class="line">	-> payment_date datetime,</span><br><span class="line">	-> amount DECIMAL(15,2),</span><br><span class="line">	-> INDEX(country_id)</span><br><span class="line">	-> )engine=merge union=(payment_2006,payment_2007) INSERT_METHOD=LAST;</span><br></pre></td></tr></tbody></table></figure>
 
 <h2><span id="guan-yu-innodb">关于InnoDB</span><a href="#guan-yu-innodb" class="header-anchor">#</a></h2><ul>
 <li>InnoDB默认地被包含在MySQL二进制分发中。Windows Essentials installer使InnoDB成为Windows上MySQL的默认表。如果你想要所有（非系统）表都被创建成InnoDB表，你可以简单地把<code>default-table-type=innodb</code>行添加到my.cnf或my.ini文件的[mysqld]节里。</li>
@@ -324,7 +324,7 @@
 <li>如果只是对某些语句需要进行事务控制，则使用<code>START TRANSACTION</code>语句开始一个事务比较方便，这样事务结束之后可以自动回到自动提交的方式，如果希望所有的事务都不是自动提交的，那么通过修改<code>AUTOCOMMIT</code>为0来控制事务比较方便，这样不用在每个事务开始的时候再执行<code>START TRANSACTION</code>语句。</li>
 <li>在同一个事务中，最好不使用不同存储引擎的表，否则<code>ROLLBACK</code>时需要对非事务类型的表进行特别的处理，因为<code>COMMIT</code>、<code>ROLLBACK</code>只能对事务类型的表进行提交和回滚。</li>
 </ul>
-
+</body></html>
         </div>
         
         <div class="level is-size-7 is-uppercase">
@@ -455,7 +455,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        18
+                        19
                     </p>
                 </div>
             </div>
@@ -621,7 +621,7 @@
                 <span class="level-item">Unclassified</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/操作系统/">
@@ -682,7 +682,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 13.33px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 16.67px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
     </div>
 </div>
     
@@ -691,6 +691,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Lightweight JSON Parser Based on C -- cJSON">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-01T13:35:53.000Z">2020-05-01</time></div>
+                    <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Lightweight JSON Parser Based on C -- cJSON</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unclassified/">Unclassified</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -768,25 +787,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
-                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -797,6 +797,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2020/01/">
@@ -904,7 +915,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/No-tags/">
                         <span class="tag">No-tags</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 

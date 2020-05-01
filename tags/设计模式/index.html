@@ -167,7 +167,7 @@
             
         </h1>
         <div class="content">
-            <h1 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a><span>文章目录</span></h1><ul>
+            <html><head></head><body><h1 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a><span>文章目录</span></h1><ul>
 <li><a href="#1">一、代理设计模式</a><ul>
 <li><a href="#1.1">组成</a></li>
 <li><a href="#1.2">分类</a></li>
@@ -188,7 +188,7 @@
 <li>Subject：抽象角色。通过接口或抽象类声明真实角色实现的业务方法。</li>
 <li>Proxy：代理角色。实现抽象角色，是真实角色的代理，通过真实角色的业务逻辑方法来实现抽象方法，并可以附加自己的操作。</li>
 <li>RealSubject：真实角色。实现抽象角色，定义真实角色所要实现的业务逻辑，供代理角色调用。  </li>
-</ul>
+</ul></body></html>
         </div>
         
         
@@ -241,7 +241,7 @@
             
         </h1>
         <div class="content">
-            <h1 id="文章目录："><a href="#文章目录：" class="headerlink" title="文章目录："></a><span>文章目录：</span></h1><ul>
+            <html><head></head><body><h1 id="文章目录："><a href="#文章目录：" class="headerlink" title="文章目录："></a><span>文章目录：</span></h1><ul>
 <li><a href="#1">一、概念</a></li>
 <li><a href="#2">二、结构</a><ul>
 <li><a href="#2.1">如何理解装饰器设计模式的运行原理？</a></li>
@@ -251,7 +251,7 @@
 </ul>
 <h2 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a><span id="1">一、概念</span></h2><blockquote>
 <p>《Thinking in Java》: <strong>装饰器</strong>模式使用分层对象来动态透明地向单个对象中添加责任。装饰器指定包装在最初地对象周围地所有对象都具有相同的基本接口。某些事物是可装饰的，可以通过将其它类包装在这个可装饰对象的四周，从而将功能分层，这使得对装饰器的使用是透明的——无论对象是否被装饰，你都拥有一个可以向对象发送的公共消息集。</p>
-</blockquote>
+</blockquote></body></html>
         </div>
         
         
@@ -304,14 +304,14 @@
             
         </h1>
         <div class="content">
-            <p>@[TOC](Java I/O库结合装饰器设计模式的一点理解)</p>
+            <html><head></head><body><p>@[TOC](Java I/O库结合装饰器设计模式的一点理解)</p>
 <h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><h3 id="关于I-O库使用的设计模式-装饰器模式"><a href="#关于I-O库使用的设计模式-装饰器模式" class="headerlink" title="关于I/O库使用的设计模式-装饰器模式"></a>关于I/O库使用的设计模式-装饰器模式</h3><blockquote>
 <p>《Thinking in Java》: <strong>装饰器</strong>模式使用分层对象来动态透明地向单个对象中添加责任。装饰器指定包装在最初地对象周围地所有对象都具有相同的基本接口。某些事物是可装饰的，可以通过将其它类包装在这个可装饰对象的四周，从而将功能分层，这使得对装饰器的使用是透明的——无论对象是否被装饰，你都拥有一个可以向对象发送的公共消息集。</p>
 </blockquote>
 <p>Java I/O库实际是很多功能的组合，所以使用装饰器设计模式。<br>至于装饰器设计模式，在我的另外一篇笔记中也进行了学习，这里就不再赘述。</p>
 <h3 id="装饰器模式在I-O库中的实际应用"><a href="#装饰器模式在I-O库中的实际应用" class="headerlink" title="装饰器模式在I/O库中的实际应用"></a>装饰器模式在I/O库中的实际应用</h3><p>就以字节输入流系列为例:<br><em>InputStream</em>是一个抽象类，在装饰器设计模式当中，充当了抽象构件的角色，它为所有被修饰的对象提供通用接口，通过查看源码也能知道这点。</p>
 <p><em>FilterInputStream</em>继承自<em>InputStream</em>，充当装饰角色(Decorator)，该类应当持有一个构件角色对象的实例，在<em>FilterInputStream</em>中含有一个输入流对象的保护成员：</p>
-<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">volatile</span> InputStream in;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">volatile</span> InputStream in;</span><br></pre></td></tr></tbody></table></figure></body></html>
         </div>
         
         
@@ -378,7 +378,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        18
+                        19
                     </p>
                 </div>
             </div>
@@ -514,7 +514,7 @@
                 <span class="level-item">Unclassified</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/操作系统/">
@@ -575,7 +575,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+        <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 13.33px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 16.67px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
     </div>
 </div>
     
@@ -584,6 +584,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Lightweight JSON Parser Based on C -- cJSON">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-01T13:35:53.000Z">2020-05-01</time></div>
+                    <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Lightweight JSON Parser Based on C -- cJSON</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unclassified/">Unclassified</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -661,25 +680,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB1 Booting a PC">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-28T14:28:42.000Z">2019-12-28</time></div>
-                    <a href="/2019/12/28/MIT-6-828-LAB1-Booting-a-PC/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB1 Booting a PC</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -690,6 +690,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2020/01/">
@@ -797,7 +808,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/No-tags/">
                         <span class="tag">No-tags</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
