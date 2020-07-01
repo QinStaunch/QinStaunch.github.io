@@ -7,18 +7,22 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>标签: 数据库 - YanTang Qin的博客</title>
+<title>【译文】The end of the Redis adventure.antirez. - YanTang Qin的博客</title>
 
 
-    <meta name="keywords" content="Java,Python,Linux">
-<meta property="og:type" content="website">
-<meta property="og:title" content="YanTang Qin的博客">
-<meta property="og:url" content="https://qinstaunch.github.io/tags/数据库/index.html">
+    <meta name="description" content="原文引用 - The end of the Redis adventure - antirez   Redis这场冒险的终点 When I started the Redis project more than ten years ago I was in one of the most exciting moments of my career. My co-founder and I had">
+<meta name="keywords" content="杂记译文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【译文】The end of the Redis adventure.antirez.">
+<meta property="og:url" content="https://qinstaunch.github.io/2020/07/01/【译文】The-end-of-the-Redis-adventure-antirez/index.html">
 <meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="原文引用 - The end of the Redis adventure - antirez   Redis这场冒险的终点 When I started the Redis project more than ten years ago I was in one of the most exciting moments of my career. My co-founder and I had">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-07-01T09:43:34.222Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="YanTang Qin的博客">
+<meta name="twitter:title" content="【译文】The end of the Redis adventure.antirez.">
+<meta name="twitter:description" content="原文引用 - The end of the Redis adventure - antirez   Redis这场冒险的终点 When I started the Redis project more than ten years ago I was in one of the most exciting moments of my career. My co-founder and I had">
 <meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
 
 
@@ -77,7 +81,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.png" alt="YanTang Qin的博客" height="28">
+                <img src="/images/logo.png" alt="【译文】The end of the Redis adventure.antirez." height="28">
             
             </a>
         </div>
@@ -113,6 +117,10 @@
                     
                 
                 
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
                 
                 <a class="navbar-item search" title="搜索" href="javascript:;">
                     <i class="fas fa-search"></i>
@@ -126,65 +134,96 @@
     <section class="section">
         <div class="container">
             <div class="columns">
-                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main"><div class="card">
-    <div class="card-content">
-        <nav class="breadcrumb" aria-label="breadcrumbs">
-        <ul>
-            <li><a href="/tags">标签</a></li>
-            <li class="is-active"><a href="#" aria-current="page">数据库</a></li>
-        </ul>
-        </nav>
-    </div>
-</div>
-
-    
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
 <div class="card">
     
     <div class="card-content article ">
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-25T12:45:04.000Z">2019-10-25</time>
+                <time class="level-item has-text-grey" datetime="2020-07-01T03:40:13.000Z">2020-07-01</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/数据库/">数据库</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/数据库/MySQL/">MySQL</a>
+                <a class="has-link-grey -link" href="/categories/译文/">译文</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/译文/杂记/">杂记</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    12 分钟 读完 (大约 1805 个字)
+                    17 分钟 读完 (大约 2499 个字)
                 </span>
                 
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
                 
             </div>
         </div>
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/10/25/MySQL学习笔记学习笔记-一-存储引擎和事务/">MySQL学习笔记（一）：存储引擎和事务</a>
+                【译文】The end of the Redis adventure.antirez.
             
         </h1>
         <div class="content">
-            <html><head></head><body><h1 id="一、如何阅读官方文档"><a href="#一、如何阅读官方文档" class="headerlink" title="一、如何阅读官方文档"></a>一、如何阅读官方文档</h1><p>官方中文文档传送门：<a href="https://www.mysqlzh.com" target="_blank" rel="noopener">MySQL5.1中文文档</a><br>重点关注：</p>
-<ul>
-<li><a href="https://www.mysqlzh.com/doc/64.html" target="_blank" rel="noopener">第七章 优化</a></li>
-<li><a href="https://www.mysqlzh.com/doc/105.html" target="_blank" rel="noopener">第十一章 列类型</a></li>
-<li><a href="https://www.mysqlzh.com/doc/124.html" target="_blank" rel="noopener">第十三章 SQL语句语法</a></li>
-<li><a href="https://www.mysqlzh.com/doc/213.html" target="_blank" rel="noopener">第十五章 存储引擎和表类型</a></li>
-</ul>
-<p><strong>更好地阅读文档</strong>：注意方括号 [] 意味着该字段可以省略，也就是可选字段；当要用到圆括号字段修饰的字段的时候，圆括号()不可以省略；大括号{}意味着在该字段的给定值中进行选择，| 这个符号就意味着选择呗；啥符号都没带的就是必填字段呗。<br>例如下面由MySQL官方文档给出的select语法：<br>像[all | distinct | distinctrow] 这个字段本身是可选字段，写select语句的时候可加可不加，但是如果加上该字段的时候，就要在all，distinct，distinctrow中选择一个字段加上。<br>select_expr就是必选字段，必须要在select语句中写这个字段。<br>像[LIMIT {[offset,] row_count | row_count OFFSET offset}]这个，也就是说，这一整个字段是可选字段，但是如果加上该字段，就要在{}中给出选项中选择一个，offser加上了[]，说明它可有可无。</p></body></html>
+            <html><head></head><body><blockquote>
+<p><strong>原文引用 - <a href="http://antirez.com/news/133" target="_blank" rel="noopener">The end of the Redis adventure - antirez</a></strong></p>
+</blockquote>
+<hr>
+<h1><span id="redis-zhe-chang-mou-xian-de-zhong-dian"><span>Redis这场冒险的终点</span></span><a href="#redis-zhe-chang-mou-xian-de-zhong-dian" class="header-anchor">#</a></h1><blockquote>
+<p>When I started the Redis project more than ten years ago I was in one of the most exciting moments of my career. My co-founder and I had successfully launched two of the major web 2.0 services of the Italian web. In order to make them scalable we had to invent many new concepts, that were already known in the field most of the times, but we didn’t know, nor we cared to check. Problem? Let’s figure out a solution. We wanted to solve problems but we wanted, even more, to have fun. This was the playful environment where was born.</p>
+</blockquote>
+<a id="more"></a>
+
+<p>10年多之前我启动Redis项目的时候，正处于我事业最令人激动的时刻之一，我同我的合伙人成功地启动了意大利网络的两个主要的Web 2.0服务，为了使得它们具有足够的伸缩性，我们不得不发明许多新的概念，尽管这些概念在该领域已经被多数人熟知，但是我们不知道，也不想去检查。存在问题？那就让我们找出解决方案吧。我们想解决问题，但我们更想获取乐趣，这也就是Redis项目创始时的背景了，很有意思。</p>
+<blockquote>
+<p>But now Redis is, incredibly, one of the main parts of so many things. And year after year my work changed from building this thing to making sure that it was also as useful as possible, as reliable as possible. And in recent years, what I do every day changed so much that most of my attention is spent in checking what other developers tell me about the Redis code, how to improve it, the changes it requires to be more correct or faster or more secure. However I never wanted to be a software maintainer.</p>
+</blockquote>
+<p>难以置信，Redis如今已经是许多项目的主要部分之一了。一年又一年，我的工作从构建Redis变成了确保它尽可能的有用，尽可能的可靠。在最近这几年，我每天要做的事情改变了非常多，每天我都要花大量精力去检查其它开发人员对我说的关于Redis代码的问题，如何改进代码以及那些需要更正确、更快速或者更安全的更改上。然而，我并不想成为一个软件维护者。</p>
+<blockquote>
+<p>I write code in order to express myself, and I consider what I code an artifact, rather than just something useful to get things done. I would say that what I write is useful just as a side effect, but my first goal is to make something that is, in some way, beautiful. In essence, I would rather be remembered as a bad artist than a good programmer. Now I’m asked more and more, by the circumstances created by a project that became so important, to express myself less and to maintain the project more. And this is indeed exactly what Redis needs right now. But this is not what I want to do, and I stretched myself enough during the past years.</p>
+</blockquote>
+<p>我写代码是为了表达我自己，我将我写的代码视作手工艺品而不仅仅是一个能够解决问题的有用的东西，我想说的是，我写的代码有用仅仅只是因为它的副作用就是它有用，但是我的首要目标是写出在某种程度上很漂亮的东西。本质上，我宁愿作为一个坏艺术家而不是一个好的程序员而被世人铭记。如今，在一个非常重要的项目所创造的环境下，我被问得越来越多，越来越少去表达我自己，而更多的是在维护这个项目。的确，这是Redis目前需要的，但是这样的状态不是我想要的，在过去的几年里，我也一直在提升自己。</p>
+<blockquote>
+<p>So, dear Redis community, today I’m stepping back as the Redis maintainer. My new position will be, on one side, an “ideas” person at Redis Labs, in order to provide inputs for new Redis possibilities: I’ll continue to be part of the Redis Labs advisory board. On the other hand however my hands will be free, and I’ll do something else, that could be writing code or not, who knows, I don’t want to make plans for now. However I’m very skeptical about me not writing more code in the future. It’s just too much fun :D</p>
+</blockquote>
+<p>所以，亲爱的Redis社区，今天我就不再作为Redis的维护者了。我的新的定位，一方面将会是作为Redis实验室的“军师”，以便能为Redis新的可能性提出建议：即我将成为Redis实验室顾问委员会的一员。但是从另外一方面来说，我也就空闲下来了，我会做些别的什么，或许是写代码也可能不是，谁知道呢，我现在不想制定计划。然而，我对将来我是否会写更多的代码特别怀疑，因为写代码实在是太有趣了:D</p>
+<blockquote>
+<p>I leave Redis in the hands of the Redis community. I asked my colleagues Yossi Gottlied and Oran Agra to continue to maintain the project starting from today: these are the people that helped me the most in recent years, and that tried hard, even when it was not “linear” to follow me in my very subjective point of views, to understand what my vision on Redis was. Since I don’t want to be part of how the new Redis development setup will be shaped (that is the most meta of the maintenance tasks, exactly what I want to avoid), I’ll just leave Yossi and Oran the task of understanding how to interface with the rest of the Redis developers to find a sustainable development model, you can hear directly from Yossi and Oran in this blog post:<a href="https://redislabs.com/blog/new-governance-for-redis/" target="_blank" rel="noopener">https://redislabs.com/blog/new-governance-for-redis/</a></p>
+</blockquote>
+<p>我将Redis交给Redis社区，并且请我的同事Yossi Gottlied和Oran Agra从今天开始继续维护这个项目，他们是这些年帮助我最多的人，即使他们并不总是完全认同我的十分主观的观点，不完全了解我对Redis的看法，但是他们也十分努力了。由于我不想成为了解未来Redis的开发计划将如何制定的一员（这是维护任务中最重要的部分，也正是我想避免的事情），我把负责理解如何与其余的Redis开发人员找到一个可持续发展模型的任务交给了Yossi和Oran，你可以通过以下链接的博客文章中直接了解到具体发展：<a href="https://redislabs.com/blog/new-governance-for-redis/" target="_blank" rel="noopener">https://redislabs.com/blog/new-governance-for-redis/</a></p>
+<blockquote>
+<p>I believe I’m not just leaving Redis in the hands of community of expert programmers, but also in the hands of people who care about the legacy of the community spirit of Redis. In eleven years I hope I was able to provide a point of view that certain persons understood, about an alternative way to write software. I hope that such point of view will be taken into consideration in the evolution of Redis.</p>
+</blockquote>
+<p>我相信我把Redis不仅仅交给了专家程序员，也交给了那些在乎Redis社区精神遗产的人。希望在11年后，我能就可替代的写软件的方法，提供某些人能理解的点子，我希望Redis未来的发展也能够考虑这些点子。</p>
+<blockquote>
+<p>Redis was the most stressful thing I did in my career, and probably also the most important. I don’t like much what the underground programming world became in recent years, but even if it was not an easy journey, I had the privilege to work and interact with mant great individuals. Thank you for your humanity and your help, and for what you taught me. You know who you are! I want to also say thank you to the companies and individuals inside such companies that allowed me to write open source every day for so many years, with the freedom to do what I believed to be correct for the user base. Redis Labs, VMware and Pivotal, thank you for your great help and generosity.</p>
+</blockquote>
+<p>Redis是我职业生涯中做的最有压力的，也可能是最重要的一个项目。虽然我并不喜欢近几年背后编程界的发展，但是即使这不是一段轻松的旅程，我仍然有幸与许多优秀的人一起工作、交流，感谢你们的宽容与帮助，感谢你们所教给我的，你们知道你们是谁！我还要对那些公司以及那些公司里的人表示感谢，正是他们，在这么多年的时间里，允许我每天写开源代码，并且可以自由地做我所认为的对于用户来说正确的事情。Redis实验室，VMware和Pivotal，感谢你们的大力支持和宽宏大量。</p>
+<blockquote>
+<p>As I said, I don’t really know what there is for me in my future, other than the involvement with the Redis advisory board. I guess that for some time, just look around is a good idea, without doing too many things. I would like to explore more a few hobbies of mine. Writing blog posts is also a major thing that I wanted to do but did less and less because of time concerns. Recently I published videos in Italian language explaining technological concepts to the general public, I had fun doing that and received good feedbacks, maybe I’ll do more of that as well. Anyway I guess some of you know that I’m active on Twitter as @antirez. If you are interested in what an old, strange programmer will do next, see you there.</p>
+</blockquote>
+<p>正如我所说，除了参加Redis顾问委员会之外，我真的不知道在未来等待我的是什么。我想，在未来的一段时间里，只是四处看看会是个好主意，不要做太多事情。我想探索更多业余爱好，写博客也是一件主要的我想做的事情，但是由于时间上的考量，我做的越来越少。最近我发布了意大利语的视频来向大众介绍技术概念，我乐在其中并且也收到了很不错的反馈，可能我也会做更多这样的视频。无论如何，我想你们当中有些人知道我在Twitter上以@antirez的身份活跃着，如果你对一个老而陌生的程序员接下来将会做些什么感兴趣，那就相见于Twitter吧。</p>
+<hr>
+<h1><span id="statement"><div align="center"><span>Statement</span></div></span><a href="#statement" class="header-anchor">#</a></h1><ol>
+<li>业余翻译，业余爱好，如有建议请发邮件至<a href="mailto:staunchqyt@163.com" target="_blank" rel="noopener">staunchqyt@163.com</a></li>
+<li>原文内容版权归属原文作者所有@antirez，翻译内容仅供学习、交流之用。</li>
+</ol>
+</body></html>
         </div>
         
-        
-        <div class="level is-mobile">
+        <div class="level is-size-7 is-uppercase">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/10/25/MySQL学习笔记学习笔记-一-存储引擎和事务/#more">阅读更多</a>
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/杂记译文/">杂记译文</a>
                 </div>
             </div>
         </div>
+        
         
         
     </div>
@@ -192,11 +231,67 @@
 
 
 
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
 
 
 
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/">
+                <span class="level-item">Lightweight JSON Parser Based on C -- cJSON</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
 
 
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2020/07/01/【译文】The-end-of-the-Redis-adventure-antirez/" data-num-posts="5"></div>
+
+    </div>
+</div>
 </div>
                 
 
@@ -289,6 +384,24 @@
 </div>
     
         
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>Redis这场冒险的终点#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>Statement#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
     
         <div class="card widget">
     <div class="card-content">
@@ -801,7 +914,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.png" alt="YanTang Qin的博客" height="28">
+                    <img src="/images/logo.png" alt="【译文】The end of the Redis adventure.antirez." height="28">
                 
                 </a>
                 <p class="is-size-7">
