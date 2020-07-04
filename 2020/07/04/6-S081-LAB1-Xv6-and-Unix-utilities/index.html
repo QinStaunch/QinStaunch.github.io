@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>6.S081-LAB1 Xv6 and Unix utilities - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="Contents Tools Preparation Boot xv6 Utilities sleep Optional:uptime   pingpong primes find xargs   TEST REFERENCES">
+<meta name="keywords" content="6.S081">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6.S081-LAB1 Xv6 and Unix utilities">
+<meta property="og:url" content="https://qinstaunch.github.io/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="Contents Tools Preparation Boot xv6 Utilities sleep Optional:uptime   pingpong primes find xargs   TEST REFERENCES">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-07-04T07:08:16.672Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="6.S081-LAB1 Xv6 and Unix utilities">
+<meta name="twitter:description" content="Contents Tools Preparation Boot xv6 Utilities sleep Optional:uptime   pingpong primes find xargs   TEST REFERENCES">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="6.S081-LAB1 Xv6 and Unix utilities" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-07-04T02:56:27.000Z">2020-07-04</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    13 分钟 读完 (大约 1957 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                6.S081-LAB1 Xv6 and Unix utilities
+            
+        </h1>
+        <div class="content">
+            <html><head></head><body><h1><span id="contents"><span>Contents</span></span><a href="#contents" class="header-anchor">#</a></h1><ul>
+<li><a href="#s081lab1_tools">Tools Preparation</a></li>
+<li><a href="#s081lab1_boot">Boot xv6</a></li>
+<li><a href="#s081lab1_util">Utilities</a><ul>
+<li><a href="#s081lab1_util_sleep">sleep</a><ul>
+<li><a href="#s081lab1_util_sleep_opt">Optional:uptime</a></li>
+</ul>
+</li>
+<li><a href="#s081lab1_util_pingpong">pingpong</a></li>
+<li><a href="#s081lab1_util_primes">primes</a></li>
+<li><a href="#s081lab1_util_find">find</a></li>
+<li><a href="#s081lab1_util_xargs">xargs</a></li>
+</ul>
+</li>
+<li><a href="#s081lab1_test">TEST</a></li>
+<li><a href="#s081lab1_ref">REFERENCES</a></li>
+</ul>
+<a id="more"></a>
+
+<hr>
+<h1><span id="tools-preparation"><span id="s081lab1_tools">Tools Preparation</span></span><a href="#tools-preparation" class="header-anchor">#</a></h1><hr>
+<p>我是在Mac OS上搭建了实验环境。</p>
+<p>首先安装Mac的开发者套件：<br><code>$ xcode-select -install</code><br>再安装包管理工具<a href="https://brew.sh/" target="_blank" rel="noopener">Homebrew</a>:<br><code>$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</code><br>若在此之前已经安装过上述，直接跳到这步，安装<a href="https://github.com/riscv/homebrew-riscv" target="_blank" rel="noopener">RISC-V编译工具链</a><br><code>$ brew tap riscv/riscv</code><br><code>$ brew install riscv-tools</code><br>然后配置环境，将下述这一行添加到<code>~/.bashrc</code>配置文件当中:<br><code>PATH=$PATH:/usr/local/opt/riscv-gnu-toolchain/bin</code><br>最后安装模拟器QEMU:<br><code>$ brew install qemu</code><br>耐心等待即可。</p>
+<p>上述步骤完成后，可以通过下述步骤检查实验环境是否搭建成功。<br><code>$ riscv64-unknown-elf-gcc --version</code><br><code>riscv64-unknown-elf-gcc (GCC) 9.2.0</code><br><code>$ qemu-system-riscv64 --version</code><br><code>QEMU emulator version 4.1.0</code><br>安装无错的话应当能够编译并运行xv6:<br><code># int the xv6 directory</code><br><code>$ make qemu</code><br><code># ... lots of output ...</code><br><code>init: starting sh</code><br><code>$</code>  </p>
+<hr>
+<h1><span id="boot-xv6"><span id="s081lab1_boot">Boot xv6</span></span><a href="#boot-xv6" class="header-anchor">#</a></h1><hr>
+<p>克隆xv6的源码仓库至本地:<br><code>$ git clone git://github.com/mit-pdos/xv6-riscv-fall19.git</code><br><code>$ cd xv6-riscv-fall19</code><br>切换到util分支:<br><code>$ git checkout util</code><br>已经编写好了Makefile，可以直接编译:<br><code>$ make</code><br>运行xv6:<br><code>$ make qemu</code>  </p>
+<hr>
+<h1><span id="utilities"><span id="s081lab1_util">Utilities</span></span><a href="#utilities" class="header-anchor">#</a></h1><hr>
+<h2><span id="sleep"><span id="s081lab1_util_sleep">sleep</span></span><a href="#sleep" class="header-anchor">#</a></h2><blockquote>
+<p>Implement the UNIX program sleep for xv6, your sleep should pause for a user-specified number of ticks(A tick is a notion of time defined by the xv6 kernel, namely the time between two interrupts from the timer chip). Your solution should be in the file <em>user/sleep.c</em>. </p>
+</blockquote>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/types.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"user/user.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">if</span>(argc < <span class="hljs-number">2</span>){</span><br><span class="line">        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">"Usage:sleep number\n"</span>);</span><br><span class="line">        <span class="hljs-built_in">exit</span>();</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span>(sleep(atoi(argv[<span class="hljs-number">1</span>])) < <span class="hljs-number">0</span>){</span><br><span class="line">        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">"failed to sleep %s ticks.\n"</span>, argv[<span class="hljs-number">1</span>]);</span><br><span class="line">        <span class="hljs-built_in">exit</span>();</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h3><span id="optional-uptime"><span id="s081lab1_util_sleep_opt">Optional:uptime</span></span><a href="#optional-uptime" class="header-anchor">#</a></h3><blockquote>
+<p>Write an uptime program that prints the uptime in terms of ticks using the uptime system call.</p>
+</blockquote>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/types.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"user/user.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span><br><span class="line">{</span><br><span class="line">    uint64 uptime_ticks;</span><br><span class="line">    uptime_ticks = uptime();</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%d clock tick interrupts have occured since start.\n"</span>, uptime_ticks);</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h2><span id="pingpong"><span id="s081lab1_util_pingpong">pingpong</span></span><a href="#pingpong" class="header-anchor">#</a></h2><blockquote>
+<p>Write a program that uses UNIX system calls to “ping-pong” a byte between two processes over a pair of pipes, one for each direction. The parent sends by writing a byte to parent_fd[1] and the child receives it by reading from parent_fd[0]. After receiving a byte from parent, the child responds with its own byte by writing to chlid_fd[1], which the parent then reads. Your solution should be in the file <em>user/pingpong.c</em>.</p>
+</blockquote>
+<p>了解Pipe是什么就不会有难度，注意文件描述符的关开。</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/types.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"user/user.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">int</span> parent_fd[<span class="hljs-number">2</span>], child_fd[<span class="hljs-number">2</span>];</span><br><span class="line">    <span class="hljs-keyword">int</span> pid;</span><br><span class="line">    <span class="hljs-keyword">char</span> buf[<span class="hljs-number">2</span>];</span><br><span class="line"></span><br><span class="line">    pipe(parent_fd);</span><br><span class="line">    pipe(child_fd);</span><br><span class="line">    <span class="hljs-keyword">if</span>(fork() == <span class="hljs-number">0</span>){</span><br><span class="line">        <span class="hljs-comment">// child process.</span></span><br><span class="line">        close(parent_fd[<span class="hljs-number">1</span>]);</span><br><span class="line">        close(child_fd[<span class="hljs-number">0</span>]);</span><br><span class="line"></span><br><span class="line">        pid = getpid();</span><br><span class="line">        read(parent_fd[<span class="hljs-number">0</span>], buf, <span class="hljs-number">1</span>);</span><br><span class="line">        <span class="hljs-keyword">if</span>(buf[<span class="hljs-number">0</span>] == <span class="hljs-string">'i'</span>){</span><br><span class="line">            <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%d: received ping\n"</span>, pid);</span><br><span class="line">        }</span><br><span class="line">        write(child_fd[<span class="hljs-number">1</span>], <span class="hljs-string">"o"</span>, <span class="hljs-number">1</span>);</span><br><span class="line"></span><br><span class="line">        close(parent_fd[<span class="hljs-number">0</span>]);</span><br><span class="line">        close(child_fd[<span class="hljs-number">1</span>]);</span><br><span class="line">    }<span class="hljs-keyword">else</span>{</span><br><span class="line">        <span class="hljs-comment">// parent process.</span></span><br><span class="line">        close(parent_fd[<span class="hljs-number">0</span>]);</span><br><span class="line">        close(child_fd[<span class="hljs-number">1</span>]);</span><br><span class="line"></span><br><span class="line">        pid = getpid();</span><br><span class="line">        write(parent_fd[<span class="hljs-number">1</span>], <span class="hljs-string">"i"</span>, <span class="hljs-number">1</span>);</span><br><span class="line">        read(child_fd[<span class="hljs-number">0</span>], buf, <span class="hljs-number">1</span>);</span><br><span class="line">        <span class="hljs-keyword">if</span>(buf[<span class="hljs-number">0</span>] == <span class="hljs-string">'o'</span>){</span><br><span class="line">            <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%d: received pong\n"</span>, pid);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        close(parent_fd[<span class="hljs-number">1</span>]);</span><br><span class="line">        close(child_fd[<span class="hljs-number">0</span>]);</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h2><span id="primes"><span id="s081lab1_util_primes">primes</span></span><a href="#primes" class="header-anchor">#</a></h2><blockquote>
+<p>Write a concurrent version of prime sieve using pipes. This idea is due to Doug Mcllroy, inventor of Unix pipe. The picture halfway down <a href="http://swtch.com/~rsc/thread/" target="_blank" rel="noopener">this page</a> and the surrounding text explain how to do it. Your solution should be in the file <em>user/primes.c</em>.</p>
+</blockquote>
+<p>需要认真阅读链接给的小论文<strong>Bell Labs and CSP Threads</strong>，文中所提到的例子，基于著名的埃式素数筛选算法，做过算法的肯定都知道这个，有趣的是，文中的模型通过Pipe与多进程实现了一个素数筛子，给了一张图，简单明了：  </p><div align="center"><img src="https://swtch.com/~rsc/thread/sieve.gif" alt="图 3-1 Sieve of Eratosthenes Simulation"></div>伪代码表示即为：<p></p>
+<figure class="highlight shell hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">p = get a number from left neighbor</span><br><span class="line">print p</span><br><span class="line">loop:</span><br><span class="line">    n = get a number from left neighbor</span><br><span class="line">    if (p does not divide n)</span><br><span class="line">        send n to right neighbor</span><br></pre></td></tr></tbody></table></figure>
+
+<p>我的第一版本实现：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/types.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"user/user.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> pipeline_root[<span class="hljs-number">2</span>];</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">util(<span class="hljs-keyword">int</span>* p, <span class="hljs-keyword">int</span>* k)</span><br><span class="line">{</span><br><span class="line">    p[<span class="hljs-number">0</span>] = k[<span class="hljs-number">0</span>];</span><br><span class="line">    p[<span class="hljs-number">1</span>] = k[<span class="hljs-number">1</span>];</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">sieve()</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">int</span> n, k;</span><br><span class="line">    <span class="hljs-keyword">int</span> pipeline_left[<span class="hljs-number">2</span>], pipeline_right[<span class="hljs-number">2</span>];</span><br><span class="line">    util(pipeline_right, pipeline_root);</span><br><span class="line">loop:</span><br><span class="line">    util(pipeline_left, pipeline_right);</span><br><span class="line">    close(pipeline_left[<span class="hljs-number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span>((read(pipeline_left[<span class="hljs-number">0</span>], &n, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">int</span>))) <= <span class="hljs-number">0</span> || n <= <span class="hljs-number">0</span>){</span><br><span class="line">        close(pipeline_left[<span class="hljs-number">0</span>]);</span><br><span class="line">        <span class="hljs-built_in">exit</span>();</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"prime %d\n"</span>, n);</span><br><span class="line"></span><br><span class="line">    pipe(pipeline_right);</span><br><span class="line">    <span class="hljs-comment">// fork right neighbor.</span></span><br><span class="line">    <span class="hljs-keyword">if</span>((fork() == <span class="hljs-number">0</span>)){</span><br><span class="line">        <span class="hljs-comment">// in child process.</span></span><br><span class="line">        <span class="hljs-keyword">goto</span> loop;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    close(pipeline_right[<span class="hljs-number">0</span>]);</span><br><span class="line">    <span class="hljs-keyword">while</span>((read(pipeline_left[<span class="hljs-number">0</span>], &k, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">int</span>))) > <span class="hljs-number">0</span> && k > <span class="hljs-number">0</span>){</span><br><span class="line">        <span class="hljs-keyword">if</span>(k % n){</span><br><span class="line">            write(pipeline_right[<span class="hljs-number">1</span>], &k, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">int</span>));</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    close(pipeline_left[<span class="hljs-number">0</span>]);</span><br><span class="line">    close(pipeline_right[<span class="hljs-number">1</span>]);</span><br><span class="line">    wait();</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">    pipe(pipeline_root);</span><br><span class="line">    <span class="hljs-keyword">if</span>(fork() == <span class="hljs-number">0</span>){</span><br><span class="line">        sieve();</span><br><span class="line">    }<span class="hljs-keyword">else</span>{</span><br><span class="line">        <span class="hljs-comment">// parent root process feeding numbers.</span></span><br><span class="line">        close(pipeline_root[<span class="hljs-number">0</span>]);</span><br><span class="line">        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">2</span>; i <= <span class="hljs-number">35</span>; i++){</span><br><span class="line">            write(pipeline_root[<span class="hljs-number">1</span>], &i, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">int</span>));</span><br><span class="line">        }</span><br><span class="line">        close(pipeline_root[<span class="hljs-number">1</span>]);</span><br><span class="line">        wait();</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>为了在第一次fork第一个子进程调用sieve后能够访问到在主进程创建的pipe，使用了一个静态全局变量。这个函数的关键点就在于要及时释放用不到的描述符，否则最后程序会因为无法获取足够的描述符而达不到想要的效果，因为xv6限制了每个进程能够拥有的文件描述符的最大数量。</p>
+<p>为了不使用静态全局变量，参考<a href="https://pdos.csail.mit.edu/6.828/2019/xv6/book-riscv-rev0.pdf" target="_blank" rel="noopener">book-riscv-rev0</a>，关闭标准输入文件描述符0，将pipe的输入重定向到描述符0，并且将其作为父进程的写端，子进程的读端，且优化了下代码，如下所示：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/types.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"user/user.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">redirect</span><span class="hljs-params">(<span class="hljs-keyword">int</span> pipe_right[])</span></span></span><br><span class="line"><span class="hljs-function"></span>{</span><br><span class="line">    close(<span class="hljs-number">0</span>);</span><br><span class="line">    close(pipe_right[<span class="hljs-number">1</span>]);</span><br><span class="line">    dup(pipe_right[<span class="hljs-number">0</span>]);</span><br><span class="line">    close(pipe_right[<span class="hljs-number">0</span>]);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">sieve()</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">int</span> p, n, pipe_right[<span class="hljs-number">2</span>];</span><br><span class="line"></span><br><span class="line">loop:</span><br><span class="line">    <span class="hljs-keyword">if</span>((read(<span class="hljs-number">0</span>, &n, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">int</span>))) <= <span class="hljs-number">0</span> || n <= <span class="hljs-number">0</span>){</span><br><span class="line">        close(<span class="hljs-number">0</span>);</span><br><span class="line">        <span class="hljs-built_in">exit</span>();</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"prime %d\n"</span>, n);</span><br><span class="line"></span><br><span class="line">    pipe(pipe_right);</span><br><span class="line">    <span class="hljs-comment">// fork right neighbor.</span></span><br><span class="line">    <span class="hljs-keyword">if</span>(fork() == <span class="hljs-number">0</span>){</span><br><span class="line">        <span class="hljs-comment">// redirec pipe_right[0] to standard input file descriptor 0.</span></span><br><span class="line">        redirect(pipe_right);</span><br><span class="line">        <span class="hljs-keyword">goto</span> loop;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    close(pipe_right[<span class="hljs-number">0</span>]);</span><br><span class="line">    <span class="hljs-keyword">while</span>((read(<span class="hljs-number">0</span>, &p, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">int</span>))) > <span class="hljs-number">0</span> && p > <span class="hljs-number">0</span>){</span><br><span class="line">        <span class="hljs-keyword">if</span>(p % n){</span><br><span class="line">            write(pipe_right[<span class="hljs-number">1</span>], &p, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">int</span>));</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    close(<span class="hljs-number">0</span>);</span><br><span class="line">    close(pipe_right[<span class="hljs-number">1</span>]);</span><br><span class="line">    wait();</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">int</span> i, pipe_right[<span class="hljs-number">2</span>];</span><br><span class="line"></span><br><span class="line">    pipe(pipe_right);</span><br><span class="line">    <span class="hljs-keyword">if</span>(fork() == <span class="hljs-number">0</span>){</span><br><span class="line">        <span class="hljs-comment">// redirect pipe_right[0] to standard input file descriptor 0.</span></span><br><span class="line">        redirect(pipe_right);</span><br><span class="line">        sieve();</span><br><span class="line">    }<span class="hljs-keyword">else</span>{</span><br><span class="line">        <span class="hljs-comment">// root parent process feeding number(2-35).</span></span><br><span class="line">        close(pipe_right[<span class="hljs-number">0</span>]);</span><br><span class="line">        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">2</span>; i <= <span class="hljs-number">35</span>; i++){</span><br><span class="line">            write(pipe_right[<span class="hljs-number">1</span>], &i, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">int</span>));</span><br><span class="line">        }</span><br><span class="line">        close(pipe_right[<span class="hljs-number">1</span>]);</span><br><span class="line">        wait();</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h2><span id="find"><span id="s081lab1_util_find">find</span></span><a href="#find" class="header-anchor">#</a></h2><blockquote>
+<p>Write a simple version of the UNIX find program: find all the files in a directory tree whose name matched a string. Your solution should be in the file <em>user/find.c</em>.</p>
+</blockquote>
+<p>参考<em>user/ls.c</em>即可，注意要使用递归，否则无法通过测试：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/types.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/stat.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/fs.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"user/user.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">find(<span class="hljs-keyword">char</span> *path, <span class="hljs-keyword">char</span> *t)</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">char</span> buf[<span class="hljs-number">512</span>], *p;</span><br><span class="line">    <span class="hljs-keyword">int</span> fd;</span><br><span class="line">    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dirent</span> <span class="hljs-title">de</span>;</span></span><br><span class="line">    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">st</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span>((fd = open(path, <span class="hljs-number">0</span>)) < <span class="hljs-number">0</span>){</span><br><span class="line">        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">"find: cannot open %s\n"</span>, path);</span><br><span class="line">        <span class="hljs-keyword">return</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span>(fstat(fd, &st) < <span class="hljs-number">0</span>){</span><br><span class="line">        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">"find: cannot stat %s\n"</span>, path);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="hljs-keyword">return</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">while</span>(read(fd, &de, <span class="hljs-keyword">sizeof</span>(de)) == <span class="hljs-keyword">sizeof</span>(de)){</span><br><span class="line">        <span class="hljs-built_in">strcpy</span>(buf, path);</span><br><span class="line">        p = buf + <span class="hljs-built_in">strlen</span>(buf);</span><br><span class="line">        *p++ = <span class="hljs-string">'/'</span>;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span>(de.inum == <span class="hljs-number">0</span>){</span><br><span class="line">            <span class="hljs-keyword">continue</span>;</span><br><span class="line">        }</span><br><span class="line">        memmove(p, de.name, DIRSIZ);</span><br><span class="line">        p[DIRSIZ] = <span class="hljs-number">0</span>;</span><br><span class="line">        <span class="hljs-keyword">if</span>(stat(buf, &st) < <span class="hljs-number">0</span>){</span><br><span class="line">            <span class="hljs-built_in">printf</span>(<span class="hljs-string">"find: cannot stat %s\n"</span>, buf);</span><br><span class="line">            <span class="hljs-keyword">continue</span>;</span><br><span class="line">        }</span><br><span class="line">        </span><br><span class="line">        <span class="hljs-keyword">switch</span>(st.type){</span><br><span class="line">        <span class="hljs-keyword">case</span> T_FILE:</span><br><span class="line">            <span class="hljs-keyword">if</span>(<span class="hljs-built_in">strcmp</span>(t, de.name) == <span class="hljs-number">0</span>){</span><br><span class="line">                <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%s\n"</span>, buf);</span><br><span class="line">            }</span><br><span class="line">            <span class="hljs-keyword">break</span>;</span><br><span class="line">        <span class="hljs-keyword">case</span> T_DIR:</span><br><span class="line">            <span class="hljs-comment">// recursion to descend into sub-directories.</span></span><br><span class="line">            <span class="hljs-keyword">if</span>(<span class="hljs-built_in">strcmp</span>(de.name, <span class="hljs-string">"."</span>) != <span class="hljs-number">0</span> && <span class="hljs-built_in">strcmp</span>(de.name, <span class="hljs-string">".."</span>) != <span class="hljs-number">0</span>){</span><br><span class="line">                find(buf, t);</span><br><span class="line">            }</span><br><span class="line">            <span class="hljs-keyword">break</span>;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    close(fd);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">if</span>(argc < <span class="hljs-number">3</span>){</span><br><span class="line">        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">"Usage:find path expression\n"</span>);</span><br><span class="line">        <span class="hljs-built_in">exit</span>();</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    find(argv[<span class="hljs-number">1</span>], argv[<span class="hljs-number">2</span>]);</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h2><span id="xargs"><span id="s081lab1_util_xargs">xargs</span></span><a href="#xargs" class="header-anchor">#</a></h2><blockquote>
+<p>Write a simple version of the UNIX xargs program: read lines from standard input and run a command for each line, supplying the line as arguments to the command. Your solution should be in the file <em>user/xargs.c</em>.</p>
+</blockquote>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/types.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"kernel/param.h"</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"user/user.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> ARGLEN 32</span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> STDIN  0</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">main(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span><br><span class="line">{</span><br><span class="line">    <span class="hljs-keyword">int</span> i, j, flag, len;</span><br><span class="line">    <span class="hljs-keyword">char</span> c, args[MAXARG][ARGLEN];</span><br><span class="line">    <span class="hljs-keyword">char</span> *m[MAXARG];</span><br><span class="line">    <span class="hljs-keyword">if</span>(argc < <span class="hljs-number">2</span>){</span><br><span class="line">        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">"Usage:xargs command ...\n"</span>);</span><br><span class="line">        <span class="hljs-built_in">exit</span>();</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>){</span><br><span class="line">        <span class="hljs-comment">// clear the args buf.</span></span><br><span class="line">        <span class="hljs-built_in">memset</span>(args, <span class="hljs-number">0</span> ,MAXARG * ARGLEN);</span><br><span class="line">        <span class="hljs-comment">// reconstruct argv named args for child process.</span></span><br><span class="line">        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>, j = <span class="hljs-number">1</span>; j < argc && i < MAXARG - <span class="hljs-number">1</span>; j++){</span><br><span class="line">            <span class="hljs-built_in">strcpy</span>(args[i++], argv[j]);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        j = <span class="hljs-number">0</span>;</span><br><span class="line">        flag = <span class="hljs-number">0</span>; <span class="hljs-comment">// indicate the first blank.</span></span><br><span class="line">        <span class="hljs-keyword">while</span>((len = read(STDIN, &c, <span class="hljs-number">1</span>)) > <span class="hljs-number">0</span> && c != <span class="hljs-string">'\n'</span> && i < MAXARG - <span class="hljs-number">1</span>){</span><br><span class="line">            <span class="hljs-keyword">if</span>(c == <span class="hljs-string">' '</span>){</span><br><span class="line">                <span class="hljs-comment">// skip blank aside from the first blank occured.</span></span><br><span class="line">                <span class="hljs-keyword">if</span>(flag){</span><br><span class="line">                    i++;</span><br><span class="line">                    j = <span class="hljs-number">0</span>;</span><br><span class="line">                    flag = <span class="hljs-number">0</span>;</span><br><span class="line">                }</span><br><span class="line">                <span class="hljs-keyword">continue</span>;</span><br><span class="line">            }</span><br><span class="line">            args[i][j++] = c;</span><br><span class="line">            flag = <span class="hljs-number">1</span>; <span class="hljs-comment">// restore flag.</span></span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// indicate CTRL + D.</span></span><br><span class="line">        <span class="hljs-keyword">if</span>(len <= <span class="hljs-number">0</span>){</span><br><span class="line">            wait();</span><br><span class="line">            <span class="hljs-built_in">exit</span>();</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment">// convert types.</span></span><br><span class="line">        <span class="hljs-comment">// It is necessary for that the type second argument of function exec</span></span><br><span class="line">        <span class="hljs-comment">// is 'char **' while the type of variable args is 'char [][32]'.</span></span><br><span class="line">        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i < MAXARG - <span class="hljs-number">1</span>; i++){</span><br><span class="line">            m[i] = args[i];</span><br><span class="line">        }</span><br><span class="line">        <span class="hljs-comment">// make ture that the last argument is 0.</span></span><br><span class="line">        m[MAXARG - <span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span>(fork() == <span class="hljs-number">0</span>){</span><br><span class="line">            <span class="hljs-comment">// in child process.</span></span><br><span class="line">            exec(m[<span class="hljs-number">0</span>], m);</span><br><span class="line">            <span class="hljs-built_in">exit</span>();</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-built_in">exit</span>();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h1><span id="test"><span id="s081lab1_test">TEST</span>  <div align="center"><img src="https://s1.ax1x.com/2020/07/04/Nx1LFJ.md.png" alt="图 4-1 TEST"></div></span><a href="#test" class="header-anchor">#</a></h1><hr>
+<h1><span id="references"><div align="center"><span id="s081lab1_ref">REFERENCES</span></div></span><a href="#references" class="header-anchor">#</a></h1><p>【1】 <a href="https://pdos.csail.mit.edu/6.828/2019/xv6/book-riscv-rev0.pdf" target="_blank" rel="noopener">book-riscv-rev0</a><br>【2】 <a href="https://pdos.csail.mit.edu/6.828/2019/labs/util.html" target="_blank" rel="noopener">Lab util: Unix utilities</a><br>【3】 <a href="https://pdos.csail.mit.edu/6.828/2019/tools.html" target="_blank" rel="noopener">Tools used in MIT 6.S081</a><br>【4】 <a href="https://swtch.com/~rsc/thread/" target="_blank" rel="noopener">Bell Labs and CSP Threads,Russ Cos.</a><br>【5】 <a href="https://pdos.csail.mit.edu/6.828/2019/readings/ritchie78unix.pdf" target="_blank" rel="noopener">The UNIX Time-Sharing System</a>,<a href="http://cm.bell-labs.com/who/dmr/" target="_blank" rel="noopener">Dennis M.Ritchie</a> and <a href="http://cm.bell-labs.com/who/ken/" target="_blank" rel="noopener">Ken L.Thompson</a>, Bell System Technical Journal 57, number 6, part 2(July-August 1978) pages 1905-1930.<br>【6】 <a href="http://www.read.seas.harvard.edu/~kohler/class/aosref/ritchie84evolution.pdf" target="_blank" rel="noopener">The Evolution of the UNIX Time-Sharing System</a>, Dennis M.Ritchie, 1979.<br>【7】 <em>The C programming language(second edition)</em> by Kernighan and Ritchie. Prentice Hall, Inc., 1988. ISBN 0-13-110362-8, 1998.</p>
+</body></html>
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/6-S081/">6.S081</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/07/01/【译文】The-end-of-the-Redis-adventure-antirez/">
+                <span class="level-item">【译文】The end of the Redis adventure.antirez.</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        21
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        16
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>Contents#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>Tools Preparation#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>Boot xv6#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>Utilities#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.1</span>
+        <span>sleep#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.1.1</span>
+        <span>Optional:uptime#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.2</span>
+        <span>pingpong#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.3</span>
+        <span>primes#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.4</span>
+        <span>find#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4.5</span>
+        <span>xargs#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">5</span>
+        <span>TEST  #</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6</span>
+        <span>REFERENCES#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">10</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/6-S081/">
+            <span class="level-start">
+                <span class="level-item">6.S081</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/数据库/">
+            <span class="level-start">
+                <span class="level-item">数据库</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/数据库/MySQL/">
+            <span class="level-start">
+                <span class="level-item">MySQL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/译文/">
+            <span class="level-start">
+                <span class="level-item">译文</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/译文/杂记/">
+            <span class="level-start">
+                <span class="level-item">杂记</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/6-S081/" style="font-size: 10px;">6.S081</a> <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 13.33px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂记译文/" style="font-size: 10px;">杂记译文</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 16.67px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="6.S081-LAB1 Xv6 and Unix utilities">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-04T02:56:27.000Z">2020-07-04</time></div>
+                    <a href="/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/" class="title has-link-black-ter is-size-6 has-text-weight-normal">6.S081-LAB1 Xv6 and Unix utilities</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/07/01/【译文】The-end-of-the-Redis-adventure-antirez/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="【译文】The end of the Redis adventure.antirez.">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-01T03:40:13.000Z">2020-07-01</time></div>
+                    <a href="/2020/07/01/【译文】The-end-of-the-Redis-adventure-antirez/" class="title has-link-black-ter is-size-6 has-text-weight-normal">【译文】The end of the Redis adventure.antirez.</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/译文/">译文</a> / <a class="has-link-grey -link" href="/categories/译文/杂记/">杂记</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Lightweight JSON Parser Based on C -- cJSON">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-05-01T13:35:53.000Z">2020-05-01</time></div>
+                    <a href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Lightweight JSON Parser Based on C -- cJSON</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unclassified/">Unclassified</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB5 File system,Spawn and Shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time></div>
+                    <a href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB5 File system,Spawn and Shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="MIT-6.828-LAB4 Preemptive Multitasking">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-24T03:52:57.000Z">2020-01-24</time></div>
+                    <a href="/2020/01/24/MIT-6-828-LAB4-Preemptive-Multitasking/" class="title has-link-black-ter is-size-6 has-text-weight-normal">MIT-6.828-LAB4 Preemptive Multitasking</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/6-S081/">
+                        <span class="tag">6.S081</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MySQL/">
+                        <span class="tag">MySQL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/临界区/">
+                        <span class="tag">临界区</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/互斥/">
+                        <span class="tag">互斥</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/操作系统/">
+                        <span class="tag">操作系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据库/">
+                        <span class="tag">数据库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/杂记译文/">
+                        <span class="tag">杂记译文</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程/">
+                        <span class="tag">线程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/线程池/">
+                        <span class="tag">线程池</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程/">
+                        <span class="tag">进程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="6.S081-LAB1 Xv6 and Unix utilities" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
