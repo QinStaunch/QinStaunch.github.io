@@ -134,254 +134,6 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-28T15:19:24.000Z">2019-10-28</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Java/">Java</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/Java/并发控制/">并发控制</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    26 分钟 读完 (大约 3857 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/10/28/浅谈Java线程池/">浅谈Java线程池</a>
-            
-        </h1>
-        <div class="content">
-            <html><head></head><body><h1 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a><span>文章目录</span></h1><ul>
-<li><a href="#1">浅谈Java线程池（jdk1.8)</a><ul>
-<li><a href="#1.1">线程池状态部分</a></li>
-<li><a href="#1.2">构造函数中的参数部分</a></li>
-<li><a href="#1.3">线程池提供的hook function</a></li>
-<li><a href="#1.4">初探<code>execute(Runnable command)</code>方法</a></li>
-<li><a href="#1.5">线程池的核心:Worker</a></li>
-<li><a href="#1.6">理清脉络</a></li>
-</ul>
-</li>
-</ul>
-<h1 id="浅谈Java线程池（jdk1-8"><a href="#浅谈Java线程池（jdk1-8" class="headerlink" title="浅谈Java线程池（jdk1.8)"></a><span id="1">浅谈Java线程池（jdk1.8)</span></h1><ol>
-<li>本博客来源于自己在看JDK线程池源码时，边看边同步写下的笔记，因此排版基本没有，希望见谅；</li>
-<li>仅仅只是分析了比较核心的实现，限于个人目前的水平，尚有不理解之处，写的内容也可能有差错，非常乐意接受您的指正与建议；</li>
-<li>对于线程终止，<code>shutdown()</code>与<code>shutdownNow()</code>我觉得没必要说，因为源代码很清晰，阅读者这部分代码也没什么难度，因此没有说这一部分</li>
-</ol></body></html>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/10/28/浅谈Java线程池/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-25T12:45:04.000Z">2019-10-25</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/数据库/">数据库</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/数据库/MySQL/">MySQL</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    12 分钟 读完 (大约 1805 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/10/25/MySQL学习笔记学习笔记-一-存储引擎和事务/">MySQL学习笔记（一）：存储引擎和事务</a>
-            
-        </h1>
-        <div class="content">
-            <html><head></head><body><h1 id="一、如何阅读官方文档"><a href="#一、如何阅读官方文档" class="headerlink" title="一、如何阅读官方文档"></a>一、如何阅读官方文档</h1><p>官方中文文档传送门：<a href="https://www.mysqlzh.com" target="_blank" rel="noopener">MySQL5.1中文文档</a><br>重点关注：</p>
-<ul>
-<li><a href="https://www.mysqlzh.com/doc/64.html" target="_blank" rel="noopener">第七章 优化</a></li>
-<li><a href="https://www.mysqlzh.com/doc/105.html" target="_blank" rel="noopener">第十一章 列类型</a></li>
-<li><a href="https://www.mysqlzh.com/doc/124.html" target="_blank" rel="noopener">第十三章 SQL语句语法</a></li>
-<li><a href="https://www.mysqlzh.com/doc/213.html" target="_blank" rel="noopener">第十五章 存储引擎和表类型</a></li>
-</ul>
-<p><strong>更好地阅读文档</strong>：注意方括号 [] 意味着该字段可以省略，也就是可选字段；当要用到圆括号字段修饰的字段的时候，圆括号()不可以省略；大括号{}意味着在该字段的给定值中进行选择，| 这个符号就意味着选择呗；啥符号都没带的就是必填字段呗。<br>例如下面由MySQL官方文档给出的select语法：<br>像[all | distinct | distinctrow] 这个字段本身是可选字段，写select语句的时候可加可不加，但是如果加上该字段的时候，就要在all，distinct，distinctrow中选择一个字段加上。<br>select_expr就是必选字段，必须要在select语句中写这个字段。<br>像[LIMIT {[offset,] row_count | row_count OFFSET offset}]这个，也就是说，这一整个字段是可选字段，但是如果加上该字段，就要在{}中给出选项中选择一个，offser加上了[]，说明它可有可无。</p></body></html>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/10/25/MySQL学习笔记学习笔记-一-存储引擎和事务/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-20T04:57:36.000Z">2019-10-20</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    25 分钟 读完 (大约 3682 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/10/20/《现代操作系统》学习笔记-一-进程与线程/">《现代操作系统》学习笔记(一):进程与线程</a>
-            
-        </h1>
-        <div class="content">
-            <html><head></head><body><p>@[TOC]</p>
-<h2 id="一、进程与线程的简单回顾"><a href="#一、进程与线程的简单回顾" class="headerlink" title="一、进程与线程的简单回顾"></a>一、进程与线程的简单回顾</h2><h3 id="进程与线程的简单回顾"><a href="#进程与线程的简单回顾" class="headerlink" title="进程与线程的简单回顾"></a>进程与线程的简单回顾</h3><blockquote>
-<p>《Modern Operating System》：<strong>进程</strong>就是一个正在执行的程序的实例，包括程序计数器、寄存器和变量的当前值。</p>
-</blockquote>
-<p>每一个<strong>进程</strong>都拥有自己独立的地址空间（这源于虚拟内存技术），其中有程序和数据以及独立的用户栈和独立的堆空间等。例如在UNIX系统中，可以调用系统级函数fork()来创建一个子进程，在还未加载新的代码之前，此时子进程与父进程拥有几乎完全相同的内存映像、同样的环境字符串和同样的打开文件，可以通过execve()来重新加载新的程序（可执行文件），但是execve仅仅只是分配了虚拟页，此时并没有实际将程序从磁盘中调入内存，只有当某一条指令触发了缺页故障的时候，此时将陷入内核态，将该条指令虚拟页所指定的内容调入物理内存，并且修改相应的PTE条目（Page Table Entry)，然后系统调用返回到这条指令，再一次执行该指令时就不再会触发缺页故障了（详情可参考机械工业出版社的《深入理解计算机系统》第三版）。<br><strong>线程</strong>不准确地理解的话，可以将其看作一种轻量级的进程，同一个进程中的线程都有完全一样的地址空间，共享同样的全局变量，由于各个线程都可以放你问进程地址空间中的每一个内存地址，所以一个线程可以读、写甚至清除另一个线程的堆栈，也就是说，线程之间是没有保护的。除了共享地址空间外，还共享同一个打开文件集、子进程、定时器以及相关信号（因为这些基本上都是操作系统维护在进程的上下文中的）</p></body></html>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/10/20/《现代操作系统》学习笔记-一-进程与线程/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-11T05:59:25.000Z">2019-10-11</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/设计模式/">设计模式</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    5 分钟 读完 (大约 732 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/10/11/浅谈装饰器设计模式/">浅谈装饰器设计模式</a>
-            
-        </h1>
-        <div class="content">
-            <html><head></head><body><h1 id="文章目录："><a href="#文章目录：" class="headerlink" title="文章目录："></a><span>文章目录：</span></h1><ul>
-<li><a href="#1">一、概念</a></li>
-<li><a href="#2">二、结构</a><ul>
-<li><a href="#2.1">如何理解装饰器设计模式的运行原理？</a></li>
-<li><a href="#2.2">下面给出一个简单的示例</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="一、概念"><a href="#一、概念" class="headerlink" title="一、概念"></a><span id="1">一、概念</span></h2><blockquote>
-<p>《Thinking in Java》: <strong>装饰器</strong>模式使用分层对象来动态透明地向单个对象中添加责任。装饰器指定包装在最初地对象周围地所有对象都具有相同的基本接口。某些事物是可装饰的，可以通过将其它类包装在这个可装饰对象的四周，从而将功能分层，这使得对装饰器的使用是透明的——无论对象是否被装饰，你都拥有一个可以向对象发送的公共消息集。</p>
-</blockquote></body></html>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/10/11/浅谈装饰器设计模式/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2019-10-11T04:56:09.000Z">2019-10-11</time>
                 
                 <div class="level-item">
@@ -442,7 +194,7 @@
         <div class="pagination-previous">
             <a class="is-flex-grow has-text-black-ter" href="/page/3/">上一页</a>
         </div>
-        <div class="pagination-next">
+        <div class="pagination-next is-invisible is-hidden-mobile">
             <a class="is-flex-grow has-text-black-ter" href="/page/5/">下一页</a>
         </div>
         <ul class="pagination-list is-hidden-mobile">
@@ -454,8 +206,6 @@
             <li><a class="pagination-link has-text-black-ter" href="/page/3/">3</a></li>
             
             <li><a class="pagination-link is-current" href="/page/4/">4</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/page/5/">5</a></li>
             
         </ul>
     </nav>
@@ -504,7 +254,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        21
+                        16
                     </p>
                 </div>
             </div>
@@ -514,7 +264,7 @@
                         分类
                     </p>
                     <p class="title has-text-weight-normal">
-                        16
+                        14
                     </p>
                 </div>
             </div>
@@ -524,7 +274,7 @@
                         标签
                     </p>
                     <p class="title has-text-weight-normal">
-                        18
+                        10
                     </p>
                 </div>
             </div>
@@ -608,7 +358,7 @@
                 <span class="level-item">Java</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">4</span>
+                <span class="level-item tag">3</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/Java/Java编程语言/">
@@ -632,7 +382,7 @@
                 <span class="level-item">并发控制</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">2</span>
+                <span class="level-item tag">1</span>
             </span>
         </a></li></ul></li><li>
         <a class="level is-marginless" href="/categories/Unclassified/">
@@ -640,7 +390,7 @@
                 <span class="level-item">Unclassified</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">2</span>
+                <span class="level-item tag">1</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/操作系统/">
@@ -648,7 +398,7 @@
                 <span class="level-item">操作系统</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">10</span>
+                <span class="level-item tag">9</span>
             </span>
         </a><ul><li>
         <a class="level is-marginless" href="/categories/操作系统/6-S081/">
@@ -675,28 +425,12 @@
                 <span class="level-item tag">3</span>
             </span>
         </a></li></ul></li><li>
-        <a class="level is-marginless" href="/categories/数据库/">
-            <span class="level-start">
-                <span class="level-item">数据库</span>
-            </span>
-            <span class="level-end">
-                <span class="level-item tag">1</span>
-            </span>
-        </a><ul><li>
-        <a class="level is-marginless" href="/categories/数据库/MySQL/">
-            <span class="level-start">
-                <span class="level-item">MySQL</span>
-            </span>
-            <span class="level-end">
-                <span class="level-item tag">1</span>
-            </span>
-        </a></li></ul></li><li>
         <a class="level is-marginless" href="/categories/设计模式/">
             <span class="level-start">
                 <span class="level-item">设计模式</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">2</span>
+                <span class="level-item tag">1</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/译文/">
@@ -725,7 +459,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/6-S081/" style="font-size: 10px;">6.S081</a> <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/MySQL/" style="font-size: 10px;">MySQL</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 13.33px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/临界区/" style="font-size: 10px;">临界区</a> <a href="/tags/互斥/" style="font-size: 10px;">互斥</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/杂记译文/" style="font-size: 10px;">杂记译文</a> <a href="/tags/线程/" style="font-size: 10px;">线程</a> <a href="/tags/线程池/" style="font-size: 10px;">线程池</a> <a href="/tags/设计模式/" style="font-size: 16.67px;">设计模式</a> <a href="/tags/进程/" style="font-size: 10px;">进程</a>
+        <a href="/tags/6-S081/" style="font-size: 10px;">6.S081</a> <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 16.67px;">csapp</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/杂记译文/" style="font-size: 10px;">杂记译文</a> <a href="/tags/设计模式/" style="font-size: 13.33px;">设计模式</a>
     </div>
 </div>
     
@@ -902,17 +636,6 @@
                     <span class="level-item">十月 2019</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">5</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/09/">
-                <span class="level-start">
-                    <span class="level-item">九月 2019</span>
-                </span>
-                <span class="level-end">
                     <span class="level-item tag">1</span>
                 </span>
             </a>
@@ -960,13 +683,6 @@
                 </div>
                 
                 <div class="control">
-                    <a class="tags has-addons" href="/tags/MySQL/">
-                        <span class="tag">MySQL</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
                     <a class="tags has-addons" href="/tags/Mybatis/">
                         <span class="tag">Mybatis</span>
                         <span class="tag is-grey">1</span>
@@ -976,7 +692,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/No-tags/">
                         <span class="tag">No-tags</span>
-                        <span class="tag is-grey">2</span>
+                        <span class="tag is-grey">1</span>
                     </a>
                 </div>
                 
@@ -988,36 +704,8 @@
                 </div>
                 
                 <div class="control">
-                    <a class="tags has-addons" href="/tags/临界区/">
-                        <span class="tag">临界区</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/互斥/">
-                        <span class="tag">互斥</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
                     <a class="tags has-addons" href="/tags/并发控制/">
                         <span class="tag">并发控制</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/操作系统/">
-                        <span class="tag">操作系统</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/数据库/">
-                        <span class="tag">数据库</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1030,30 +718,9 @@
                 </div>
                 
                 <div class="control">
-                    <a class="tags has-addons" href="/tags/线程/">
-                        <span class="tag">线程</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/线程池/">
-                        <span class="tag">线程池</span>
-                        <span class="tag is-grey">1</span>
-                    </a>
-                </div>
-                
-                <div class="control">
                     <a class="tags has-addons" href="/tags/设计模式/">
                         <span class="tag">设计模式</span>
-                        <span class="tag is-grey">3</span>
-                    </a>
-                </div>
-                
-                <div class="control">
-                    <a class="tags has-addons" href="/tags/进程/">
-                        <span class="tag">进程</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
