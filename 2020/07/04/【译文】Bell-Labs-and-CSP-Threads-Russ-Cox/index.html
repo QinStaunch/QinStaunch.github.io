@@ -7,18 +7,22 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>YanTang Qin的博客</title>
+<title>【译文】Bell Labs and CSP Threads, Russ Cox. - YanTang Qin的博客</title>
 
 
-    <meta name="keywords" content="Java,Python,Linux">
-<meta property="og:type" content="website">
-<meta property="og:title" content="YanTang Qin的博客">
-<meta property="og:url" content="https://qinstaunch.github.io/index.html">
+    <meta name="description" content="版权©️归属 原文引用自Bell Labs and CSP Threads, Russ Cox.   贝尔实验室和CSP线程Russ coxrsc@swtch.com其它版本：Serbo-Croatian, Swedish">
+<meta name="keywords" content="杂记译文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【译文】Bell Labs and CSP Threads, Russ Cox.">
+<meta property="og:url" content="https://qinstaunch.github.io/2020/07/04/【译文】Bell-Labs-and-CSP-Threads-Russ-Cox/index.html">
 <meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="版权©️归属 原文引用自Bell Labs and CSP Threads, Russ Cox.   贝尔实验室和CSP线程Russ coxrsc@swtch.com其它版本：Serbo-Croatian, Swedish">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-07-14T05:40:01.586Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="YanTang Qin的博客">
+<meta name="twitter:title" content="【译文】Bell Labs and CSP Threads, Russ Cox.">
+<meta name="twitter:description" content="版权©️归属 原文引用自Bell Labs and CSP Threads, Russ Cox.   贝尔实验室和CSP线程Russ coxrsc@swtch.com其它版本：Serbo-Croatian, Swedish">
 <meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
 
 
@@ -77,7 +81,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.png" alt="YanTang Qin的博客" height="28">
+                <img src="/images/logo.png" alt="【译文】Bell Labs and CSP Threads, Russ Cox." height="28">
             
             </a>
         </div>
@@ -85,7 +89,7 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item is-active"
+                <a class="navbar-item"
                 href="/">Home</a>
                 
                 <a class="navbar-item"
@@ -113,6 +117,10 @@
                     
                 
                 
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
                 
                 <a class="navbar-item search" title="搜索" href="javascript:;">
                     <i class="fas fa-search"></i>
@@ -127,7 +135,6 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
-    
 <div class="card">
     
     <div class="card-content article ">
@@ -148,30 +155,81 @@
                 </span>
                 
                 
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
             </div>
         </div>
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/07/04/【译文】Bell-Labs-and-CSP-Threads-Russ-Cox/">【译文】Bell Labs and CSP Threads, Russ Cox.</a>
+                【译文】Bell Labs and CSP Threads, Russ Cox.
             
         </h1>
         <div class="content">
-            <html><head></head><body><h1 id="版权©️归属"><a href="#版权©️归属" class="headerlink" title="版权©️归属"></a><span>版权©️归属</span></h1><blockquote>
+            <html><head></head><body><h1><span id="ban-quan-c-gui-shu"><span>版权©️归属</span></span><a href="#ban-quan-c-gui-shu" class="header-anchor">#</a></h1><blockquote>
 <p>原文引用自<a href="https://swtch.com/~rsc/thread/" target="_blank" rel="noopener">Bell Labs and CSP Threads, Russ Cox.</a></p>
 </blockquote>
 <hr>
-<h1 id="贝尔实验室和CSP线程"><a href="#贝尔实验室和CSP线程" class="headerlink" title="贝尔实验室和CSP线程"></a><div align="center"><strong>贝尔实验室和CSP线程</strong></div></h1><h2 id="Russ-cox"><a href="#Russ-cox" class="headerlink" title="Russ cox"></a><div align="center"><a href="http://swtch.com/~rsc/" target="_blank" rel="noopener">Russ cox</a></div></h2><h3 id="rsc-swtch-com其它版本：Serbo-Croatian-Swedish"><a href="#rsc-swtch-com其它版本：Serbo-Croatian-Swedish" class="headerlink" title="rsc@swtch.com其它版本：Serbo-Croatian, Swedish"></a><div align="center"><a href="mailto:rsc@swtch.com" target="_blank" rel="noopener">rsc@swtch.com</a><br>其它版本：<a href="http://science.webhostinggeeks.com/bell-laboratorije" target="_blank" rel="noopener">Serbo-Croatian</a>, <a href="https://www.autonvaraosatpro.fi/blogi/2017/08/24/bell-labs-och-csp-tradar/" target="_blank" rel="noopener">Swedish</a></div></h3></body></html>
+<h1><span id="bei-er-shi-yan-shi-he-csp-xian-cheng"><div align="center"><strong>贝尔实验室和CSP线程</strong></div></span><a href="#bei-er-shi-yan-shi-he-csp-xian-cheng" class="header-anchor">#</a></h1><h2><span id="russ-cox"><div align="center"><a href="http://swtch.com/~rsc/" target="_blank" rel="noopener">Russ cox</a></div></span><a href="#russ-cox" class="header-anchor">#</a></h2><h3><span id="rsc-swtch-com-qi-ta-ban-ben-serbo-croatian-swedish"><div align="center"><a href="mailto:rsc@swtch.com" target="_blank" rel="noopener">rsc@swtch.com</a><br>其它版本：<a href="http://science.webhostinggeeks.com/bell-laboratorije" target="_blank" rel="noopener">Serbo-Croatian</a>, <a href="https://www.autonvaraosatpro.fi/blogi/2017/08/24/bell-labs-och-csp-tradar/" target="_blank" rel="noopener">Swedish</a></div></span><a href="#rsc-swtch-com-qi-ta-ban-ben-serbo-croatian-swedish" class="header-anchor">#</a></h3><a id="more"></a>
+
+<h2><span id="jie-shao"><span>介绍</span></span><a href="#jie-shao" class="header-anchor">#</a></h2><p>这个页面介绍并发编程历史的一部分，重点介绍一个特别的Hoare的顺序通信进程语言<a href="#">[1]</a><a href="#">[1a]</a>，这种风格的并发编程很有趣，不是因为它的效率，而在于它的清晰，也就是说，一个很普遍的误解就是认为并发编程仅仅只是作为提升性能的一种方式，例如，重叠磁盘I/O请求，对期望的查询预取结果来降低延迟，亦或者是为了充分利用多处理器，这些优点很重要，但是与这篇讨论无关。毕竟，它们也可以通过异步事件驱动编程等来实现。然而，我们对并发编程很感兴趣，因为它提供了一种自然抽象，能够简化许多程序。</p>
+<h2><span id="ta-bu-shi-shi-me"><span>它不是什么</span></span><a href="#ta-bu-shi-shi-me" class="header-anchor">#</a></h2><p>许多计算机科学本科生都被迫阅读Andrew Birrell的论文<a href="http://gatekeeper.research.compaq.com/pub/DEC/SRC/research-reports/SRC-035.pdf" target="_blank" rel="noopener">“An Introduction to Programming with Threads.”</a>。如今大多数可用的线程包都是使用得Andrew Birrell文中提到的SRC线程模型，所有它们的问题都在于它们都太底层了。不同于Hoare提供的通信原语，SRC式线程模型的原语必须与其它技术结合使用，为了使用起来更高效，通常是共享内存。通常来说，程序员不会倾向于在构建自己的高层应用时，由于需要注意这些底层细节而感到沮丧。</p>
+<p>在此刻，先把Birrell的教程抛之脑外，这篇文章所讨论的是一个不同的线程模型。如果你将它当作不同的线程模型，那么你会发现它很容易理解。</p>
+<h2><span id="shun-xu-tong-xin-jin-cheng"><span>顺序通信进程</span></span><a href="#shun-xu-tong-xin-jin-cheng" class="header-anchor">#</a></h2><p>直到1978年，为了在多处理器的环境下实现通信与同步，提出了许多的方法。共享内存是最普遍的通信机制，还有信号量、临界区以及监视器都属于同步机制。C.A.R Hoare使用一个单独的语言原语同时解决了这两个问题：同步通信。在Hoare的CSP语言中，进程之间通过命名的未缓冲的通道来发送接受值，由于这种通道不带有缓冲区，发送操作将一直阻塞直到接收者接收到一个值，它也就是通过这种方式提供了同步机制。</p>
+<p>Hoare列举的其中一个例子就是，重新格式化80列卡片，用125列打印机打印，在他的解决方案里，一个进程一次读取一张卡片，把卡片内容拆分，逐字符地发送到第二个进程，第二个进程又将这些字符125个一组组装，以组为单位发送到行式打印机。这种方式听起来很繁琐，但是在没有带有缓冲的I/O库的情况下，单进程解决方案涉及到的必要的信息记录的任务就很艰巨。事实上，带有缓冲的I/O库只是这两种导入了单字符通信接口的进程的封装。</p>
+<p>另外一个例子（Hoare将其归功于Mcllroy），考虑生成所有小于1000的素数，通过执行以下伪代码的一系列进程可以模拟Eratosthenes素数筛选法：</p>
+<figure class="highlight shell hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">p = get a number from left neighbor</span><br><span class="line">print p</span><br><span class="line">loop:</span><br><span class="line">    n = get a number from left neighbor</span><br><span class="line">    if (p does not divide n)</span><br><span class="line">        send n to right neighbor</span><br></pre></td></tr></tbody></table></figure>
+
+<p>主进程将数字2，3，4，…，1000送入到管道的左端：第一个进程消除2的倍数，第二个进程消除3的倍数，第三个进程消除5的倍数，以此类推：  </p><div align="center"><img src="https://s1.ax1x.com/2020/07/04/Nx3W7D.gif" alt="图 3-1 Eratosthenes素数筛法模拟"></div><p></p>
+<p>到目前为止示例的线性管道性质并不能代表普遍的CSP的性质，但是即便局限于线性管道，这个模型仍相当强大，并且这种强大已经由Unix操作系统著名的过滤器和管道途径的成功而得到了强力证明<a href="#">[2]</a>。实际上，管道的发明要早于Hoare的论文。在一份贝尔实验室内部1964年10月11日的备忘录上，Doug Mcllroy就提到过这个模型要成为Unix管道的想法：“我们应当有一些把程序组合成类似于花园浇水的软管的方式–当需要用另外一种方式来处理数据时就“拧入另一段”。</p>
+<p>相较于典型的Unix Shell的管道，Hoare的通信进程要加普遍，因为它们能够以任意的模式相连。其实，Hoare举了一个3x3矩阵进程的例子，他有一点像上面说的素数筛选，可以用来将一个矢量乘以一个3x3的方形矩阵。</p>
+<p>当然，Unix的管道机制并不要求上面这样的线性布局，只有shell的语法要求。Mcllroy的报告提到过早期这种带有普通管道的shell，但是他还没有喜欢到想去实现它的程度（个人通讯，2011）。后来，shell的确支持了一些严格形式的非线性管道，例如，Rochkind的2dsh支持了dags（有向无环图），Tom Duff的rc支持了树形管道。</p>
+<p>Hoare的语言新颖且具有影响力，但是缺少了几个关键点。最主要的缺陷就是用于通信的非缓冲通道并不是第一对象（<strong>注</strong>：first-class objects，Hoare文章介绍的这种技术，通信原理是进程之间的交流管道，实际操作层面会由用户态陷入内核态，由内核传递进程之间需要交流的信息）：这种非缓冲通道无法被保存到变量中，也不能以参数的形式传递给函数，也不能通过通道发送。因此，在写这种程序的时候，通信结构必须是固定不变的。这也就是为什么我们只能写一个打印前1000个素数而不是前n个素数的程序，只能写一个给一个向量乘以一个3x3矩阵而不是nxn矩阵的程序。</p>
+<h2><span id="pan-he-promela"><span>Pan和Promela</span></span><a href="#pan-he-promela" class="header-anchor">#</a></h2><p>1980年，仅仅就在Hoare的论文发表的两年之后，Gerard Holzmann和Rob Pike写了一个协议分析器叫做Pan，它接受一个CSP方言作为输入。Pan的CSP方言具有串接、选择以及循环的功能，但是没有变量。即便如此，Holzmann报告说Pan于1980年11月21日在贝尔实验室的数据切换协议中发现了它的第一个错误<a href="#">[14]</a>。这个方言很可能是贝尔实验室的第一种CSP语言，它也的确为Pike提供了如何使用以及实现类似CSP语言的经验，这是他的第一语言。</p>
+<p>Holzmann的协议分析器发展成为了SPIN模型检查器以及它的Promela语言，Promela的特点就是它使用了和Newsqueak(q.v.)一样的方式实现了第一对象通道。</p>
+<h2><span id="newsqueak"><span>Newsqueak</span></span><a href="#newsqueak" class="header-anchor">#</a></h2><p>向着另外一个方向发展，Luca Cardelli和Rob Pike将CSP中的思想发展成为了Squeak mini-language<a href="#">[4]</a>，用于生成用户接口代码（该Squeak区别于Squeak Smalltalk的实现）。后来Pike将Squeak mini-language拓展成了完全成熟的编程语言Newsqueak<a href="#">[5]</a><a href="#">[6]</a>，Plan 9的Alef<a href="#">[7]</a><a href="#">[8]</a>、Inferno的Limbo<a href="#">[9]</a>以及Google的Go<a href="#">[13]</a>都是源自于它。Newsqueak最主要的语言上的优势就是它将通信通道视为第一对象：不同于CSP和Squeak，通道能够被存储在变量中，作为参数传递给函数，以及通过通道发送。这继而实现了通信结构的程序化构造，从而允许创建比手工设计更合理的结构。特别的，Doug Mcllroy演示了如何利用Newsqueak的通讯工具编写的精彩绝伦的程序，以操纵符号幂级数<a href="#">[10]</a>。而传统编程语言往往深陷于簿记之中。类似地，Rob Pike演示了如何利用通信工具突破常规的基于事件的编程模型，从而写一个并发的窗口系统<a href="#">[11]</a>。</p>
+<h2><span id="alef"><span>Alef</span></span><a href="#alef" class="header-anchor">#</a></h2><p>Alef<a href="#">[7]</a><a href="#">[8]</a>是由Phil Winterbottom设计的一种语言，用于将Newsqueak的思想应用于成熟的系统编程语言。Alef有两种我们称之为进程的类型：procs和threads。程序被组织成为一个或多个procs，这些procs是能够被抢占式调度的共享内存的操作系统进程。每一个proc包含一个或多个任务，这些任务是协同调度的协程。注意每一个任务都会被分配给一个特定的proc：这些任务无法在procs中迁移。</p>
+<p>procs的主要用途是提供独立阻塞主任务I/O的能力（Plan 9没有select调用，即便在Unix上，如果你想要重叠非网络I/O计算也需要多个procs）。一偏Acme论文<a href="#">[12]</a>对procs和threads做了一个简短的讨论，详见<a href="http://herpolhode.com/rob/lec5.pdf" target="_blank" rel="noopener">关于Plan 9窗口系统的讲义</a>，下面也会提到。</p>
+<h2><span id="limbo"><span>Limbo</span></span><a href="#limbo" class="header-anchor">#</a></h2><p>Inferno操作系统是Plan 9的衍生品，用于机顶盒，它相应的编程语言，Limbo就受到了Alef的巨大影响，它移除了procs和tasks之间的区别，实际上只有procs，但是这里的procs要比大多数人认知里的进程要更加轻量级。所有并行性都是可抢占式的，尽管如此，有趣的是，Limbo实际并没有支持锁，相反，它的通信通道提供了足够的同步，以此来鼓励程序员们合理安排，使得任何数据都有明确的拥有者，从而不需要显式的锁。</p>
+<h2><span id="libthread"><span>Libthread</span></span><a href="#libthread" class="header-anchor">#</a></h2><p>让我们再说说Plan 9，由于Plan 9移植到越来越多的体系结构上，使得Alef编译器最终变得难以维护。Libthread就是为了将Alef的程序移植到C而创造的语言，这样Alef编译器就能退休了。Alef的procs和taks在Libthread中被称为procs和threads。关于Libthread的权威参考请见<a href="http://plan9.bell-labs.com/magic/man2html/2/thread" target="_blank" rel="noopener">手册</a>。</p>
+<h2><span id="go"><span>Go</span></span><a href="#go" class="header-anchor">#</a></h2><p>Rob Pike和Ken Thompson去了Google，并且将CSP作为Go语言并发支持的核心。</p>
+<h2><span id="ru-men"><span>入门</span></span><a href="#ru-men" class="header-anchor">#</a></h2><p>要体验这种模型，尤其是进程和线程如何交互，那么Alef用户指南<a href="#">[8]</a>值得你去阅读。<a href="http://wwwhome.cs.utwente.nl/~sape/gos/chap15.pdf" target="_blank" rel="noopener">演示文稿</a>的前三十张很好地介绍了Alef的结构是如何在C中构建的。</p>
+<p>上面提到的Mcllroy和Pike的论文<a href="#">[10]</a><a href="#">[11]</a>就是CSP模型之强大的最好例证。</p>
+<p>Rob Pike的主页包含了一份关于并发编程的课程的讲义：<a href="http://herpolhode.com/rob/lec1.pdf" target="_blank" rel="noopener">介绍</a>，以及有关上述两篇论文的幻灯片：<a href="http://herpolhode.com/rob/lec3.pdf" target="_blank" rel="noopener">squinting</a>和<a href="http://herpolhode.com/rob/lec5.pdf" target="_blank" rel="noopener">window system</a>。最后三张幻灯片就举了一个很好的例子，关于Plan 9的程序通常是如何使用procs和tasks。</p>
+<p>Rob Pike在Google做了一个<a href="http://video.google.com/videoplay?docid=810232012617965344" target="_blank" rel="noopener">教学演讲</a>，做了很好的介绍（57分钟的视频）。</p>
+<p>Rob Pike在2010年与Russ Cox所做的<a href="http://www.youtube.com/watch?v=jgVhBThJdXc" target="_blank" rel="noopener">2010 Google I/O演讲</a>中途展示了如何使用通道和Go的并发来实现一个负载平衡工作管理系统。</p>
+<h2><span id="xiang-guan-zi-yuan"><span>相关资源</span></span><a href="#xiang-guan-zi-yuan" class="header-anchor">#</a></h2><p><a href="http://www.cs.uchicago.edu/~jhr" target="_blank" rel="noopener">John Reppy</a>已将类似的思想应用到了ML，写了<a href="http://cml.cs.uchicago.edu/" target="_blank" rel="noopener">Concurrent ML</a>，他使用CML构建了<a href="http://people.cs.uchicago.edu/~jhr/eXene/" target="_blank" rel="noopener">eXene</a>多线程（非事件驱动）X Window System toolkit。</p>
+<h2><span id="can-kao-wen-xian"><span>参考文献</span></span><a href="#can-kao-wen-xian" class="header-anchor">#</a></h2><p><span id="BL1">[1]</span>C. A. R. Hoare, “Communicating Sequential Processes,” Communications of the ACM 21(8) (August 1978), 666-677.</p>
+<p><span id="BL1a">[1a]</span>C. A. R. Hoare, Communicating Sequential Processes. Prentice Hall, Englewood Cliffs, New Jersey, 1985.</p>
+<p><span id="BL2">[2]</span>Michael S. Mahoney, ed.,<a href="http://www.princeton.edu/~hos/Mahoney/expotape.htm" target="_blank" rel="noopener">The Unix Oral History Project, Release 0: The Beginning</a>.</p>
+<p><span id="BL3">[3]</span>M. Douglas McIlroy, <a href="https://swtch.com/~rsc/thread/mdmpipe.pdf" target="_blank" rel="noopener">internal Bell Labs memorandum</a>, October 1964.</p>
+<p><span id="BL4">[4]</span>Luca Cardelli and Rob Pike, <a href="https://swtch.com/~rsc/thread/squeak.pdf" target="_blank" rel="noopener">“Squeak: a Language for Communicating with Mice,”</a> Computer Graphics, 19(3) (July 1985: SIGGRAPH ‘85 Proceedings), 199-204.</p>
+<p><span id="BL5">[5]</span>Rob Pike, <a href="https://swtch.com/~rsc/thread/newsquimpl.pdf" target="_blank" rel="noopener">“The Implementation of Newsqueak,”</a> Software–Practice and Experience, 20(7) (July 1990), 649-659.</p>
+<p><span id="BL6">[6]</span>Rob Pike, <a href="https://swtch.com/~rsc/thread/newsqueak.pdf" target="_blank" rel="noopener">“Newsqueak: a Language for Communicating with Mice,”</a> Computing Science Technical Report 143, AT&T Bell Laboratories, Murray Hill, 1989.</p>
+<p><span id="BL7">[7]</span>Phil Winterbottom, <a href="https://swtch.com/~rsc/thread/alef.pdf" target="_blank" rel="noopener">“Alef Language Reference Manual,”</a> in Plan 9 Programmer’s Manual: Volume Two, AT&T, Murray Hill, 1995.</p>
+<p><span id="BL8">[8]</span>Bob Flandrena, <a href="https://swtch.com/~rsc/thread/ug.pdf" target="_blank" rel="noopener">“Alef Users’ Guide,”</a> in Plan 9 Programmer’s Manual: Volume Two, AT&T, Murray Hill, 1995.</p>
+<p><span id="BL9">[9]</span>Dennis M. Ritchie, <a href="http://www.vitanuova.com/inferno/papers/limbo.html" target="_blank" rel="noopener">“The Limbo Programming Language,”</a> in Inferno Programmer’s Manual, Volume 2, Vita Nuova Holdings Ltd., York, 2000.</p>
+<p><span id="BL10">[10]</span>M. Douglas McIlroy, <a href="https://swtch.com/~rsc/thread/squint.pdf" target="_blank" rel="noopener">“Squinting at Power Series,”</a> Software–Practice and Experience, 20(7) (July 1990), 661-683.</p>
+<p><span id="BL11">[11]</span>Rob Pike, <a href="https://swtch.com/~rsc/thread/cws.pdf" target="_blank" rel="noopener">“A Concurrent Window System,” </a>Computing Systems, 2(2) 133-153.</p>
+<p><span id="BL12">[12]</span>Rob Pike, <a href="http://plan9.bell-labs.com/sys/doc/acme.html" target="_blank" rel="noopener">“Acme: A User Interface for Programmers,”</a> Proceedings of the Winter 1994 USENIX Conference, 223-234.</p>
+<p><span id="BL13">[13]</span>golang.org, <a href="http://golang.org/" target="_blank" rel="noopener">“The Go Programming Language”</a>.</p>
+<p><span id="BL14">[14]</span>Gerard Holzmann, <a href="http://spinroot.com/spin/Doc/roots.html" target="_blank" rel="noopener">“Spin’s Roots”</a>.</p>
+<p><span id="BL15">[15]</span>Gerard Holzmann, <a href="http://spinroot.com/spin/Man/promela.html" target="_blank" rel="noopener">“Promela Language Reference”</a>.</p>
+</body></html>
         </div>
         
-        
-        <div class="level is-mobile">
+        <div class="level is-size-7 is-uppercase">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/07/04/【译文】Bell-Labs-and-CSP-Threads-Russ-Cox/#more">阅读更多</a>
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/杂记译文/">杂记译文</a>
                 </div>
             </div>
         </div>
+        
         
         
     </div>
@@ -179,343 +237,66 @@
 
 
 
-
-
-
-
-
-    
 <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-07-04T02:56:27.000Z">2020-07-04</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    13 分钟 读完 (大约 1958 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
             
-                <a class="has-link-black-ter" href="/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/">6.S081-LAB1 Xv6 and Unix utilities</a>
-            
-        </h1>
-        <div class="content">
-            <html><head></head><body><h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a><span>Contents</span></h1><ul>
-<li><a href="#s081lab1_tools">Tools Preparation</a></li>
-<li><a href="#s081lab1_boot">Boot xv6</a></li>
-<li><a href="#s081lab1_util">Utilities</a><ul>
-<li><a href="#s081lab1_util_sleep">sleep</a><ul>
-<li><a href="#s081lab1_util_sleep_opt">Optional:uptime</a></li>
-</ul>
-</li>
-<li><a href="#s081lab1_util_pingpong">pingpong</a></li>
-<li><a href="#s081lab1_util_primes">primes</a></li>
-<li><a href="#s081lab1_util_find">find</a></li>
-<li><a href="#s081lab1_util_xargs">xargs</a></li>
-</ul>
-</li>
-<li><a href="#s081lab1_test">TEST</a></li>
-<li><a href="#s081lab1_ref">REFERENCES</a></li>
-</ul></body></html>
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
         </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
     </div>
 </div>
 
 
 
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-07-01T03:40:13.000Z">2020-07-01</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/译文/">译文</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/译文/杂记/">杂记</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    17 分钟 读完 (大约 2504 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2020/07/01/【译文】The-end-of-the-Redis-adventure-antirez/">【译文】The end of the Redis adventure.antirez.</a>
-            
-        </h1>
-        <div class="content">
-            <html><head></head><body><h1 id="版权©️归属"><a href="#版权©️归属" class="headerlink" title="版权©️归属"></a><span>版权©️归属</span></h1><blockquote>
-<p><strong>原文引用 - <a href="http://antirez.com/news/133" target="_blank" rel="noopener">The end of the Redis adventure - antirez</a></strong></p>
-</blockquote>
-<hr>
-<h1 id="Redis这场冒险的终点"><a href="#Redis这场冒险的终点" class="headerlink" title="Redis这场冒险的终点"></a><div align="center"><span>Redis这场冒险的终点</span></div></h1><blockquote>
-<p>When I started the Redis project more than ten years ago I was in one of the most exciting moments of my career. My co-founder and I had successfully launched two of the major web 2.0 services of the Italian web. In order to make them scalable we had to invent many new concepts, that were already known in the field most of the times, but we didn’t know, nor we cared to check. Problem? Let’s figure out a solution. We wanted to solve problems but we wanted, even more, to have fun. This was the playful environment where was born.</p>
-</blockquote></body></html>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/07/01/【译文】The-end-of-the-Redis-adventure-antirez/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-05-01T13:35:53.000Z">2020-05-01</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Unclassified/">Unclassified</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    39 分钟 读完 (大约 5906 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/">Lightweight JSON Parser Based on C -- cJSON</a>
-            
-        </h1>
-        <div class="content">
-            <html><head></head><body><h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ul>
-<li><a href="#cJSON_compile">Quick start</a><ul>
-<li><a href="#cJSON_compile_build">build</a></li>
-<li><a href="#cJSON_compile_test">run cJSON with test.c</a></li>
-<li><a href="#cJSON_compile_flow">be familiar to call flow with test.c</a></li>
-</ul>
-</li>
-<li><a href="#cJSON_coreds">Core data structure</a></li>
-<li><a href="#cJSON_constructor">Construtor</a><ul>
-<li><a href="#cJSON_constructor_normal">normal constructor</a></li>
-<li><a href="#cJSON_constructor_ref">reference item constructor</a></li>
-</ul>
-</li>
-<li><a href="#cJSON_destructor">Destructor</a></li>
-<li><a href="#cJSON_special">Special data sturcture based on core DS</a><ul>
-<li><a href="#cJSON_sds">Array</a><ul>
-<li><a href="#cJSON_sds_construction">construction of array</a></li>
-<li><a href="#cJSON_sds_insert">insert</a></li>
-<li><a href="#cJSON_sds_detach">detach</a></li>
-<li><a href="#cJSON_sds_iteration">iteration</a></li>
-</ul>
-</li>
-<li><a href="#cJSON_object">Object</a><ul>
-<li><a href="#cJSON_object_construction">construction of object</a></li>
-<li><a href="#cJSON_object_insert">insert</a></li>
-<li><a href="#cJSON_object_detach">detach</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#cJSON_parser">Parser</a><ul>
-<li><a href="#cJSON_parser_core">core API</a></li>
-<li><a href="#cJSON_parser_string">string parser</a></li>
-<li><a href="#cJSON_parser_number">number parser</a></li>
-<li><a href="#cJSON_parser_array">array parser</a></li>
-<li><a href="#cJSON_parser_object">object parser</a></li>
-</ul>
-</li>
-<li><a href="#cJSON_REFERENCES">REFERENCES</a></li>
-</ul></body></html>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/05/01/Lightweight-JSON-Parser-Based-on-C-cJSON/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-01-31T14:36:42.000Z">2020-01-31</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/MIT-6-828-OSE/">MIT-6.828-OSE</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    37 分钟 读完 (大约 5492 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/">MIT-6.828-LAB5 File system,Spawn and Shell</a>
-            
-        </h1>
-        <div class="content">
-            <html><head></head><body><h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a><span>Contents</span></h1><ul>
-<li><a href="#OSELAB5_A">File system preliminaries</a><ul>
-<li><a href="#OSELAB5_A.1">Block Layout and struct File</a></li>
-<li><a href="#OSELAB5_A.2">Design Philosophy of File System</a></li>
-</ul>
-</li>
-<li><a href="#OSELAB5_B">The File System</a><ul>
-<li><a href="#OSELAB5_B.1">Exercise 1 - Disk Access</a><ul>
-<li><a href="#OSELAB5_B.1.QUESTION">Question</a></li>
-</ul>
-</li>
-<li><a href="#OSELAB5_B.2">Exercise 2 - The Block Cache</a><ul>
-<li><a href="#OSELAB5_B.2.CHALLENGE">Challenge - Block Eviction Policy</a></li>
-</ul>
-</li>
-<li><a href="#OSELAB5_B.3">Exercise 3 - The Block Bitmap</a></li>
-<li><a href="#OSELAB5_B.4">Exercise 4 - File Operations</a></li>
-<li><a href="#OSELAB5_B.5">Exercise 5, 6 - The File System Interface</a></li>
-</ul>
-</li>
-<li><a href="#OSELAB5_C">Spawning Process</a><ul>
-<li><a href="#OSELAB5_C.7">Exercise 7 - Implement spawn</a><ul>
-<li><a href="#OSELAB5_C.7.CHALLENGE">Challenge - Implement Unix-style exec</a></li>
-</ul>
-</li>
-<li><a href="#OSELAB5_C.8">Exercise 8 - Sharing library state across fork and spawn</a></li>
-</ul>
-</li>
-<li><a href="#OSELAB5_D">The keyboard interface</a><ul>
-<li><a href="#OSELAB5_D.9">Exercise 9 - Responsing to externel interrupt</a></li>
-</ul>
-</li>
-<li><a href="#OSELAB5_E">Shell</a><ul>
-<li><a href="#OSELAB5_E.10">Exercise 10 - Implement I/O redirection</a></li>
-</ul>
-</li>
-<li><a href="#OSELAB5_REFERENCES">REFERENCES</a></li>
-</ul></body></html>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/01/31/MIT-6-828-LAB5-File-system-Spawn-and-Shell/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-
-    
 <div class="card card-transparent">
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <div class="pagination-previous is-invisible is-hidden-mobile">
-            <a class="is-flex-grow has-text-black-ter" href="/page/0/">上一页</a>
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/">
+                <span class="level-item">6.S081-LAB1 Xv6 and Unix utilities</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
         </div>
-        <div class="pagination-next">
-            <a class="is-flex-grow has-text-black-ter" href="/page/2/">下一页</a>
-        </div>
-        <ul class="pagination-list is-hidden-mobile">
-            
-            <li><a class="pagination-link is-current" href="/">1</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/page/2/">2</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/page/3/">3</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/page/4/">4</a></li>
-            
-        </ul>
-    </nav>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2020/07/04/【译文】Bell-Labs-and-CSP-Threads-Russ-Cox/" data-num-posts="5"></div>
+
+    </div>
 </div>
 </div>
                 
@@ -609,6 +390,80 @@
 </div>
     
         
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>版权©️归属#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>贝尔实验室和CSP线程#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1</span>
+        <span>Russ cox#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1.1</span>
+        <span>rsc@swtch.com其它版本：Serbo-Croatian, Swedish#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.2</span>
+        <span>介绍#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.3</span>
+        <span>它不是什么#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.4</span>
+        <span>顺序通信进程#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.5</span>
+        <span>Pan和Promela#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.6</span>
+        <span>Newsqueak#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.7</span>
+        <span>Alef#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.8</span>
+        <span>Limbo#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.9</span>
+        <span>Libthread#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.10</span>
+        <span>Go#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.11</span>
+        <span>入门#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.12</span>
+        <span>相关资源#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.13</span>
+        <span>参考文献#</span>
+        </a></li></ul></li></ul>
+        </div>
+    </div>
+</div>
     
         <div class="card widget">
     <div class="card-content">
@@ -1053,7 +908,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.png" alt="YanTang Qin的博客" height="28">
+                    <img src="/images/logo.png" alt="【译文】Bell Labs and CSP Threads, Russ Cox." height="28">
                 
                 </a>
                 <p class="is-size-7">
