@@ -19,7 +19,7 @@
 <meta property="og:description" content="Contents Requirement Analyze Implementation Break out of the limit of NFILE Optimization   More REFERENCES">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
-<meta property="og:updated_time" content="2020-07-19T04:55:10.980Z">
+<meta property="og:updated_time" content="2020-07-19T05:09:31.288Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="6.S081-LAB3 Allocator for xv6">
 <meta name="twitter:description" content="Contents Requirement Analyze Implementation Break out of the limit of NFILE Optimization   More REFERENCES">
@@ -151,7 +151,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    12 分钟 读完 (大约 1786 个字)
+                    12 分钟 读完 (大约 1799 个字)
                 </span>
                 
                 
@@ -200,9 +200,10 @@
 <p>最小Block大小LEAF_SIZE为：$$M_{leaf}=16byte=2^4byte$$</p>
 <p>则有：<br>$$nsizes=log_{2}{\frac{M_{all}}{M_{leaf}}}+1=24$$</p>
 <p>相应地：<br>$$MAXSIZE=nsizes-1=23$$</p>
-<p>记$thr=MAXSIZE-1=22$：<br>$$M_{\alpha}=\sum_{k=0}^{thr}ROUNDUP(2^{MAXSIZE-k},8)/8+\sum_{k=1}^{thr}ROUNDUP(2^{MAXSIZE-k},8)/8$$<br>$$M_{\beta}=\sum_{k=0}^{thr}ROUNDUP(2^{MAXSIZE-k},16)/16+\sum_{k=1}^{thr}ROUNDUP(2^{MAXSIZE-k},8)/8$$</p>
+<p>定义函数<br>$$ROUNDUP(n,sz)=(\lfloor\frac{n-1}{sz}\rfloor+1)\times{sz}$$</p>
+<p>记$thr=MAXSIZE-1=22$:<br>$$M_{\alpha}=\sum_{k=0}^{thr}ROUNDUP(2^{MAXSIZE-k},8)/8+\sum_{k=1}^{thr}ROUNDUP(2^{MAXSIZE-k},8)/8$$<br>$$M_{\beta}=\sum_{k=0}^{thr}ROUNDUP(2^{MAXSIZE-k},16)/16+\sum_{k=1}^{thr}ROUNDUP(2^{MAXSIZE-k},8)/8$$</p>
 <p>其中$M_{\alpha}$为每个Block使用一个bit位时位图占用的内存大小,$M_{\beta}$为每对Block使用一个bit位时位图占用的内存大小。</p>
-<p>节省的内存大小为：<br>$$M_{saved}=M_{\alpha}-M_{\beta}=\sum_{k=0}^{22}ROUNDUP(2^{23-k}，8)/8 - \sum_{k=0}^{22}ROUNDUP(2^{23-k,16},16)/16$$</p>
+<p>节省的内存大小为：<br>$$M_{saved}=M_{\alpha}-M_{\beta}=\sum_{k=0}^{22}ROUNDUP(2^{23-k}，8)/8 - \sum_{k=0}^{22}ROUNDUP(2^{23-k},16)/16$$</p>
 <p>最后：<br>$$M_{saved}=\sum_{k=0}^{20}2^k+3-(\sum_{k=0}^{19}2^k+4)=2^{20}-1\approx1Mbyte$$</p>
 <hr>
 <h1><span id="implementation"><span id="s081lab3_imp">Implementation</span></span><a href="#implementation" class="header-anchor">#</a></h1><hr>
@@ -227,7 +228,7 @@
 
 <p>这样修改就没有问题了： </p><div align="center"><img src="https://s1.ax1x.com/2020/07/19/URw3ZQ.png" alt="图 2-2-1 Buddy Allocator Tests"></div><p></p>
 <hr>
-<h1><span id="more"><span id="s081lab3_ibd">More</span></span><a href="#more" class="header-anchor">#</a></h1><p>Buddy Allocator for xv6这个lab的代码量并不大，但是完全理解其中的代码还是花一定的时间，我也建议认真阅读这里的Buddy Algorithm的实现，然后参阅相关资料以及论文，关于Buddy Algorithm的，因为现在很多主流操作系统的动态内存分配技术就会用到这个内存管理算法。这里先埋个坑，我只是将这里的代码基本弄懂了，也参阅了一些非权威资料，等待我有时间并且看了论文以及相关资料会补上更专业的内容。</p>
+<h1><span id="more"><span id="s081lab3_iba">More</span></span><a href="#more" class="header-anchor">#</a></h1><p>Buddy Allocator for xv6这个lab的代码量并不大，但是完全理解其中的代码还是花一定的时间，我也建议认真阅读这里的Buddy Algorithm的实现，然后参阅相关资料以及论文，关于Buddy Algorithm的，因为现在很多主流操作系统的动态内存分配技术就会用到这个内存管理算法。这里先埋个坑，我只是将这里的代码基本弄懂了，也参阅了一些非权威资料，等待我有时间并且看了论文以及相关资料会补上更专业的内容。</p>
 <hr>
 <h1><span id="references"><div align="center"><span id="s081lab3_ref">REFERENCES</span></div></span><a href="#references" class="header-anchor">#</a></h1><p>【1】 <a href="https://pdos.csail.mit.edu/6.828/2019/xv6/book-riscv-rev0.pdf" target="_blank" rel="noopener">book-riscv-rev0</a><br>【2】 <a href="https://pdos.csail.mit.edu/6.828/2019/labs/alloc.html" target="_blank" rel="noopener">Lab : Buddy Allocator for xv6</a><br>【3】 <em>The C programming language(second edition)</em> by Kernighan and Ritchie. Prentice Hall, Inc., 1988. ISBN 0-13-110362-8, 1998.</p>
 </body></html>
