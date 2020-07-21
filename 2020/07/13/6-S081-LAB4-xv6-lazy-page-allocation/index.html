@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 3.9.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>6.S081-LAB4 xv6 lazy page allocation - YanTang Qin的博客</title>
+
+
+    <meta name="description" content="Contents Kernel &amp; User Address Space Kernel User   Print page table Eliminate allocation from sbrk() Lazy allocation REFERENCES">
+<meta name="keywords" content="6.S081">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6.S081-LAB4 xv6 lazy page allocation">
+<meta property="og:url" content="https://qinstaunch.github.io/2020/07/13/6-S081-LAB4-xv6-lazy-page-allocation/index.html">
+<meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="Contents Kernel &amp; User Address Space Kernel User   Print page table Eliminate allocation from sbrk() Lazy allocation REFERENCES">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-07-21T07:02:15.601Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="6.S081-LAB4 xv6 lazy page allocation">
+<meta name="twitter:description" content="Contents Kernel &amp; User Address Space Kernel User   Print page table Eliminate allocation from sbrk() Lazy allocation REFERENCES">
+<meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-2-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.png" alt="6.S081-LAB4 xv6 lazy page allocation" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories">目录</a>
+                
+                <a class="navbar-item"
+                href="/tags">标签</a>
+                
+                <a class="navbar-item"
+                href="/about">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-07-13T05:28:06.000Z">2020-07-13</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    18 分钟 读完 (大约 2713 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                6.S081-LAB4 xv6 lazy page allocation
+            
+        </h1>
+        <div class="content">
+            <html><head></head><body><h1><span id="contents"><span>Contents</span></span><a href="#contents" class="header-anchor">#</a></h1><ul>
+<li><a href="#s081lab4_as">Kernel & User Address Space</a><ul>
+<li><a href="#s081lab4_as_kernel">Kernel</a></li>
+<li><a href="#s081lab4_as_user">User</a></li>
+</ul>
+</li>
+<li><a href="#s081lab4_ppt">Print page table</a></li>
+<li><a href="#s081lab4_ea">Eliminate allocation from sbrk()</a></li>
+<li><a href="#s081lab4_la">Lazy allocation</a></li>
+<li><a href="#s081lab4_ref">REFERENCES</a></li>
+</ul>
+<a id="more"></a>
+
+<hr>
+<h1><span id="kernel-amp-user-address-space"><span id="s081lab4_as">Kernel & User Address Space</span></span><a href="#kernel-amp-user-address-space" class="header-anchor">#</a></h1><p>在这个LAB中，有一些细节的地方，需要对xv6的内核以及用户地址空间十分清楚，才能比较顺利地进行下去。</p>
+<hr>
+<h2><span id="kernel"><span id="s081lab4_as_kernel">Kernel</span></span><a href="#kernel" class="header-anchor">#</a></h2><p>参阅book-riscv-rev0第三章Page tables： </p><div align="center"><img src="https://s1.ax1x.com/2020/07/20/U41qpT.png" alt="图 1-1-1 Xv6 kernel address space(left);The RISC-V physical address space that xv6 expects to see(right)"></div><p></p>
+<p>几个关键点：</p>
+<ol>
+<li>RISC-V物理地址空间的最大地址为$2^{56}-1$，相应地，page table中的PPN就有44位，加上offset的12位，总共56位的物理地址，如图1-1-2所示；</li>
+<li>内核基本都是直接映射，例如，无论是虚拟地址还是物理地址，内核数据和代码的起始地址都是KERNBASE(0x80000000)，从图1-1-1有一个很直观的表现。直接映射简化了那些需要读写页面（使用虚拟地址）的内核代码，同样也简化了对指向同一个页面（使用物理地址）的PTE的操作。（TIPS：如果你做过6.828，jos的内核地址空间与xv6有较大的区别，也没办法像xv6一样，直接使用PTE中记录的物理地址就能访问下一级页表等，需要先转换为虚拟地址）；</li>
+<li>内核中有一部分存在重复映射的现象，如图所示的Trampoline以及Kernel Stack，换而言之，在内核态中，可以通过两个地址访问到Trampoline和Kernel Stack，事实上这样的设计，节省了物理内存，注意到，Trampoline和每一个Kstack下都有一个Guard page，作为警戒页面，Guard page只是一个逻辑概念，事实上它们在内核的页表中并未映射，换而言之，倘若访问这些Guard page内的非法地址，将会产生page fault exception）；</li>
+</ol>
+<p>RISC-V使用三级页表： </p><div align="center"><img src="https://s1.ax1x.com/2020/07/20/U4Jj8x.png" alt="图 1-1-2 RISC-V page table hardware"></div><p></p>
+<p>如图1-1-2所示：</p>
+<ol>
+<li>物理地址为56bit，页表的44bit+虚拟地址的低12bit作为offset，从而构成物理地址；</li>
+<li>每一个PTE总共需要54bit，其中高44bit为PPN（下一个物理页的物理地址），低10位为控制bit位，但是实际上就用两个字（8字节）来记录一个PTE，因此对于一个页表，为其分配一页，大小为4K，那么每一级页表需要的bit位数为$log_{2}{\frac{2^{12}}{2^3}}=9$位；</li>
+<li>RISC-V架构使用satp寄存器来存储初级页表的基地址；</li>
+</ol>
+<hr>
+<h2><span id="user"><span id="s081lab4_as_user">User</span></span><a href="#user" class="header-anchor">#</a></h2><p>用户地址空间如图1-2-1所示： </p><div align="center"><img src="https://s1.ax1x.com/2020/07/20/U41HhV.png" alt="图 1-2-1 User address space"></div><p></p>
+<p>关键点：</p>
+<ol>
+<li>用户地址空间起始地址从0开始；</li>
+<li>stack之上为动态内存分配空间，但是在进程初始状态时，这部分只是逻辑概念，并没有分配实际上的物理内存空间，换而言之，没有在页表中写入相应的映射关系。而函数<code>sbrk</code>就能增大进程所占用的内存，即让堆向上生长，同时也能够释放由sbrk分配的内存空间，但是不能够越过stack；</li>
+</ol>
+<hr>
+<h1><span id="print-page-table"><span id="s081lab4_ppt">Print page table</span></span><a href="#print-page-table" class="header-anchor">#</a></h1><hr>
+<p>正如上面所讨论的，xv6是直接映射，并且RISC-V也没有分段机制，内核地址空间的虚拟地址等价于物理地址，因此，在函数<code>vmprint1</code>中能注意到，获取了pte之后，直接将其控制bit清除之后，直接能够访问，而不用先转换为新地址。</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span></span><br><span class="line">printfmt(<span class="hljs-keyword">int</span> level, uint64 index, uint64 pte, uint64 pa)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">for</span>(; level; level--){</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">" .."</span>);</span><br><span class="line">  }</span><br><span class="line">  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%d: pte %p pa %p\n"</span>, index, pte, pa);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span></span><br><span class="line">vmprint1(<span class="hljs-keyword">pagetable_t</span> pagetable, <span class="hljs-keyword">int</span> level)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">pte_t</span> pte;</span><br><span class="line">  uint64 i;</span><br><span class="line">  <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i < <span class="hljs-number">512</span>; i++){</span><br><span class="line">    pte = pagetable[i];</span><br><span class="line">    <span class="hljs-keyword">if</span>(pte & PTE_V){</span><br><span class="line">      printfmt(level, i, pte, PTE2PA(pte));</span><br><span class="line">      <span class="hljs-keyword">if</span>(level < <span class="hljs-number">3</span>){</span><br><span class="line">        vmprint1((<span class="hljs-keyword">pagetable_t</span>)PTE2PA(pte), level + <span class="hljs-number">1</span>);</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">vmprint(<span class="hljs-keyword">pagetable_t</span> pagetable)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">if</span>(!pagetable){</span><br><span class="line">    panic(<span class="hljs-string">"print : pagetable is NULL"</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="hljs-comment">// print the address of the argument of vmprint.</span></span><br><span class="line">  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"page table %p\n"</span>, pagetable);</span><br><span class="line">  vmprint1(pagetable, <span class="hljs-number">1</span>);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h1><span id="eliminate-allocation-from-sbrk"><span id="s081lab4_ea">Eliminate allocation from sbrk()</span></span><a href="#eliminate-allocation-from-sbrk" class="header-anchor">#</a></h1><p>实现页面的延迟加载，就不能在系统调用sys_sbrk当中直接为该进程分配内存。此外，由于用户程序加载时，是从0地址开始的，因此proc->sz能直接作为进程的上限虚拟地址（这里不太准确，应该说是实际上进程所占用的虚拟地址上限？）。</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line">sys_sbrk(<span class="hljs-keyword">void</span>)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">int</span> addr;</span><br><span class="line">  <span class="hljs-keyword">int</span> n;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span>(argint(<span class="hljs-number">0</span>, &n) < <span class="hljs-number">0</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;</span><br><span class="line">  addr = myproc()->sz;</span><br><span class="line">  myproc()->sz += n;</span><br><span class="line">  <span class="hljs-keyword">if</span>(n < <span class="hljs-number">0</span>){</span><br><span class="line">    uvmdealloc(myproc()->pagetable, addr, myproc()->sz);</span><br><span class="line">  }</span><br><span class="line">  <span class="hljs-keyword">return</span> addr;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>值得注意的是，倘若n<0，那么意味着进程归还内存，倘若不在这里立即释放物理内存并修改进程的page table中的映射关系，那么实际上就会丢失了对这部分已经映射了并且分配了物理内存的追踪，那么在该进程完全被释放时，最终会调用<code>uvmfree</code>：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// Recursively free page-table pages.</span></span><br><span class="line"><span class="hljs-comment">// All leaf mappings must already have been removed.</span></span><br><span class="line"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span></span><br><span class="line">freewalk(<span class="hljs-keyword">pagetable_t</span> pagetable)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-comment">// there are 2^9 = 512 PTEs in a page table.</span></span><br><span class="line">  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i < <span class="hljs-number">512</span>; i++){</span><br><span class="line">    <span class="hljs-keyword">pte_t</span> pte = pagetable[i];</span><br><span class="line">    <span class="hljs-keyword">if</span>((pte & PTE_V) && (pte & (PTE_R|PTE_W|PTE_X)) == <span class="hljs-number">0</span>){</span><br><span class="line">      <span class="hljs-comment">// this PTE points to a lower-level page table.</span></span><br><span class="line">      uint64 child = PTE2PA(pte);</span><br><span class="line">      freewalk((<span class="hljs-keyword">pagetable_t</span>)child);</span><br><span class="line">      pagetable[i] = <span class="hljs-number">0</span>;</span><br><span class="line">    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(pte & PTE_V){</span><br><span class="line">      panic(<span class="hljs-string">"freewalk: leaf"</span>);</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  kfree((<span class="hljs-keyword">void</span>*)pagetable);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Free user memory pages,</span></span><br><span class="line"><span class="hljs-comment">// then free page-table pages.</span></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">uvmfree(<span class="hljs-keyword">pagetable_t</span> pagetable, uint64 sz)</span><br><span class="line">{</span><br><span class="line">  uvmunmap(pagetable, <span class="hljs-number">0</span>, sz, <span class="hljs-number">1</span>);</span><br><span class="line">  freewalk(pagetable);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注意到，在<code>uvmfree</code>中，首先释放该进程的pagetable能够追踪到的物理内存，在上面所说的n<0的情况下，此时sz变小，那么<code>uvmunmap(pagetable, 0, sz, 1)</code>就只能够释放到sz以下的虚拟地址对应的物理内存，并且将相应的PTE清0，而sz以上虚拟地址对应的物理内存以及相应的PTE也就没有清0。然后执行<code>freewalk(pagetable)</code>，该函数用来释放pagetable本身，并且校验pagetable中的所有映射关系都已经解除，否则就会panic。综上所述，倘若在<code>sys_sbrk</code>中n<0时立即解除映射关系，那么最终在<code>freewalk</code>会panic（不妨可以去验证一下）。</p>
+<hr>
+<h1><span id="lazy-allocation"><span id="s081lab4_la">Lazy allocation</span></span><a href="#lazy-allocation" class="header-anchor">#</a></h1><p>在上面，我们已经去除了sbrk立即分配物理页的代码，但是对于进程而言，由于我们修改了proc->sz，它的感知就是那部分虚拟地址已经分配了物理内存，可以使用了，那么在访问这些虚拟地址时，就必然会由硬件产生Page Fault Exception，并最终进入函数<code>usertrap</code>，因此我们需要在这里为引发Page Fault的虚拟地址分配物理内存，并修改page table，就能实现延迟加载的效果：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">//</span></span><br><span class="line"><span class="hljs-comment">// handle an interrupt, exception, or system call from user space.</span></span><br><span class="line"><span class="hljs-comment">// called from trampoline.S</span></span><br><span class="line"><span class="hljs-comment">//</span></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">usertrap(<span class="hljs-keyword">void</span>)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">int</span> which_dev = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span>((r_sstatus() & SSTATUS_SPP) != <span class="hljs-number">0</span>)</span><br><span class="line">    panic(<span class="hljs-string">"usertrap: not from user mode"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-comment">// send interrupts and exceptions to kerneltrap(),</span></span><br><span class="line">  <span class="hljs-comment">// since we're now in the kernel.</span></span><br><span class="line">  w_stvec((uint64)kernelvec);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> *<span class="hljs-title">p</span> = <span class="hljs-title">myproc</span>();</span></span><br><span class="line">  </span><br><span class="line">  <span class="hljs-comment">// save user program counter.</span></span><br><span class="line">  p->tf->epc = r_sepc();</span><br><span class="line">  </span><br><span class="line">  <span class="hljs-keyword">if</span>(r_scause() == <span class="hljs-number">8</span>){</span><br><span class="line">    <span class="hljs-comment">// system call</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span>(p->killed)</span><br><span class="line">      <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// sepc points to the ecall instruction,</span></span><br><span class="line">    <span class="hljs-comment">// but we want to return to the next instruction.</span></span><br><span class="line">    p->tf->epc += <span class="hljs-number">4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// an interrupt will change sstatus &c registers,</span></span><br><span class="line">    <span class="hljs-comment">// so don't enable until done with those registers.</span></span><br><span class="line">    intr_on();</span><br><span class="line"></span><br><span class="line">    syscall();</span><br><span class="line">  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>((which_dev = devintr()) != <span class="hljs-number">0</span>){</span><br><span class="line">    <span class="hljs-comment">// ok</span></span><br><span class="line">  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r_scause() == <span class="hljs-number">13</span> || r_scause() == <span class="hljs-number">15</span>){</span><br><span class="line">    <span class="hljs-comment">// page fault.</span></span><br><span class="line">    uint64 fault_va = (uint64)r_stval();</span><br><span class="line">    <span class="hljs-keyword">if</span>(fault_va < (uint64)PGROUNDUP(p->tf->sp) || fault_va >= p->sz){</span><br><span class="line">      <span class="hljs-comment">// note that the PGROUNDUP(p->tf->sp) is the top address of</span></span><br><span class="line">      <span class="hljs-comment">// the process's stack.</span></span><br><span class="line">      p->killed = <span class="hljs-number">1</span>;</span><br><span class="line">    }<span class="hljs-keyword">else</span>{</span><br><span class="line">      <span class="hljs-keyword">char</span> *mem = kalloc();</span><br><span class="line">      <span class="hljs-keyword">if</span>(mem == <span class="hljs-number">0</span>){</span><br><span class="line">        p->killed = <span class="hljs-number">1</span>;</span><br><span class="line">      }<span class="hljs-keyword">else</span>{</span><br><span class="line">        <span class="hljs-built_in">memset</span>(mem, <span class="hljs-number">0</span>, PGSIZE);</span><br><span class="line">        <span class="hljs-keyword">if</span>(mappages(p->pagetable, PGROUNDDOWN(fault_va), PGSIZE, (uint64)mem, PTE_W|PTE_X|PTE_R|PTE_U) != <span class="hljs-number">0</span>){</span><br><span class="line">          kfree(mem);</span><br><span class="line">          p->killed = <span class="hljs-number">1</span>;</span><br><span class="line">        }</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">  }<span class="hljs-keyword">else</span> {</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"usertrap(): unexpected scause %p pid=%d\n"</span>, r_scause(), p->pid);</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"            sepc=%p stval=%p\n"</span>, r_sepc(), r_stval());</span><br><span class="line">    p->killed = <span class="hljs-number">1</span>;</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span>(p->killed)</span><br><span class="line">    <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-comment">// give up the CPU if this is a timer interrupt.</span></span><br><span class="line">  <span class="hljs-keyword">if</span>(which_dev == <span class="hljs-number">2</span>)</span><br><span class="line">    yield();</span><br><span class="line"></span><br><span class="line">  usertrapret();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>值得注意的点就是要对fault_va的合法性进行校验，user stack的大小为1页，因此，PGROUNDUP(p->tf->sp)就是栈顶的地址。</p>
+<p>除此之外，我们还需要消除之前版本的代码在页表没有映射关系时报错的现象，这里就不赘述，详情可见下方的提示：</p>
+<ol>
+<li>克隆仓库至本地:<code>git clone git@github.com:QinStaunch/MIT6.S081.git S081</code></li>
+<li>切换分支至lazy:<code>git checkout lazy</code></li>
+<li>查看提交记录:<code>git log</code></li>
+<li>从提交记录中可看到Print page table以及xv6 page table allocation两个提交记录，相应的标识符为”07622…”和”fce7c…”</li>
+<li>比较两个commit即可了解所有在Print page table基础上，完成lazy allocation所需要做的所有修改:<code>git diff 07622 fce7c</code></li>
+</ol>
+<p>事实上，你通过上述比较之后会发现，我在<code>vm.c</code>当中增加了一个函数<code>copy_uvmalloc</code>，这是因为在做usertests时，其它测试用例都通过的情况下，测试用例<code>sbrkarg</code>始终失败，并且错误信息为<code>write sbrk failed</code>，不妨去看看这个测试用例：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// test reads/writes from/to allocated memory</span></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">sbrkarg(<span class="hljs-keyword">char</span> *s)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">char</span> *a;</span><br><span class="line">  <span class="hljs-keyword">int</span> fd, n;</span><br><span class="line"></span><br><span class="line">  a = sbrk(PGSIZE);</span><br><span class="line">  fd = open(<span class="hljs-string">"sbrk"</span>, O_CREATE|O_WRONLY);</span><br><span class="line">  unlink(<span class="hljs-string">"sbrk"</span>);</span><br><span class="line">  <span class="hljs-keyword">if</span>(fd < <span class="hljs-number">0</span>)  {</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%s: open sbrk failed\n"</span>, s);</span><br><span class="line">    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);</span><br><span class="line">  }</span><br><span class="line">  <span class="hljs-keyword">if</span> ((n = write(fd, a, PGSIZE)) < <span class="hljs-number">0</span>) {</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%s: write sbrk failed\n"</span>, s);</span><br><span class="line">    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);</span><br><span class="line">  }</span><br><span class="line">  close(fd);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-comment">// test writes to allocated memory</span></span><br><span class="line">  a = sbrk(PGSIZE);</span><br><span class="line">  <span class="hljs-keyword">if</span>(pipe((<span class="hljs-keyword">int</span> *) a) != <span class="hljs-number">0</span>){</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%s: pipe() failed\n"</span>, s);</span><br><span class="line">    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);</span><br><span class="line">  } </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>可以看到，在调用<code>write(fd, a, PGSIZE)</code>时产生了错误，分析调用链，最终在内核中会调用vm.c当中的<code>copyut</code>与<code>copyin</code>，以<code>copyout</code>为例：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// Copy from kernel to user.</span></span><br><span class="line"><span class="hljs-comment">// Copy len bytes from src to virtual address dstva in a given page table.</span></span><br><span class="line"><span class="hljs-comment">// Return 0 on success, -1 on error.</span></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">copyout(<span class="hljs-keyword">pagetable_t</span> pagetable, uint64 dstva, <span class="hljs-keyword">char</span> *src, uint64 len)</span><br><span class="line">{</span><br><span class="line">  uint64 n, va0, pa0;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">while</span>(len > <span class="hljs-number">0</span>){</span><br><span class="line">    va0 = PGROUNDDOWN(dstva);</span><br><span class="line">    pa0 = walkaddr(pagetable, va0);</span><br><span class="line">    <span class="hljs-keyword">if</span>(pa0 == <span class="hljs-number">0</span>)</span><br><span class="line">      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;</span><br><span class="line">    n = PGSIZE - (dstva - va0);</span><br><span class="line">    <span class="hljs-keyword">if</span>(n > len)</span><br><span class="line">      n = len;</span><br><span class="line">    memmove((<span class="hljs-keyword">void</span> *)(pa0 + (dstva - va0)), src, n);</span><br><span class="line"></span><br><span class="line">    len -= n;</span><br><span class="line">    src += n;</span><br><span class="line">    dstva = va0 + PGSIZE;</span><br><span class="line">  }</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>那么很显然，是由于<code>if(pa0 == 0)return -1;</code>所返回的错误，那么原因也就很明显了，在<code>sbrkarg</code>这个测试中调用了<code>sbrk</code>后，就调用write，此时这部分内存尚未分配，于是最终进入<code>copyout</code>与<code>copyin</code>后，<code>walkaddr(pagetable, va0)</code>找不到映射关系，自然返回的pa0的值为0，于是向上级调用返回error，那么解决办法就是在<code>copyout</code>与<code>copyin</code>中为其分配内存，并修改pagetable，但是不能直接使用原始的<code>uvmalloc</code>，因为我们需要对地址的合法性进行校验，就像在<code>usertrap</code>当中所做的一样，因此我提供了一个额外的函数<code>copy_uvmalloc</code>专门应对这种情况。</p>
+<hr>
+<h1><span id="references"><div align="center"><span id="s081lab4_ref">REFERENCES</span></div></span><a href="#references" class="header-anchor">#</a></h1><p>【1】 <a href="https://pdos.csail.mit.edu/6.828/2019/xv6/book-riscv-rev0.pdf" target="_blank" rel="noopener">book-riscv-rev0</a><br>【2】 <a href="https://pdos.csail.mit.edu/6.828/2019/labs/lazy.html" target="_blank" rel="noopener">Lab : xv6 lazy page allocation</a><br>【3】 <em>The C programming language(second edition)</em> by Kernighan and Ritchie. Prentice Hall, Inc., 1988. ISBN 0-13-110362-8, 1998.</p>
+</body></html>
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/6-S081/">6.S081</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/07/10/6-S081-LAB3-Allocator-for-xv6/">
+                <span class="level-item">6.S081-LAB3 Allocator for xv6</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2020/07/13/6-S081-LAB4-xv6-lazy-page-allocation/" data-num-posts="5"></div>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-4-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="QinStaunch">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        QinStaunch
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        梦想是做出优秀的开源产品
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>四川成都</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        20
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        14
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        10
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/QinStaunch" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/QinStaunch">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>Contents#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>Kernel & User Address Space#</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.1</span>
+        <span>Kernel#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2.2</span>
+        <span>User#</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>Print page table#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>Eliminate allocation from sbrk()#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">5</span>
+        <span>Lazy allocation#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6</span>
+        <span>REFERENCES#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://leetcode-cn.com/u/qinstaunch/" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">My LeetCode</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">leetcode-cn.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Framework/">
+            <span class="level-start">
+                <span class="level-item">Framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Framework/Mybatis/">
+            <span class="level-start">
+                <span class="level-item">Mybatis</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Java/Java编程语言/">
+            <span class="level-start">
+                <span class="level-item">Java编程语言</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/algorithms/">
+            <span class="level-start">
+                <span class="level-item">algorithms</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java/并发控制/">
+            <span class="level-start">
+                <span class="level-item">并发控制</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Unclassified/">
+            <span class="level-start">
+                <span class="level-item">Unclassified</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">12</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/操作系统/6-S081/">
+            <span class="level-start">
+                <span class="level-item">6.S081</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">4</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/MIT-6-828-OSE/">
+            <span class="level-start">
+                <span class="level-item">MIT-6.828-OSE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/csapp/">
+            <span class="level-start">
+                <span class="level-item">csapp</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/设计模式/">
+            <span class="level-start">
+                <span class="level-item">设计模式</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/译文/">
+            <span class="level-start">
+                <span class="level-item">译文</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/译文/杂记/">
+            <span class="level-start">
+                <span class="level-item">杂记</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/6-S081/" style="font-size: 17.5px;">6.S081</a> <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/MIT6-828/" style="font-size: 20px;">MIT6.828</a> <a href="/tags/Mybatis/" style="font-size: 10px;">Mybatis</a> <a href="/tags/No-tags/" style="font-size: 10px;">No-tags</a> <a href="/tags/csapp/" style="font-size: 15px;">csapp</a> <a href="/tags/并发控制/" style="font-size: 10px;">并发控制</a> <a href="/tags/杂记译文/" style="font-size: 12.5px;">杂记译文</a> <a href="/tags/设计模式/" style="font-size: 12.5px;">设计模式</a>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/07/13/6-S081-LAB4-xv6-lazy-page-allocation/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="6.S081-LAB4 xv6 lazy page allocation">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-13T05:28:06.000Z">2020-07-13</time></div>
+                    <a href="/2020/07/13/6-S081-LAB4-xv6-lazy-page-allocation/" class="title has-link-black-ter is-size-6 has-text-weight-normal">6.S081-LAB4 xv6 lazy page allocation</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/07/10/6-S081-LAB3-Allocator-for-xv6/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="6.S081-LAB3 Allocator for xv6">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-10T08:32:01.000Z">2020-07-10</time></div>
+                    <a href="/2020/07/10/6-S081-LAB3-Allocator-for-xv6/" class="title has-link-black-ter is-size-6 has-text-weight-normal">6.S081-LAB3 Allocator for xv6</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/07/07/6-S081-LAB2-Simple-xv6-shell/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="6.S081-LAB2 Simple xv6 shell">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-06T20:36:48.000Z">2020-07-07</time></div>
+                    <a href="/2020/07/07/6-S081-LAB2-Simple-xv6-shell/" class="title has-link-black-ter is-size-6 has-text-weight-normal">6.S081-LAB2 Simple xv6 shell</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/07/04/【译文】Bell-Labs-and-CSP-Threads-Russ-Cox/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="【译文】Bell Labs and CSP Threads, Russ Cox.">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-04T11:04:21.000Z">2020-07-04</time></div>
+                    <a href="/2020/07/04/【译文】Bell-Labs-and-CSP-Threads-Russ-Cox/" class="title has-link-black-ter is-size-6 has-text-weight-normal">【译文】Bell Labs and CSP Threads, Russ Cox.</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/译文/">译文</a> / <a class="has-link-grey -link" href="/categories/译文/杂记/">杂记</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="6.S081-LAB1 Xv6 and Unix utilities">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-07-04T02:56:27.000Z">2020-07-04</time></div>
+                    <a href="/2020/07/04/6-S081-LAB1-Xv6-and-Unix-utilities/" class="title has-link-black-ter is-size-6 has-text-weight-normal">6.S081-LAB1 Xv6 and Unix utilities</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a> / <a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/6-S081/">
+                        <span class="tag">6.S081</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Algorithms/">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MIT6-828/">
+                        <span class="tag">MIT6.828</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Mybatis/">
+                        <span class="tag">Mybatis</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/No-tags/">
+                        <span class="tag">No-tags</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/csapp/">
+                        <span class="tag">csapp</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/并发控制/">
+                        <span class="tag">并发控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/杂记译文/">
+                        <span class="tag">杂记译文</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/设计模式/">
+                        <span class="tag">设计模式</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.png" alt="6.S081-LAB4 xv6 lazy page allocation" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 坚定qinyantang.&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="My Github" href="https://github.com/QinStaunch">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
