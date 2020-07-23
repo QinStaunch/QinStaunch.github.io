@@ -7,18 +7,22 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>归档: 2019/10 - YanTang Qin的博客</title>
+<title>6.S081-LAB5 Copy-on-Write Fork for xv6 - YanTang Qin的博客</title>
 
 
-    <meta name="keywords" content="Java,Python,Linux">
-<meta property="og:type" content="website">
-<meta property="og:title" content="YanTang Qin的博客">
-<meta property="og:url" content="https://qinstaunch.github.io/archives/2019/10/index.html">
+    <meta name="description" content="Contents Itroduce reference count to kalloc Implement uvmcopy for fork Handle page fault Tips REFERENCES">
+<meta name="keywords" content="6.S081">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6.S081-LAB5 Copy-on-Write Fork for xv6">
+<meta property="og:url" content="https://qinstaunch.github.io/2020/07/14/6-S081-LAB5-Copy-on-Write-Fork-for-xv6/index.html">
 <meta property="og:site_name" content="YanTang Qin的博客">
+<meta property="og:description" content="Contents Itroduce reference count to kalloc Implement uvmcopy for fork Handle page fault Tips REFERENCES">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://qinstaunch.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-07-23T05:29:47.023Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="YanTang Qin的博客">
+<meta name="twitter:title" content="6.S081-LAB5 Copy-on-Write Fork for xv6">
+<meta name="twitter:description" content="Contents Itroduce reference count to kalloc Implement uvmcopy for fork Handle page fault Tips REFERENCES">
 <meta name="twitter:image" content="https://qinstaunch.github.io/images/og_image.png">
 
 
@@ -77,7 +81,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/logo.png" alt="YanTang Qin的博客" height="28">
+                <img src="/images/logo.png" alt="6.S081-LAB5 Copy-on-Write Fork for xv6" height="28">
             
             </a>
         </div>
@@ -113,6 +117,10 @@
                     
                 
                 
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
                 
                 <a class="navbar-item search" title="搜索" href="javascript:;">
                     <i class="fas fa-search"></i>
@@ -127,38 +135,174 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
-
-<div class="card widget">
-    <div class="card-content">
-        <h3 class="tag is-link">
-        十月 2019
-        </h3>
-        <div class="timeline">
+<div class="card">
+    
+    <div class="card-content article ">
         
-            <article class="media">
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-07-14T14:10:30.000Z">2020-07-14</time>
                 
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2019-10-11T04:56:09.000Z">2019-10-11</time>
-                        <a href="/2019/10/11/Java-I-O结合装饰器设计模式的一点理解/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Java I/O结合装饰器设计模式的一点理解</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Java/">Java</a> / <a class="has-link-grey -link" href="/categories/Java/Java编程语言/">Java编程语言</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/操作系统/">操作系统</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/操作系统/6-S081/">6.S081</a>
                 </div>
-            </article>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    9 分钟 读完 (大约 1387 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
         
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                6.S081-LAB5 Copy-on-Write Fork for xv6
+            
+        </h1>
+        <div class="content">
+            <html><head></head><body><h1><span id="contents"><span>Contents</span></span><a href="#contents" class="header-anchor">#</a></h1><ul>
+<li><a href="#s081lab5_ir">Itroduce reference count to kalloc</a></li>
+<li><a href="#s081lab5_iv">Implement uvmcopy for fork</a></li>
+<li><a href="#s081lab5_hpf">Handle page fault</a></li>
+<li><a href="#s081lab5_tips">Tips</a></li>
+<li><a href="#s081lab5_ref">REFERENCES</a></li>
+</ul>
+<a id="more"></a>
+
+<hr>
+<h1><span id="itroduce-reference-count-to-kalloc"><span id="s081lab5_ir">Itroduce reference count to kalloc</span></span><a href="#itroduce-reference-count-to-kalloc" class="header-anchor">#</a></h1><hr>
+<p>正确地释放物理内存，需要为物理内存页面引入引用计数机制，为此，我们在紧接内核后的物理内存分配一块区域用于引用计数。</p>
+<p>维护引用计数的核心数据结构为：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">struct</span> {</span></span><br><span class="line">    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">spinlock</span> <span class="hljs-title">lock</span>;</span></span><br><span class="line">    <span class="hljs-keyword">char</span> *pa_start;</span><br><span class="line">    <span class="hljs-keyword">char</span> *ref;</span><br><span class="line">} kmem_ref;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其中，kmem_ref.ref指向用于引用计数的内存起始地址，kmem_ref.pa_start指向能用于自由分配的内存起始地址。</p>
+<p>记紧接Kernel后第一个地址为pa_start，物理内存上限地址为pa_end，PGSIZE为物理页大小，以及每个计数单元大小为unit，那么理论上为引用计数应当分配的内存大小为：<br>$$<br>M_{ref}=\lfloor\frac{pa_end-pa_start}{PGSIZE}\rfloor\times{unit}<br>$$</p>
+<p>但是，能用于自由分配的内存起始地址应当按物理页大小对齐。记函数：<br>$$<br>PGROUNDUP(sz)=(\lfloor\frac{PGSIZE-1}{sz}\rfloor+1)\times{sz}<br>$$</p>
+<p>那么，最终kmem_ref.pa_start应当赋值：<br>$$<br>kmem_ref.pa_start = PGROUNDUP(pa_start+M_{ref})<br>$$</p>
+<p>因此有：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">freerange(<span class="hljs-keyword">void</span> *pa_start, <span class="hljs-keyword">void</span> *pa_end)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">char</span> *p;</span><br><span class="line">  uint64 num;</span><br><span class="line"></span><br><span class="line">  kmem_ref.ref = (<span class="hljs-keyword">char</span> *)pa_start;</span><br><span class="line">  num = (uint64)(((<span class="hljs-keyword">char</span> *)pa_end-(<span class="hljs-keyword">char</span> *)pa_start)>>PGSHIFT) * <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">char</span>);</span><br><span class="line">  kmem_ref.pa_start = (<span class="hljs-keyword">char</span> *)PGROUNDUP((uint64)(pa_start + num));</span><br><span class="line">  <span class="hljs-built_in">memset</span>(pa_start, <span class="hljs-number">1</span>, num);</span><br><span class="line">  p = kmem_ref.pa_start;</span><br><span class="line">  <span class="hljs-keyword">for</span>(; p + PGSIZE <= (<span class="hljs-keyword">char</span>*)pa_end; p += PGSIZE)</span><br><span class="line">    kfree(p);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后，在<code>kalloc</code>和<code>kfree</code>中进行引用计数即可：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// Free the page of physical memory pointed at by v,</span></span><br><span class="line"><span class="hljs-comment">// which normally should have been returned by a</span></span><br><span class="line"><span class="hljs-comment">// call to kalloc().  (The exception is when</span></span><br><span class="line"><span class="hljs-comment">// initializing the allocator; see kinit above.)</span></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">kfree(<span class="hljs-keyword">void</span> *pa)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">run</span> *<span class="hljs-title">r</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-keyword">char</span>*)pa < end || (uint64)pa >= PHYSTOP)</span><br><span class="line">    panic(<span class="hljs-string">"kfree"</span>);</span><br><span class="line"></span><br><span class="line">  r = (struct run*)pa;</span><br><span class="line"></span><br><span class="line">  acquire(&kmem_ref.lock);</span><br><span class="line">  kmem_ref.ref[kmemindex(pa)]--;</span><br><span class="line">  <span class="hljs-keyword">if</span>(kmem_ref.ref[kmemindex(pa)] > <span class="hljs-number">0</span>){</span><br><span class="line">    release(&kmem_ref.lock);</span><br><span class="line">    <span class="hljs-keyword">return</span>;</span><br><span class="line">  }</span><br><span class="line">  release(&kmem_ref.lock);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-comment">// Fill with junk to catch dangling refs.</span></span><br><span class="line">  <span class="hljs-built_in">memset</span>(pa, <span class="hljs-number">1</span>, PGSIZE);</span><br><span class="line"></span><br><span class="line">  acquire(&kmem.lock);</span><br><span class="line">  r->next = kmem.freelist;</span><br><span class="line">  kmem.freelist = r;</span><br><span class="line">  release(&kmem.lock);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Allocate one 4096-byte page of physical memory.</span></span><br><span class="line"><span class="hljs-comment">// Returns a pointer that the kernel can use.</span></span><br><span class="line"><span class="hljs-comment">// Returns 0 if the memory cannot be allocated.</span></span><br><span class="line"><span class="hljs-keyword">void</span> *</span><br><span class="line">kalloc(<span class="hljs-keyword">void</span>)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">run</span> *<span class="hljs-title">r</span>;</span></span><br><span class="line"></span><br><span class="line">  acquire(&kmem.lock);</span><br><span class="line">  r = kmem.freelist;</span><br><span class="line">  <span class="hljs-keyword">if</span>(r)</span><br><span class="line">    kmem.freelist = r->next;</span><br><span class="line">  release(&kmem.lock);</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">if</span>(r){</span><br><span class="line">    <span class="hljs-built_in">memset</span>((<span class="hljs-keyword">char</span>*)r, <span class="hljs-number">5</span>, PGSIZE); <span class="hljs-comment">// fill with junk</span></span><br><span class="line">    acquire(&kmem_ref.lock);</span><br><span class="line">    kmem_ref.ref[kmemindex(r)] = <span class="hljs-number">1</span>;</span><br><span class="line">    release(&kmem_ref.lock);</span><br><span class="line">  }</span><br><span class="line">  <span class="hljs-keyword">return</span> (<span class="hljs-keyword">void</span>*)r;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Util</span></span><br><span class="line"><span class="hljs-comment">// Calculate the index of physical address pa in kmem.ref array.</span></span><br><span class="line"><span class="hljs-keyword">static</span> uint64</span><br><span class="line">kmemindex(<span class="hljs-keyword">void</span> *pa)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">return</span> (uint64)(((<span class="hljs-keyword">char</span> *)pa-kmem_ref.pa_start)>>PGSHIFT);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">// Increment the reference count of physical page at physical address pa.</span></span><br><span class="line"><span class="hljs-keyword">void</span></span><br><span class="line">incref(<span class="hljs-keyword">void</span> *pa)</span><br><span class="line">{</span><br><span class="line">  acquire(&kmem_ref.lock);</span><br><span class="line">  kmem_ref.ref[kmemindex(pa)]++;</span><br><span class="line">  release(&kmem_ref.lock);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h1><span id="implement-uvmcopy-for-fork"><span id="s081lab5_iv">Implement uvmcopy for fork</span></span><a href="#implement-uvmcopy-for-fork" class="header-anchor">#</a></h1><hr>
+<p>函数<code>fork</code>即是调用了<code>uvmcopy</code>用于复制父进程的pagetable，同时还需要将父进程和子进程的PTE都清除掉PTE_W，以便后续在进程产生写入时引发page fault exception，同时还需要将PTE标记上PTE_COW，以便在<code>usertrap</code>中能分辨由于Copy-on-Write机制引发的page fault，从而进行处理。</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">uvmcopy(<span class="hljs-keyword">pagetable_t</span> old, <span class="hljs-keyword">pagetable_t</span> <span class="hljs-keyword">new</span>, uint64 sz)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">pte_t</span> *pte, *ptenew;</span><br><span class="line">  uint64 pa, i;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i < sz; i += PGSIZE){</span><br><span class="line">    <span class="hljs-keyword">if</span>((pte = walk(old, i, <span class="hljs-number">0</span>)) == <span class="hljs-number">0</span>){</span><br><span class="line">      panic(<span class="hljs-string">"uvmcopy: pte should exist"</span>);</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-keyword">if</span>((*pte & PTE_V) == <span class="hljs-number">0</span>){</span><br><span class="line">      panic(<span class="hljs-string">"uvmcopy: page not present"</span>);</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-keyword">if</span>((ptenew = walk(<span class="hljs-keyword">new</span>, i, <span class="hljs-number">1</span>)) == <span class="hljs-number">0</span>){</span><br><span class="line">      <span class="hljs-keyword">goto</span> err;</span><br><span class="line">    }</span><br><span class="line">    <span class="hljs-comment">// Clear the PTE_W in the PTEs of both new and old pagetable.</span></span><br><span class="line">    <span class="hljs-keyword">if</span>((*pte & PTE_W) != <span class="hljs-number">0</span>){</span><br><span class="line">      <span class="hljs-comment">// Clear bit PTE_W.</span></span><br><span class="line">      *pte ^= PTE_W;</span><br><span class="line">      <span class="hljs-comment">// Mark this page as COW.</span></span><br><span class="line">      *pte |= PTE_COW;</span><br><span class="line">    }</span><br><span class="line">    pa = PTE2PA(*pte);</span><br><span class="line">    *ptenew = *pte;</span><br><span class="line">    incref((<span class="hljs-keyword">void</span> *)pa);</span><br><span class="line">  }</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line"> err:</span><br><span class="line">  uvmunmap(<span class="hljs-keyword">new</span>, <span class="hljs-number">0</span>, i, <span class="hljs-number">1</span>);</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h1><span id="handle-page-fault"><span id="s081lab5_hpf">Handle page fault</span></span><a href="#handle-page-fault" class="header-anchor">#</a></h1><hr>
+<blockquote>
+<p>Here’s one reasonable plan of attack. Modify uvmcopy() to map the parent’s physical pages into the child, instead of allocating new pages, and clear PTE_W in the PTEs of both child and parent. Modify usertrap() to recognize page faults. When a page-fault occurs on a COW page, allocate a new page with kalloc(), copy the old page to the new page, and install the new page in the PTE with PTE_W set. Next, ensure that each physical page is freed when the last PTE reference to it goes away (but not before!), perhaps by implementing reference counts in kalloc.c. Finally, modify copyout() to use the same scheme as page faults when it encounters a COW page.</p>
+</blockquote>
+<p>正如LAB给的提示一样，我们需要在两个地方对Copy-on-Write机制进行处理，处理方式一样，因此用一个函数来处理：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// Handler copy-on-write page.</span></span><br><span class="line"><span class="hljs-comment">// 0 on success, -1 on error.</span></span><br><span class="line"><span class="hljs-keyword">int</span></span><br><span class="line">uvmcow(<span class="hljs-keyword">pagetable_t</span> pagetable, uint64 va)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-keyword">pte_t</span> *pte;</span><br><span class="line">  <span class="hljs-keyword">char</span> *mem;</span><br><span class="line">  uint64 pa;</span><br><span class="line">  uint flag;</span><br><span class="line"></span><br><span class="line">  <span class="hljs-comment">// We have to do this check, or the test case "pgbug" in "usertests"</span></span><br><span class="line">  <span class="hljs-comment">// will fail.</span></span><br><span class="line">  <span class="hljs-keyword">if</span>(va > MAXVA){</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;</span><br><span class="line">  }</span><br><span class="line">  </span><br><span class="line">  va = PGROUNDDOWN(va);</span><br><span class="line">  <span class="hljs-keyword">if</span>((pte = walk(pagetable, va, <span class="hljs-number">0</span>)) == <span class="hljs-number">0</span> || (*pte & PTE_COW) == <span class="hljs-number">0</span>){</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;</span><br><span class="line">  }</span><br><span class="line">  <span class="hljs-keyword">if</span>((mem = kalloc()) == <span class="hljs-number">0</span>){</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;</span><br><span class="line">  }</span><br><span class="line">  pa = PTE2PA(*pte);</span><br><span class="line">  flag = (PTE_FLAGS(*pte)^PTE_COW)|PTE_W;</span><br><span class="line">  memmove(mem, (<span class="hljs-keyword">void</span> *)pa, PGSIZE);</span><br><span class="line">  <span class="hljs-keyword">if</span>(mappages(pagetable, va, PGSIZE, (uint64)mem, flag) != <span class="hljs-number">0</span>){</span><br><span class="line">    kfree(mem);</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;</span><br><span class="line">  }</span><br><span class="line">  kfree((<span class="hljs-keyword">void</span> *)pa);</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在<code>usertrap</code>以及<code>copyout</code>中添加上这个函数即可。</p>
+<hr>
+<h1><span id="tips"><span id="s081lab5_tips">Tips</span></span><a href="#tips" class="header-anchor">#</a></h1><hr>
+<p>除此之外，还有一些细枝末节的地方需要修改，例如在riscv.h中增加PTE_COW，在defs.h中添加一些函数的定义等，详情见下方：</p>
+<ol>
+<li>克隆仓库至本地:<code>git clone git@github.com:QinStaunch/MIT6.S081.git S081</code></li>
+<li>切换分支至cow:<code>git checkout cow</code></li>
+<li>查看我在此LAB中所做的修改:<code>git diff 8d97b1 0483de</code></li>
+</ol>
+<p>不妨考虑这种情况：一个fork出来的进程，它的所有PTE都被标记了PTE_V以及PTE_COW，那么当该进程的一些操作需要再调用<code>mappages</code>时，在其原来的实现中，有这么一行：</p>
+<figure class="highlight c hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span>(*pte & PTE_V){</span><br><span class="line">    panic(<span class="hljs-string">"remap"</span>);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>显然，如果不去掉这几行，一定会panic，事实上也是如此，不妨自己试一试。</p>
+<p>最后，别忘了在目录下添加一个time.txt文件，写上做这个LAB的用时，否则<code>make grade</code>只能得99分。</p>
+<hr>
+<h1><span id="references"><div align="center"><span id="s081lab5_ref">REFERENCES</span></div></span><a href="#references" class="header-anchor">#</a></h1><p>【1】 <a href="https://pdos.csail.mit.edu/6.828/2019/xv6/book-riscv-rev0.pdf" target="_blank" rel="noopener">book-riscv-rev0</a><br>【2】 <a href="https://pdos.csail.mit.edu/6.828/2019/labs/cow.html" target="_blank" rel="noopener">Lab : Copy-on-Write fork for xv6</a><br>【3】 <em>The C programming language(second edition)</em> by Kernighan and Ritchie. Prentice Hall, Inc., 1988. ISBN 0-13-110362-8, 1998.</p>
+</body></html>
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/6-S081/">6.S081</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/assets/img/ali_pay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/assets/img/weixin_pay.png" alt="微信"></div>
+</a>
+
+                
         </div>
     </div>
 </div>
 
 
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/07/13/6-S081-LAB4-xv6-lazy-page-allocation/">
+                <span class="level-item">6.S081-LAB4 xv6 lazy page allocation</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.8";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-comments" data-width="100%" data-href="https://qinstaunch.github.io/2020/07/14/6-S081-LAB5-Copy-on-Write-Fork-for-xv6/" data-num-posts="5"></div>
+
+    </div>
+</div>
 </div>
                 
 
@@ -251,6 +395,40 @@
 </div>
     
         
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">1</span>
+        <span>Contents#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">2</span>
+        <span>Itroduce reference count to kalloc#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">3</span>
+        <span>Implement uvmcopy for fork#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">4</span>
+        <span>Handle page fault#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">5</span>
+        <span>Tips#</span>
+        </a></li><li>
+        <a class="is-flex" href="#undefined">
+        <span class="has-mr-6">6</span>
+        <span>REFERENCES#</span>
+        </a></li></ul>
+        </div>
+    </div>
+</div>
     
         <div class="card widget">
     <div class="card-content">
@@ -695,7 +873,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/logo.png" alt="YanTang Qin的博客" height="28">
+                    <img src="/images/logo.png" alt="6.S081-LAB5 Copy-on-Write Fork for xv6" height="28">
                 
                 </a>
                 <p class="is-size-7">
